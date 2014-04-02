@@ -36,7 +36,7 @@ This example will make the translatio manager availbale at `http://yourdomain.co
 
 The import command will search through app/lang and load all strings in the database, so you can easily manage them.
 
-    $ php artisan translations:import
+    $ php artisan translation:import
 
 ### Web interface
 
@@ -50,7 +50,7 @@ The export command will write the contents of the database back to app/lang php 
 This will overwrite existing translations and remove all comments, so make sure to backup your data before using.
 Supply the group name to define which groups you want to publish.
 
-    $ php artisan translations:export <group>
+    $ php artisan translation:export <group>
 
 For example, `php artisan translations:export reminders` when you have 2 locales (en/nl), will write to `app/lang/en/reminders.php` and `app/lang/nl/reminders.php`
 
@@ -58,7 +58,7 @@ For example, `php artisan translations:export reminders` when you have 2 locales
 
 The reset command simply clears all translation in the database, so you can start fresh (by a new import). Make sure to export your work if needed before doing this.
 
-    $ php artisan translations:reset
+    $ php artisan translation:reset
 
 
 ### Detect missing translations
