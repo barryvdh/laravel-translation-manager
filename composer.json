@@ -1,0 +1,26 @@
+{
+    "name": "barryvdh/laravel-translation-manager",
+    "description": "Manage Laravel Translations",
+    "keywords": ["laravel", "translations", "translator"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Barry vd. Heuvel",
+            "email": "barryvdh@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.1.*",
+        "illuminate/translation": "4.1.*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Barryvdh\\TranslationManager\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
