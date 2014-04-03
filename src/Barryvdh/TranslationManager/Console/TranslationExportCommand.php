@@ -13,7 +13,7 @@ class TranslationExportCommand extends Command {
      *
      * @var string
      */
-    protected $name = 'translation:export';
+    protected $name = 'translations:export';
 
     /**
      * The console command description.

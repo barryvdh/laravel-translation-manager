@@ -10,7 +10,7 @@ class TranslationResetCommand extends Command {
      *
      * @var string
      */
-    protected $name = 'translation:reset';
+    protected $name = 'translations:reset';
 
     /**
      * The console command description.
