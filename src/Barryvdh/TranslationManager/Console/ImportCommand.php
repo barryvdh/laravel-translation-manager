@@ -2,9 +2,8 @@
 
 use Barryvdh\TranslationManager\Manager;
 use Illuminate\Console\Command;
-use Barryvdh\TranslationManager\Models\Translation;
 
-class TranslationImportCommand extends Command {
+class ImportCommand extends Command {
 
     /**
      * The console command name.
@@ -18,7 +17,7 @@ class TranslationImportCommand extends Command {
      *
      * @var string
      */
-    protected $description = 'Import translations';
+    protected $description = 'Import translations from the PHP sources';
 
     /** @var  \Barryvdh\TranslationManager\Manager  */
     protected $manager;

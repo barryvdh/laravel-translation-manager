@@ -3,10 +3,8 @@
 use Barryvdh\TranslationManager\Manager;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Barryvdh\TranslationManager\Models\Translation;
-use Illuminate\Filesystem\Filesystem;
 
-class TranslationExportCommand extends Command {
+class ExportCommand extends Command {
 
     /**
      * The console command name.
@@ -20,7 +18,7 @@ class TranslationExportCommand extends Command {
      *
      * @var string
      */
-    protected $description = 'Export translations';
+    protected $description = 'Export translations to PHP files';
 
     /** @var \Barryvdh\TranslationManager\Manager  */
     protected $manager;

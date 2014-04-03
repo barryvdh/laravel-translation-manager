@@ -35,21 +35,27 @@ class ManagerServiceProvider extends ServiceProvider {
 
         $this->app['command.translation-manager.reset'] = $this->app->share(function($app)
         {
-            return new Console\TranslationResetCommand;
+            return new Console\ResetCommand;
         });
         $this->commands('command.translation-manager.reset');
 
         $this->app['command.translation-manager.import'] = $this->app->share(function($app)
         {
-            return new Console\TranslationImportCommand($app['translation-manager']);
+            return new Console\ImportCommand($app['translation-manager']);
         });
         $this->commands('command.translation-manager.import');
 
         $this->app['command.translation-manager.export'] = $this->app->share(function($app)
         {
-            return new Console\TranslationExportCommand($app['translation-manager']);
+            return new Console\ExportCommand($app['translation-manager']);
         });
         $this->commands('command.translation-manager.export');
+
+        $this->app['command.translation-manager.clean'] = $this->app->share(function($app)
+        {
+            return new Console\CleanCommand();
+        });
+        $this->commands('command.translation-manager.clean');
 	}
 
 	/**
@@ -59,7 +65,12 @@ class ManagerServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array('translation-manager', 'command.translation-manager.reset', 'command.translation-manager.import', 'command.translation-manager.export');
+		return array('translation-manager',
+            'command.translation-manager.reset',
+            'command.translation-manager.import',
+            'command.translation-manager.export',
+            'command.translation-manager.clean'
+        );
 	}
 
 }

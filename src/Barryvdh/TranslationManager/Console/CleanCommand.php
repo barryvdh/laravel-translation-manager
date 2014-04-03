@@ -1,24 +1,23 @@
 <?php namespace Barryvdh\TranslationManager\Console;
 
-use Illuminate\Console\Command;
 use Barryvdh\TranslationManager\Models\Translation;
+use Illuminate\Console\Command;
 
-class TranslationResetCommand extends Command {
+class CleanCommand extends Command {
 
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'translations:reset';
+    protected $name = 'translations:clean';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Reset translations';
-
+    protected $description = 'Clean empty translations';
 
     /**
      * Execute the console command.
@@ -27,10 +26,8 @@ class TranslationResetCommand extends Command {
      */
     public function fire()
     {
-        Translation::truncate();
-        $this->info("All translations are deleted");
-
+        Translation::whereNull('value')->delete();
+        $this->info("Done cleaning translations");
     }
-
 
 }
