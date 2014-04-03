@@ -1,7 +1,7 @@
 <?php namespace Barryvdh\TranslationManager\Console;
 
 use Illuminate\Console\Command;
-use Barryvdh\TranslationManager\Models\Translation;
+use Barryvdh\TranslationManager\Manager;
 
 class ResetCommand extends Command {
 
@@ -17,8 +17,16 @@ class ResetCommand extends Command {
      *
      * @var string
      */
-    protected $description = 'Delete all translation in the database';
+    protected $description = 'Delete all translations from the database';
 
+    /** @var \Barryvdh\TranslationManager\Manager  */
+    protected $manager;
+
+    public function __construct(Manager $manager)
+    {
+        $this->manager = $manager;
+        parent::__construct();
+    }
 
     /**
      * Execute the console command.
@@ -27,9 +35,8 @@ class ResetCommand extends Command {
      */
     public function fire()
     {
-        Translation::truncate();
+        $this->manager->truncateTranslations();
         $this->info("All translations are deleted");
-
     }
 
 

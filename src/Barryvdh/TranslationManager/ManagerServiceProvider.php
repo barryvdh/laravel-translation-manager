@@ -35,7 +35,7 @@ class ManagerServiceProvider extends ServiceProvider {
 
         $this->app['command.translation-manager.reset'] = $this->app->share(function($app)
         {
-            return new Console\ResetCommand;
+            return new Console\ResetCommand($app['translation-manager']);
         });
         $this->commands('command.translation-manager.reset');
 
@@ -53,7 +53,7 @@ class ManagerServiceProvider extends ServiceProvider {
 
         $this->app['command.translation-manager.clean'] = $this->app->share(function($app)
         {
-            return new Console\CleanCommand();
+            return new Console\CleanCommand($app['translation-manager']);
         });
         $this->commands('command.translation-manager.clean');
 	}

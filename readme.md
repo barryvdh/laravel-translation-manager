@@ -55,6 +55,12 @@ Supply the group name to define which groups you want to publish.
 
 For example, `php artisan translations:export reminders` when you have 2 locales (en/nl), will write to `app/lang/en/reminders.php` and `app/lang/nl/reminders.php`
 
+### Clean command
+
+The clean command will search for all translation that are NULL and delete them, so your interface is a bit cleaner. Note: empty translations are never exported.
+
+    $ php artisan translations:clean
+
 ### Reset command
 
 The reset command simply clears all translation in the database, so you can start fresh (by a new import). Make sure to export your work if needed before doing this.
@@ -78,6 +84,7 @@ You shouldn't use this in production, just in production to translate your views
 
 This package is still very alpha. Few thinks that are on the todo-list:
 
+    - Delete strings via webinterface
     - Add locales/groups via webinterface
     - Import/export via webinterface
     - Improve webinterface (more selection/filtering, behavior of popup after save etc)

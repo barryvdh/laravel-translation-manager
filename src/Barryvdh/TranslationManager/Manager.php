@@ -71,6 +71,16 @@ class Manager{
         }
     }
 
+    public function cleanTranslations()
+    {
+        Translation::whereNull('value')->delete();
+    }
+
+    public function truncateTranslations()
+    {
+        Translation::truncate();
+    }
+
     protected function makeTree($translations)
     {
         $array = array();

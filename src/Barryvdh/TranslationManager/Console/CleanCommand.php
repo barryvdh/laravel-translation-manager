@@ -1,6 +1,6 @@
 <?php namespace Barryvdh\TranslationManager\Console;
 
-use Barryvdh\TranslationManager\Models\Translation;
+use Barryvdh\TranslationManager\Manager;
 use Illuminate\Console\Command;
 
 class CleanCommand extends Command {
@@ -19,6 +19,15 @@ class CleanCommand extends Command {
      */
     protected $description = 'Clean empty translations';
 
+    /** @var \Barryvdh\TranslationManager\Manager  */
+    protected $manager;
+
+    public function __construct(Manager $manager)
+    {
+        $this->manager = $manager;
+        parent::__construct();
+    }
+
     /**
      * Execute the console command.
      *
@@ -26,7 +35,7 @@ class CleanCommand extends Command {
      */
     public function fire()
     {
-        Translation::whereNull('value')->delete();
+        $this->manager->cleanTranslations();
         $this->info("Done cleaning translations");
     }
 
