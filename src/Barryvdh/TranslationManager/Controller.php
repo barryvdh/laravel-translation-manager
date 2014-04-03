@@ -4,10 +4,18 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Redirect;
 use Barryvdh\TranslationManager\Models\Translation;
 
 class Controller extends BaseController
 {
+    /** @var \Barryvdh\TranslationManager\Manager  */
+    protected $manager;
+
+    public function __construct(Manager $manager)
+    {
+        $this->manager = $manager;
+    }
 
     public function getIndex($group = null)
     {
@@ -34,6 +42,19 @@ class Controller extends BaseController
         //Set the default locale as the first one.
         $locales = array_merge(array(Config::get('app.locale')), Translation::groupBy('locale')->lists('locale'));
         return array_unique($locales);
+    }
+
+    public function postAdd($group)
+    {
+        $keys = explode("\n", Input::get('keys'));
+
+        foreach($keys as $key){
+            $key = trim($key);
+            if($group && $key){
+                $this->manager->missingKey('*', $group, $key);
+            }
+        }
+        return Redirect::back();
     }
 
     public function postEdit($group)

@@ -46,11 +46,17 @@
         <div style="width: 80%; margin: auto;">
             <h1>Translation Manager</h1>
             <p>Warning, translations are not visible until they are exported back to the app/lang file, using 'php artisan translation:export'</p>
-            <form>
+            <form role="form">
                 <div class="form-group">
-                    <?= Form::select('group', $groups, $group, ['class'=>'group-select']) ?>
+                    <?= Form::select('group', $groups, $group, ['class'=>'form-control group-select']) ?>
                 </div>
             </form>
+            <?php if($group): ?>
+            <form action="<?= action('Barryvdh\TranslationManager\Controller@postAdd', [$group]) ?>" method="POST"  role="form">
+                <textarea class="form-control" rows="3" name="keys" placeholder="Add 1 key per line, without the group prefix"></textarea>
+                <input type="submit" value="Add keys" class="btn btn-primary">
+            </form>
+            <?php endif; ?>
             <table class="table">
                 <thead>
                 <tr>
