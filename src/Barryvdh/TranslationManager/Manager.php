@@ -82,6 +82,7 @@ class Manager{
                 $this->files->put($path, $output);
             }
         }
+        Translation::where('group', $group)->whereNotNull('value')->update(array('status' => Translation::STATUS_SAVED));
     }
 
     public function cleanTranslations()
