@@ -21,7 +21,7 @@ class Manager{
         $this->events = $events;
     }
 
-    public function missingKey($group, $key)
+    public function missingKey($namespace, $group, $key)
     {
         Translation::firstOrCreate(array(
             'locale' => $this->app['config']['app.locale'],
