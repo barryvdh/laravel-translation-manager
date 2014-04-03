@@ -73,7 +73,7 @@
                     </td>
                     <?php endforeach; ?>
                     <td>
-                        <a href="#delete" class="delete-key" data-key="<?= $key ?>">X</a>
+                        <a href="#delete" class="delete-key" data-key="<?= $key ?>"><span class="glyphicon glyphicon-trash"></span></a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
