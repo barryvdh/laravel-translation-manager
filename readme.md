@@ -11,6 +11,8 @@ The workflow would be:
 
 This way, translations can be saved in git history and no overhead is introduced in production.
 
+![Screenshot](http://i.imgur.com/4th2krf.png)
+
 ## Installation
 
 Require this package in your composer.json and run composer update (or run `composer require barryvdh/laravel-translation-manager:*` directly):
