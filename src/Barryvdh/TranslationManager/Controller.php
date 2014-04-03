@@ -16,7 +16,7 @@ class Controller extends BaseController
         $groups = array(''=>'Choose a group') + $groups;
 
         $translations = array();
-        foreach(Translation::where('group', $group)->get() as $translation){
+        foreach(Translation::where('group', $group)->orderBy('key', 'asc')->get() as $translation){
             $translations[$translation->key][$translation->locale] = $translation;
         }
 
