@@ -78,7 +78,6 @@ You shouldn't use this in production, just in production to translate your views
 
 This package is still very alpha. Few thinks that are on the todo-list:
 
-    - Delete strings via webinterface
     - Add locales/groups via webinterface
     - Import/export via webinterface
     - Improve webinterface (more selection/filtering, behavior of popup after save etc)

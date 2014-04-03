@@ -17,7 +17,6 @@
                     window.location.href = '<?= action('Barryvdh\TranslationManager\Controller@getIndex') ?>/'+$(this).val();
                 })
 
-
                 $('.editable').on('hidden', function(e, reason){
                     var locale = $(this).data('locale');
                     if(reason === 'save' || reason === 'nochange') {
@@ -27,6 +26,19 @@
                         }, 300);
                     }
                 });
+
+                $('a.delete-key').on('click', function(e){
+                    e.stopPropagation();
+                    var el = $(this);
+                    var key = el.data('key');
+                    if(!confirm('Are you sure you want to delete all translations for key "'+key+'"?')){
+                        return;
+                    }
+
+                    $.post( "<?= action('Barryvdh\TranslationManager\Controller@postDelete', [$group]) ?>", {key: key }, function( data ) {
+                        el.closest('tr').remove();
+                    });
+                })
             })
         </script>
     </head>
@@ -46,6 +58,7 @@
                     <?php foreach($locales as $locale): ?>
                     <th><?= $locale ?></th>
                     <?php endforeach; ?>
+                    <th>&nbsp;</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -59,8 +72,12 @@
                         <a href="#edit" class="editable locale-<?= $locale ?>" data-locale="<?= $locale ?>" data-name="<?= $locale . "|" . $key ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= $editUrl ?>" data-title="Enter translation"><?= $t ? $t->value : '' ?></a>
                     </td>
                     <?php endforeach; ?>
+                    <td>
+                        <a href="#delete" class="delete-key" data-key="<?= $key ?>">X</a>
+                    </td>
                 </tr>
                 <?php endforeach; ?>
+
                 </tbody>
             </table>
         </div>
