@@ -3,6 +3,7 @@
 This is a package to manage Laravel translation files.
 It does not replace the Translation system, only import/export the php files to a database and make them editable through a webinterface.
 The workflow would be:
+
     - Import translations: Read alle translation files and save them in the databse
     - Optionally: Listen to missing translation with the custom Translator
     - Translate all keys through the webinterface
@@ -77,8 +78,9 @@ You shouldn't use this in production, just in production to translate your views
 
 This package is still very alpha. Few thinks that are on the todo-list:
 
-    * Delete strings via webinterface
-    * Add locales/groups via webinterface
-    * Import/export via webinterface
-    * Improve webinterface (more selection/filtering, behavior of popup after save etc)
-    * Suggestions are welcome :)
+    - Delete strings via webinterface
+    - Add locales/groups via webinterface
+    - Import/export via webinterface
+    - Improve webinterface (more selection/filtering, behavior of popup after save etc)
+    - Seed existing languages (https://github.com/caouecs/Laravel4-lang)
+    - Suggestions are welcome :)
