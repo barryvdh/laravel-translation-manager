@@ -38,6 +38,8 @@ This example will make the translatio manager availbale at `http://yourdomain.co
 The import command will search through app/lang and load all strings in the database, so you can easily manage them.
 
     $ php artisan translations:import
+    
+Note: this will override existing translations!
 
 ### Web interface
 
