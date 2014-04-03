@@ -39,7 +39,8 @@ The import command will search through app/lang and load all strings in the data
 
     $ php artisan translations:import
     
-Note: this will override existing translations!
+Note: By default, only new strings are added. Translations already in the DB are kept the same. If you want to replace all values with the ones from the files, 
+add the `--replace` (or `-R`) option: `php artisan translations:import --replace`
 
 ### Web interface
 

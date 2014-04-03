@@ -2,6 +2,7 @@
 
 use Barryvdh\TranslationManager\Manager;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Input\InputOption;
 
 class ImportCommand extends Command {
 
@@ -36,10 +37,22 @@ class ImportCommand extends Command {
      */
     public function fire()
     {
-        $counter = $this->manager->importTranslations();
-
+        $replace = $this->option('replace');
+        $counter = $this->manager->importTranslations($replace);
         $this->info('Done importing, processed '.$counter. ' items!');
 
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return array(
+            array('replace', "R", InputOption::VALUE_NONE, 'Replace existing keys'),
+        );
     }
 
 

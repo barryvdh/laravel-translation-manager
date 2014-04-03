@@ -30,7 +30,7 @@ class Manager{
         ));
     }
 
-    public function importTranslations()
+    public function importTranslations($replace = false)
     {
         $counter = 0;
         foreach($this->files->directories($this->app->make('path').'/lang') as $langPath){
@@ -43,13 +43,26 @@ class Manager{
 
                 $translations = array_dot(\Lang::getLoader()->load($locale, $group));
                 foreach($translations as $key => $value){
-                    $translation = Translation::firstOrNew(array(
+                    $value = (string) $value;
+                     $translation = Translation::firstOrNew(array(
                         'locale' => $locale,
                         'group' => $group,
                         'key' => $key,
                     ));
-                    $translation->value = (string) $value;
+
+                    // Check if the database is different then the files
+                    $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
+                    if($newStatus !== (int) $translation->status){
+                        $translation->status = $newStatus;
+                    }
+
+                    // Only replace when empty, or explicitly told so
+                    if($replace || !$translation->value){
+                        $translation->value = $value;
+                    }
+
                     $translation->save();
+
                     $counter++;
                 }
             }

@@ -9,6 +9,11 @@
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
         <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
         <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+        <style>
+            a.status-1{
+                font-weight: bold;
+            }
+        </style>
         <script>
             $(document).ready(function(){
                 $('.editable').editable();
@@ -19,6 +24,9 @@
 
                 $('.editable').on('hidden', function(e, reason){
                     var locale = $(this).data('locale');
+                    if(reason === 'save'){
+                        $(this).removeClass('status-0').addClass('status-1');
+                    }
                     if(reason === 'save' || reason === 'nochange') {
                         var $next = $(this).closest('tr').next().find('.editable.locale-'+locale);
                         setTimeout(function() {
@@ -57,6 +65,7 @@
                 <input type="submit" value="Add keys" class="btn btn-primary">
             </form>
             <?php endif; ?>
+            <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
             <table class="table">
                 <thead>
                 <tr>
@@ -74,8 +83,9 @@
                     <td><?= $key ?></td>
                     <?php foreach($locales as $locale): ?>
                     <?php $t = isset($translation[$locale]) ? $translation[$locale] : null?>
+
                     <td>
-                        <a href="#edit" class="editable locale-<?= $locale ?>" data-locale="<?= $locale ?>" data-name="<?= $locale . "|" . $key ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= $editUrl ?>" data-title="Enter translation"><?= $t ? $t->value : '' ?></a>
+                        <a href="#edit" class="editable status-<?= $t ? $t->status : 0 ?> locale-<?= $locale ?>" data-locale="<?= $locale ?>" data-name="<?= $locale . "|" . $key ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= $editUrl ?>" data-title="Enter translation"><?= $t ? $t->value : '' ?></a>
                     </td>
                     <?php endforeach; ?>
                     <td>

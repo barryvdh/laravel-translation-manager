@@ -22,17 +22,24 @@ class Controller extends BaseController
         $locales = $this->loadLocales();
         $groups = Translation::groupBy('group')->lists('group', 'group');
         $groups = array(''=>'Choose a group') + $groups;
+        $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
+
+        $allTranslations = Translation::where('group', $group)->orderBy('key', 'asc')->get();
+        $numTranslations = count($allTranslations);
         $translations = array();
-        foreach(Translation::where('group', $group)->orderBy('key', 'asc')->get() as $translation){
+        foreach($allTranslations as $translation){
             $translations[$translation->key][$translation->locale] = $translation;
         }
+
 
         return \View::make('laravel-translation-manager::index')
             ->with('translations', $translations)
             ->with('locales', $locales)
             ->with('groups', $groups)
             ->with('group', $group)
+            ->with('numTranslations', $numTranslations)
+            ->with('numChanged', $numChanged)
             ->with('editUrl', URL::action(get_class($this).'@postEdit', [$group]))
         ;
     }
@@ -69,6 +76,7 @@ class Controller extends BaseController
             'key' => $key,
         ));
         $translation->value = (string) $value ?: null;
+        $translation->status = Translation::STATUS_CHANGED;
         $translation->save();
         return array('status' => 'ok');
     }
