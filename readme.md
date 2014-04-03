@@ -27,7 +27,9 @@ You need to run the migrations for this package
 
 You have to add the Controller to your routes.php, so you can set your own url/filters.
 
-     Route::controller('translations', 'Barryvdh\TranslationManager\Controller');
+    Route::group(array('before' => 'auth_admin'), function() {
+        Route::controller('translations', 'Barryvdh\TranslationManager\Controller');
+    });
 
 This example will make the translatio manager availbale at `http://yourdomain.com/translations`
 
