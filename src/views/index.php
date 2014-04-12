@@ -54,6 +54,24 @@
         <div style="width: 80%; margin: auto;">
             <h1>Translation Manager</h1>
             <p>Warning, translations are not visible until they are exported back to the app/lang file, using 'php artisan translation:export'</p>
+            <?php if(Session::has('successImport')) : ?>
+            <div class="alert alert-success">
+                <?php echo Session::get('successImport'); ?>
+            </div>
+            <?php endif; ?>
+            <?php if(Session::has('successPublish')) : ?>
+            <div class="alert alert-info">
+                <?php echo Session::get('successPublish'); ?>
+            </div>
+            <?php endif; ?>
+            <p>
+                <?php if(!isset($group)) : ?>
+                <a href="<?= action('Barryvdh\TranslationManager\Controller@getImport') ?>" class="btn btn-success">Import groups</a>
+                <?php endif; ?>
+                <?php if(isset($group)) : ?>
+                <a href="<?= action('Barryvdh\TranslationManager\Controller@getPublish', $group) ?>" class="btn btn-info">Publish translations</a>
+                <?php endif; ?>
+            </p>
             <form role="form">
                 <div class="form-group">
                     <?= Form::select('group', $groups, $group, ['class'=>'form-control group-select']) ?>

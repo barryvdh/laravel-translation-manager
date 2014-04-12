@@ -88,4 +88,17 @@ class Controller extends BaseController
         return array('status' => 'ok');
     }
 
+    public function getImport($replace = '')
+    {
+        $counter = $this->manager->importTranslations($replace);
+        
+        return Redirect::back()->with('successImport', 'Done importing, processed ' . $counter . ' items!');
+    }
+
+    public function getPublish($group)
+    {
+        $this->manager->exportTranslations($group);
+        
+        return Redirect::back()->with('successPublish', 'Published <em>' . $group .'</em>!');
+    }
 }
