@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Response;
 use Barryvdh\TranslationManager\Models\Translation;
 
 class Controller extends BaseController
@@ -88,4 +89,17 @@ class Controller extends BaseController
         return array('status' => 'ok');
     }
 
+    public function getImport($replace = '')
+    {
+        $counter = $this->manager->importTranslations($replace);
+        
+        return Response::json(array('success' => 'ok', 'counter' => $counter)); 
+    }
+
+    public function getPublish($group)
+    {
+        $this->manager->exportTranslations($group);
+        
+        return Redirect::back()->with('successPublish', 'Published <em>' . $group .'</em>!');
+    }
 }

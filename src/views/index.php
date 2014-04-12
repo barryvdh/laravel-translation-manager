@@ -46,7 +46,21 @@
                     $.post( "<?= action('Barryvdh\TranslationManager\Controller@postDelete', [$group]) ?>", {key: key }, function( data ) {
                         el.closest('tr').remove();
                     });
-                })
+                });
+
+                $('a.import').click(function () {
+                    var btn = $(this);
+                    btn.button('loading');
+
+                    $.get("<?= action('Barryvdh\TranslationManager\Controller@getImport') ?>",
+                        null,
+                        function(data) {
+                            btn.button('reset');
+                            $('div.success-import strong.counter').text(data.counter);
+                            $('div.success-import').slideDown();
+                        }
+                    );
+                });
             })
         </script>
     </head>
@@ -54,6 +68,22 @@
         <div style="width: 80%; margin: auto;">
             <h1>Translation Manager</h1>
             <p>Warning, translations are not visible until they are exported back to the app/lang file, using 'php artisan translation:export'</p>
+            <div class="alert alert-success success-import" style="display:none;">
+                <p>Done importing, processed <strong class="counter">N</strong> items! Reload this page to refresh the groups!</p>
+            </div>
+            <?php if(Session::has('successPublish')) : ?>
+            <div class="alert alert-info">
+                <?php echo Session::get('successPublish'); ?>
+            </div>
+            <?php endif; ?>
+            <p>
+                <?php if(!isset($group)) : ?>
+                <a href="<?= action('Barryvdh\TranslationManager\Controller@getImport') ?>" class="btn btn-success">Import groups</a>
+                <?php endif; ?>
+                <?php if(isset($group)) : ?>
+                <a href="<?= action('Barryvdh\TranslationManager\Controller@getPublish', $group) ?>" class="btn btn-info">Publish translations</a>
+                <?php endif; ?>
+            </p>
             <form role="form">
                 <div class="form-group">
                     <?= Form::select('group', $groups, $group, ['class'=>'form-control group-select']) ?>
