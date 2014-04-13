@@ -90,7 +90,6 @@ class Controller extends BaseController
 
     public function postImport()
     {
-        sleep(2);
         $replace = Input::get('replace', false);
         $counter = $this->manager->importTranslations($replace);
 
