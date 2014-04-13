@@ -42,7 +42,7 @@ class Controller extends BaseController
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
             ->with('editUrl', URL::action(get_class($this).'@postEdit', [$group]))
-        ;
+            ;
     }
 
     protected function loadLocales()
@@ -82,24 +82,25 @@ class Controller extends BaseController
         return array('status' => 'ok');
     }
 
-    public function postDelete($group)
+    public function postDelete($group, $key)
     {
-        $key = Input::get('key');
         Translation::where('group', $group)->where('key', $key)->delete();
         return array('status' => 'ok');
     }
 
-    public function getImport($replace = '')
+    public function postImport()
     {
+        sleep(2);
+        $replace = Input::get('replace', false);
         $counter = $this->manager->importTranslations($replace);
-        
-        return Response::json(array('success' => 'ok', 'counter' => $counter)); 
+
+        return Response::json(array('status' => 'ok', 'counter' => $counter));
     }
 
-    public function getPublish($group)
+    public function postPublish($group)
     {
         $this->manager->exportTranslations($group);
-        
-        return Redirect::back()->with('successPublish', 'Published <em>' . $group .'</em>!');
+
+        return Response::json(array('status' => 'ok'));
     }
 }
