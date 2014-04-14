@@ -37,6 +37,16 @@ This example will make the translatio manager availbale at `http://yourdomain.co
 
 ## Usage
 
+### Web interface
+
+When you have imported your translation (via buttons or command), you can view them in the webinterface (on the url you defined the with the controller).
+You can click on a translation and an edit field will popup. Just click save and it is saved :)
+When a translation is not yet created in a different locale, you can also just edit it to create it.
+
+Using the buttons on the webinterface, you can import/export the translations. For publishing translations, make sure your application can write to the language directory.
+
+You can also use the commands below.
+
 ### Import command
 
 The import command will search through app/lang and load all strings in the database, so you can easily manage them.
@@ -45,12 +55,6 @@ The import command will search through app/lang and load all strings in the data
     
 Note: By default, only new strings are added. Translations already in the DB are kept the same. If you want to replace all values with the ones from the files, 
 add the `--replace` (or `-R`) option: `php artisan translations:import --replace`
-
-### Web interface
-
-When you have imported your translation, you can view them in the webinterface (on the url you defined the with the controller).
-You can click on a translation and an edit field will popup. Just click save and it is saved :)
-When a translation is not yet created in a different locale, you can also just edit it to create it.
 
 ### Export command
 
@@ -92,7 +96,6 @@ You shouldn't use this in production, just in production to translate your views
 This package is still very alpha. Few thinks that are on the todo-list:
 
     - Add locales/groups via webinterface
-    - Import/export via webinterface
     - Improve webinterface (more selection/filtering, behavior of popup after save etc)
     - Seed existing languages (https://github.com/caouecs/Laravel4-lang)
     - Suggestions are welcome :)
