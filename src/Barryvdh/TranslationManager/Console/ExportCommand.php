@@ -40,7 +40,7 @@ class ExportCommand extends Command {
 
         $this->manager->exportTranslations($group);
 
-        $this->info("Done writing language files for group $group");
+        $this->info("Done writing language files for " . (($group == '*') ? 'ALL groups' : $group . " group") );
 
     }
 
