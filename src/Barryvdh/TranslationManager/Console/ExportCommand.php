@@ -52,7 +52,7 @@ class ExportCommand extends Command {
     protected function getArguments()
     {
         return array(
-            array('group', InputArgument::REQUIRED, 'The group to export.'),
+            array('group', InputArgument::REQUIRED, 'The group to export (`*` for all).'),
         );
     }
 

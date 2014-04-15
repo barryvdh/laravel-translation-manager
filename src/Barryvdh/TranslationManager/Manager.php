@@ -73,6 +73,9 @@ class Manager{
 
     public function exportTranslations($group)
     {
+        if($group == '*')
+            return $this->exportAllTranslations();
+
         $tree = $this->makeTree(Translation::where('group', $group)->whereNotNull('value')->get());
 
         foreach($tree as $locale => $groups){
