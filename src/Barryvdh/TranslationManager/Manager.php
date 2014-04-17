@@ -4,6 +4,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Events\Dispatcher;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\DB;
 
 class Manager{
 
@@ -72,6 +73,9 @@ class Manager{
 
     public function exportTranslations($group)
     {
+        if($group == '*')
+            return $this->exportAllTranslations();
+
         $tree = $this->makeTree(Translation::where('group', $group)->whereNotNull('value')->get());
 
         foreach($tree as $locale => $groups){
@@ -83,6 +87,15 @@ class Manager{
             }
         }
         Translation::where('group', $group)->whereNotNull('value')->update(array('status' => Translation::STATUS_SAVED));
+    }
+    
+    public function exportAllTranslations()
+    {
+        $groups = Translation::whereNotNull('value')->select(DB::raw('DISTINCT `group`'))->get('group');
+
+        foreach($groups as $group){
+            $this->exportTranslations($group->group);
+        }
     }
 
     public function cleanTranslations()

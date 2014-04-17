@@ -40,7 +40,7 @@ class ExportCommand extends Command {
 
         $this->manager->exportTranslations($group);
 
-        $this->info("Done writing language files for group $group");
+        $this->info("Done writing language files for " . (($group == '*') ? 'ALL groups' : $group . " group") );
 
     }
 
@@ -52,7 +52,7 @@ class ExportCommand extends Command {
     protected function getArguments()
     {
         return array(
-            array('group', InputArgument::REQUIRED, 'The group to export.'),
+            array('group', InputArgument::REQUIRED, 'The group to export (`*` for all).'),
         );
     }
 
