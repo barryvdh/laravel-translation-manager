@@ -78,13 +78,13 @@ class Manager{
         $path = $path ?: $this->app['path'];
         $keys = array();
         $functions =  array('trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice');
-        $pattern =                              // See http://regexr.com/38ol2
+        $pattern =                              // See http://regexr.com/38olt
             "(".implode('|', $functions) .")".  // Must start with one of the functions
             "\(".                               // Match opening parenthese
             "[\'\"]".                           // Match " or '
             "(".                                // Start a new group to match:
                 "[a-zA-Z0-9_-]+".               // Must start with group
-                "([.][a-zA-Z0-9_-]+)+".         // Be followed by one or more items/keys
+                "([.][^\'\")]+)+".              // Be followed by one or more items/keys
             ")".                                // Close group
             "[\'\"]".                           // Closing quote
             "[\),]";                            // Close parentheses or new parameter
