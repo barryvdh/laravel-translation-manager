@@ -45,6 +45,11 @@
                 $('div.success-import strong.counter').text(data.counter);
                 $('div.success-import').slideDown();
             });
+            
+            $('.form-find').on('ajax:success', function (e, data) {
+                $('div.success-find strong.counter').text(data.counter);
+                $('div.success-find').slideDown();
+            });
 
             $('.form-publish').on('ajax:success', function (e, data) {
                 $('div.success-publish').slideDown();
@@ -59,6 +64,9 @@
     <p>Warning, translations are not visible until they are exported back to the app/lang file, using 'php artisan translation:export' command or publish button.</p>
     <div class="alert alert-success success-import" style="display:none;">
         <p>Done importing, processed <strong class="counter">N</strong> items! Reload this page to refresh the groups!</p>
+    </div>
+    <div class="alert alert-success success-find" style="display:none;">
+        <p>Done searching for translations, found <strong class="counter">N</strong> items!</p>
     </div>
     <div class="alert alert-success success-publish" style="display:none;">
         <p>Done publishing the translations for group '<?= $group ?>'!</p>
@@ -76,6 +84,9 @@
                 <option value="1">Replace existing translations</option>
             </select>
             <button type="submit" class="btn btn-success"  data-disable-with="Loading..">Import groups</button>
+        </form>
+        <form class="form-inline form-find" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postFind') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to scan you app folder? All found translation keys will be added to the database.">
+            <button type="submit" class="btn btn-info" data-disable-with="Searching.." >Find translations in files</button>
         </form>
         <?php endif; ?>
         <?php if(isset($group)) : ?>

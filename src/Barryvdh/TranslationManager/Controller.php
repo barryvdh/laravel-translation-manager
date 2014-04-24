@@ -95,6 +95,13 @@ class Controller extends BaseController
 
         return Response::json(array('status' => 'ok', 'counter' => $counter));
     }
+    
+    public function postFind()
+    {
+        $numFound = $this->manager->findTranslations();
+
+        return Response::json(array('status' => 'ok', 'counter' => (int) $numFound));
+    }
 
     public function postPublish($group)
     {

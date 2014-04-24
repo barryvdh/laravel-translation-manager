@@ -5,6 +5,7 @@ use Illuminate\Events\Dispatcher;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\Finder\Finder;
 
 class Manager{
 
@@ -70,7 +71,50 @@ class Manager{
         }
         return $counter;
     }
+    
+        public function findTranslations($path = null)
+    {
 
+        $path = $path ?: $this->app['path'];
+        $keys = array();
+        $functions =  array('trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice');
+        $pattern = "/(".implode('|', $functions) .")\(([^\)]*)\)/siU";
+
+        // Find all PHP + Twig files in the app folder, except for storage
+        $finder = new Finder();
+        $finder->in($path)->exclude('storage')->name('*.php')->name('*.twig')->files();
+
+        /** @var \Symfony\Component\Finder\SplFileInfo $file */
+        foreach ($finder as $file) {
+            // Search the current file for the pattern
+            if(preg_match_all($pattern, $file->getContents(), $matches)) {
+                // Check all matches
+                foreach ($matches[2] as $key) {
+                    // Only use the first parameter
+                    list($key) = explode(',', $key);
+                    // Strip single+double quotes
+                    $key = trim($key, '\'"');
+                    // Check if valid (only alphanum and ._-) and contains a dot (for group + key)
+                    if((preg_match('/[^0-9a-zA-Z\._-]/', $key) == 0) && strpos($key, '.') !== false){
+                        $keys[] = $key;
+                    }
+                }
+            }
+        }
+        // Remove duplicates
+        $keys = array_unique($keys);
+
+        // Add the translations to the database, if not existing.
+        foreach($keys as $key){
+            // Split the group and item
+            list($group, $item) = explode('.', $key, 2);
+            $this->missingKey('', $group, $item);
+        }
+
+        // Return the number of found translations
+        return count($keys);
+    }
+    
     public function exportTranslations($group)
     {
         if($group == '*')

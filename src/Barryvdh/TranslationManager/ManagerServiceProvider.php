@@ -44,6 +44,12 @@ class ManagerServiceProvider extends ServiceProvider {
             return new Console\ImportCommand($app['translation-manager']);
         });
         $this->commands('command.translation-manager.import');
+        
+        $this->app['command.translation-manager.find'] = $this->app->share(function($app)
+        {
+            return new Console\FindCommand($app['translation-manager']);
+        });
+        $this->commands('command.translation-manager.find');
 
         $this->app['command.translation-manager.export'] = $this->app->share(function($app)
         {
@@ -68,6 +74,7 @@ class ManagerServiceProvider extends ServiceProvider {
 		return array('translation-manager',
             'command.translation-manager.reset',
             'command.translation-manager.import',
+            'command.translation-manager.find',
             'command.translation-manager.export',
             'command.translation-manager.clean'
         );

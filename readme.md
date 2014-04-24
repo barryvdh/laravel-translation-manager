@@ -56,6 +56,14 @@ The import command will search through app/lang and load all strings in the data
 Note: By default, only new strings are added. Translations already in the DB are kept the same. If you want to replace all values with the ones from the files, 
 add the `--replace` (or `-R`) option: `php artisan translations:import --replace`
 
+### Find translations in source
+
+The Find command/button will look search for all php/twig files in the app directory, to see if they contain translation functions, and will try to extract the group/item names.
+The found keys will be added to the database, so they can be easily translated.
+This can be done through the webinterface, or via an Artisan command.
+
+    $ php artisan translations:find
+
 ### Export command
 
 The export command will write the contents of the database back to app/lang php files.
@@ -79,8 +87,10 @@ The reset command simply clears all translation in the database, so you can star
     $ php artisan translations:reset
 
 
+
 ### Detect missing translations
 
+Most translations can be found by using the Find command (see above), but in case you have dynamic keys (variables/automatic forms etc), it can be helpful to 'listen' to the missing translations.
 To detect missing translations, we can swap the Laravel TranslationServicepProvider with a custom provider.
 In your config/app.php, comment out the original TranslationServiceProvider and add the one from this package:
 
