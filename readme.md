@@ -4,7 +4,7 @@ This is a package to manage Laravel translation files.
 It does not replace the Translation system, only import/export the php files to a database and make them editable through a webinterface.
 The workflow would be:
 
-    - Import translations: Read alle translation files and save them in the databse
+    - Import translations: Read all translation files and save them in the database
     - Optionally: Listen to missing translation with the custom Translator
     - Translate all keys through the webinterface
     - Export: Write all translations back to the translation files.
@@ -33,7 +33,7 @@ You have to add the Controller to your routes.php, so you can set your own url/f
         Route::controller('translations', 'Barryvdh\TranslationManager\Controller');
     });
 
-This example will make the translatio manager availbale at `http://yourdomain.com/translations`
+This example will make the translation manager available at `http://yourdomain.com/translations`
 
 ## Usage
 
