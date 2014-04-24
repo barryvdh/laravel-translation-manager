@@ -78,7 +78,16 @@ class Manager{
         $path = $path ?: $this->app['path'];
         $keys = array();
         $functions =  array('trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice');
-        $pattern = "/(".implode('|', $functions) .")\(([^\)]*)\)/siU";
+        $pattern =                              // See http://regexr.com/38ol2
+            "(".implode('|', $functions) .")".  // Must start with one of the functions
+            "\(".                               // Match opening parenthese
+            "[\'\"]".                           // Match " or '
+            "(".                                // Start a new group to match:
+                "[a-zA-Z0-9_-]+".               // Must start with group
+                "([.][a-zA-Z0-9_-]+)+".         // Be followed by one or more items/keys
+            ")".                                // Close group
+            "[\'\"]".                           // Closing quote
+            "[\),]";                            // Close parentheses or new parameter
 
         // Find all PHP + Twig files in the app folder, except for storage
         $finder = new Finder();
@@ -87,17 +96,10 @@ class Manager{
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($finder as $file) {
             // Search the current file for the pattern
-            if(preg_match_all($pattern, $file->getContents(), $matches)) {
-                // Check all matches
+            if(preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
+                // Get all matches
                 foreach ($matches[2] as $key) {
-                    // Only use the first parameter
-                    list($key) = explode(',', $key);
-                    // Strip single+double quotes
-                    $key = trim($key, '\'"');
-                    // Check if valid (only alphanum and ._-) and contains a dot (for group + key)
-                    if((preg_match('/[^0-9a-zA-Z\._-]/', $key) == 0) && strpos($key, '.') !== false){
-                        $keys[] = $key;
-                    }
+                    $keys[] = $key;
                 }
             }
         }
