@@ -5,6 +5,7 @@ It does not replace the Translation system, only import/export the php files to 
 The workflow would be:
 
     - Import translations: Read all translation files and save them in the database
+    - Find all translations in php/twig sources
     - Optionally: Listen to missing translation with the custom Translator
     - Translate all keys through the webinterface
     - Export: Write all translations back to the translation files.
