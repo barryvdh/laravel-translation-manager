@@ -15,7 +15,7 @@ class CreateTranslationsTable extends Migration {
         Schema::create('ltm_translations', function(Blueprint $table)
         {
             $table->increments('id');
-            $table->integer('status');
+            $table->integer('status')->default(0);
             $table->string('locale');
             $table->string('group');
             $table->string('key');
