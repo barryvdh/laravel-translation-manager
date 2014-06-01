@@ -18,7 +18,7 @@ This way, translations can be saved in git history and no overhead is introduced
 
 Require this package in your composer.json and run composer update (or run `composer require barryvdh/laravel-translation-manager:*` directly):
 
-    "barryvdh/laravel-translation-manager": "*"
+    "barryvdh/laravel-translation-manager": "0.1.x"
 
 After updating composer, add the ServiceProvider to the providers array in app/config/app.php
 
