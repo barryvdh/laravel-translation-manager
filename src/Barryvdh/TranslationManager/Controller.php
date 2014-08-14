@@ -41,7 +41,7 @@ class Controller extends BaseController
             ->with('group', $group)
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
-            ->with('editUrl', URL::action(get_class($this).'@postEdit', [$group]))
+            ->with('editUrl', URL::action(get_class($this).'@postEdit', array($group)))
             ;
     }
 
