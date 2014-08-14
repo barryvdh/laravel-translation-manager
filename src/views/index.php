@@ -97,11 +97,11 @@
     </p>
     <form role="form">
         <div class="form-group">
-            <?= Form::select('group', $groups, $group, ['class'=>'form-control group-select']) ?>
+            <?= Form::select('group', $groups, $group, array('class'=>'form-control group-select')) ?>
         </div>
     </form>
     <?php if($group): ?>
-        <form action="<?= action('Barryvdh\TranslationManager\Controller@postAdd', [$group]) ?>" method="POST"  role="form">
+        <form action="<?= action('Barryvdh\TranslationManager\Controller@postAdd', array($group)) ?>" method="POST"  role="form">
             <textarea class="form-control" rows="3" name="keys" placeholder="Add 1 key per line, without the group prefix"></textarea>
             <input type="submit" value="Add keys" class="btn btn-primary">
         </form>
@@ -130,7 +130,7 @@
                     </td>
                 <?php endforeach; ?>
                 <td>
-                    <a href="<?= action('Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>" class="delete-key" data-method="POST" data-remote="true" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
+                    <a href="<?= action('Barryvdh\TranslationManager\Controller@postDelete', array($group, $key)) ?>" class="delete-key" data-method="POST" data-remote="true" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
                 </td>
             </tr>
         <?php endforeach; ?>
