@@ -4,6 +4,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Events\Dispatcher;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Finder\Finder;
 
@@ -16,20 +17,25 @@ class Manager{
     /** @var \Illuminate\Events\Dispatcher  */
     protected $events;
 
+    protected $config;
+
     public function __construct(Application $app, Filesystem $files, Dispatcher $events)
     {
         $this->app = $app;
         $this->files = $files;
         $this->events = $events;
+        $this->config = Config::get('laravel-translation-manager::ltmanager');
     }
 
     public function missingKey($namespace, $group, $key)
     {
-        Translation::firstOrCreate(array(
-            'locale' => $this->app['config']['app.locale'],
-            'group' => $group,
-            'key' => $key,
-        ));
+        if(!in_array($group, $this->config['exclude_groups'])) {
+            Translation::firstOrCreate(array(
+                'locale' => $this->app['config']['app.locale'],
+                'group' => $group,
+                'key' => $key,
+            ));
+        }
     }
 
     public function importTranslations($replace = false)
@@ -42,6 +48,8 @@ class Manager{
 
                 $info = pathinfo($file);
                 $group = $info['filename'];
+
+                if(in_array($group, $this->config['exclude_groups'])) continue;
 
                 $translations = array_dot(\Lang::getLoader()->load($locale, $group));
                 foreach($translations as $key => $value){
@@ -72,7 +80,7 @@ class Manager{
         return $counter;
     }
     
-        public function findTranslations($path = null)
+    public function findTranslations($path = null)
     {
 
         $path = $path ?: $this->app['path'];
@@ -119,6 +127,8 @@ class Manager{
     
     public function exportTranslations($group)
     {
+        if(in_array($group, $this->config['exclude_groups'])) return;
+
         if($group == '*')
             return $this->exportAllTranslations();
 
@@ -161,6 +171,16 @@ class Manager{
             array_set($array[$translation->locale][$translation->group], $translation->key, $translation->value);
         }
         return $array;
+    }
+
+    public function getConfig($key = null)
+    {
+        if($key == null) {
+            return $this->config;
+        }
+        else {
+            return $this->config[$key];
+        }
     }
 
 }

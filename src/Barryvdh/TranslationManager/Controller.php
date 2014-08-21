@@ -21,7 +21,8 @@ class Controller extends BaseController
     public function getIndex($group = null)
     {
         $locales = $this->loadLocales();
-        $groups = Translation::groupBy('group')->lists('group', 'group');
+        $excludedGroups = $this->manager->getConfig('exclude_groups');
+        $groups = Translation::whereNotIn('group', $excludedGroups)->groupBy('group')->lists('group', 'group');
         $groups = array(''=>'Choose a group') + $groups;
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
@@ -67,6 +68,8 @@ class Controller extends BaseController
 
     public function postEdit($group)
     {
+        if(in_array($group, $this->manager->getConfig('exclude_groups'))) return;
+
         $name = Input::get('name');
         $value = Input::get('value');
 
@@ -84,6 +87,9 @@ class Controller extends BaseController
 
     public function postDelete($group, $key)
     {
+        if(in_array($group, $this->manager->getConfig('exclude_groups'))) return array('status' => 'error');
+        if($this->manager->getConfig('delete_enabled') == false) return array('status' => 'error');
+
         Translation::where('group', $group)->where('key', $key)->delete();
         return array('status' => 'ok');
     }
