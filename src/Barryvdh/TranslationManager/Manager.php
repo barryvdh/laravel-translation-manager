@@ -4,7 +4,6 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Events\Dispatcher;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Finder\Finder;
 
@@ -24,7 +23,7 @@ class Manager{
         $this->app = $app;
         $this->files = $files;
         $this->events = $events;
-        $this->config = Config::get('laravel-translation-manager::ltmanager');
+        $this->config = $app['config']['laravel-translation-manager::ltmanager'];
     }
 
     public function missingKey($namespace, $group, $key)
