@@ -68,30 +68,29 @@ class Controller extends BaseController
 
     public function postEdit($group)
     {
-        if(in_array($group, $this->manager->getConfig('exclude_groups'))) return;
+        if(!in_array($group, $this->manager->getConfig('exclude_groups'))) {
+            $name = Input::get('name');
+            $value = Input::get('value');
 
-        $name = Input::get('name');
-        $value = Input::get('value');
-
-        list($locale, $key) = explode('|', $name, 2);
-        $translation = Translation::firstOrNew(array(
-            'locale' => $locale,
-            'group' => $group,
-            'key' => $key,
-        ));
-        $translation->value = (string) $value ?: null;
-        $translation->status = Translation::STATUS_CHANGED;
-        $translation->save();
-        return array('status' => 'ok');
+            list($locale, $key) = explode('|', $name, 2);
+            $translation = Translation::firstOrNew(array(
+                'locale' => $locale,
+                'group' => $group,
+                'key' => $key,
+            ));
+            $translation->value = (string) $value ?: null;
+            $translation->status = Translation::STATUS_CHANGED;
+            $translation->save();
+            return array('status' => 'ok');
+        }
     }
 
     public function postDelete($group, $key)
     {
-        if(in_array($group, $this->manager->getConfig('exclude_groups'))) return array('status' => 'error');
-        if($this->manager->getConfig('delete_enabled') == false) return array('status' => 'error');
-
-        Translation::where('group', $group)->where('key', $key)->delete();
-        return array('status' => 'ok');
+        if(!in_array($group, $this->manager->getConfig('exclude_groups')) && !$this->manager->getConfig('delete_enabled')) {
+            Translation::where('group', $group)->where('key', $key)->delete();
+            return array('status' => 'ok');
+        }
     }
 
     public function postImport()
