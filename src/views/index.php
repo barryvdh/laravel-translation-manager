@@ -120,7 +120,7 @@
         <tbody>
 
         <?php foreach($translations as $key => $translation): ?>
-            <tr>
+            <tr id="<?= $key ?>">
                 <td><?= $key ?></td>
                 <?php foreach($locales as $locale): ?>
                     <?php $t = isset($translation[$locale]) ? $translation[$locale] : null?>
