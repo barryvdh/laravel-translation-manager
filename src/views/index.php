@@ -18,7 +18,7 @@
         }
     </style>
     <script>
-        $(document).ready(function(){
+        jQuery(document).ready(function($){
             $('.editable').editable().on('hidden', function(e, reason){
                 var locale = $(this).data('locale');
                 if(reason === 'save'){
