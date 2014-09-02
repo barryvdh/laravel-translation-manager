@@ -28,7 +28,7 @@ You need to run the migrations for this package
 
     $ php artisan migrate --package="barryvdh/laravel-translation-manager"
 
-You need to publish the config file for this package. This will add the file `app/config/packages/barryvdh/laravel-translation-manager/ltmanager.php`, where you can configure this package.
+You need to publish the config file for this package. This will add the file `app/config/packages/barryvdh/laravel-translation-manager/config.php`, where you can configure this package.
 
     $ php artisan config:publish barryvdh/laravel-translation-manager
 
