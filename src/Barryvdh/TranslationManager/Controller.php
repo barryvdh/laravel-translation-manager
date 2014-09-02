@@ -21,9 +21,13 @@ class Controller extends BaseController
     public function getIndex($group = null)
     {
         $locales = $this->loadLocales();
+        $groups = Translation::groupBy('group');
         $excludedGroups = $this->manager->getConfig('exclude_groups');
-        $groups = Translation::whereNotIn('group', $excludedGroups)->groupBy('group')->lists('group', 'group');
-        $groups = array(''=>'Choose a group') + $groups;
+        if($excludedGroups){
+            $groups->whereNotIn('group', $excludedGroups);
+        }
+        
+        $groups = array(''=>'Choose a group') + $groups->lists('group', 'group');
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
 
