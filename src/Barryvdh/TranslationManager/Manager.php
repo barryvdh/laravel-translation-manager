@@ -16,20 +16,25 @@ class Manager{
     /** @var \Illuminate\Events\Dispatcher  */
     protected $events;
 
+    protected $config;
+
     public function __construct(Application $app, Filesystem $files, Dispatcher $events)
     {
         $this->app = $app;
         $this->files = $files;
         $this->events = $events;
+        $this->config = $app['config']['laravel-translation-manager::config'];
     }
 
     public function missingKey($namespace, $group, $key)
     {
-        Translation::firstOrCreate(array(
-            'locale' => $this->app['config']['app.locale'],
-            'group' => $group,
-            'key' => $key,
-        ));
+        if(!in_array($group, $this->config['exclude_groups'])) {
+            Translation::firstOrCreate(array(
+                'locale' => $this->app['config']['app.locale'],
+                'group' => $group,
+                'key' => $key,
+            ));
+        }
     }
 
     public function importTranslations($replace = false)
@@ -42,6 +47,10 @@ class Manager{
 
                 $info = pathinfo($file);
                 $group = $info['filename'];
+
+                if(in_array($group, $this->config['exclude_groups'])) {
+                    continue;
+                }
 
                 $translations = array_dot(\Lang::getLoader()->load($locale, $group));
                 foreach($translations as $key => $value){
@@ -72,7 +81,7 @@ class Manager{
         return $counter;
     }
     
-        public function findTranslations($path = null)
+    public function findTranslations($path = null)
     {
 
         $path = $path ?: $this->app['path'];
@@ -119,20 +128,22 @@ class Manager{
     
     public function exportTranslations($group)
     {
-        if($group == '*')
-            return $this->exportAllTranslations();
+        if(!in_array($group, $this->config['exclude_groups'])) {
+            if($group == '*')
+                return $this->exportAllTranslations();
 
-        $tree = $this->makeTree(Translation::where('group', $group)->whereNotNull('value')->get());
+            $tree = $this->makeTree(Translation::where('group', $group)->whereNotNull('value')->get());
 
-        foreach($tree as $locale => $groups){
-            if(isset($groups[$group])){
-                $translations = $groups[$group];
-                $path = $this->app->make('path').'/lang/'.$locale.'/'.$group.'.php';
-                $output = "<?php\n\nreturn ".var_export($translations, true).";\n";
-                $this->files->put($path, $output);
+            foreach($tree as $locale => $groups){
+                if(isset($groups[$group])){
+                    $translations = $groups[$group];
+                    $path = $this->app->make('path').'/lang/'.$locale.'/'.$group.'.php';
+                    $output = "<?php\n\nreturn ".var_export($translations, true).";\n";
+                    $this->files->put($path, $output);
+                }
             }
+            Translation::where('group', $group)->whereNotNull('value')->update(array('status' => Translation::STATUS_SAVED));
         }
-        Translation::where('group', $group)->whereNotNull('value')->update(array('status' => Translation::STATUS_SAVED));
     }
     
     public function exportAllTranslations()
@@ -161,6 +172,16 @@ class Manager{
             array_set($array[$translation->locale][$translation->group], $translation->key, $translation->value);
         }
         return $array;
+    }
+
+    public function getConfig($key = null)
+    {
+        if($key == null) {
+            return $this->config;
+        }
+        else {
+            return $this->config[$key];
+        }
     }
 
 }

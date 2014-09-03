@@ -21,8 +21,13 @@ class Controller extends BaseController
     public function getIndex($group = null)
     {
         $locales = $this->loadLocales();
-        $groups = Translation::groupBy('group')->lists('group', 'group');
-        $groups = array(''=>'Choose a group') + $groups;
+        $groups = Translation::groupBy('group');
+        $excludedGroups = $this->manager->getConfig('exclude_groups');
+        if($excludedGroups){
+            $groups->whereNotIn('group', $excludedGroups);
+        }
+        
+        $groups = array(''=>'Choose a group') + $groups->lists('group', 'group');
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
 
@@ -42,6 +47,7 @@ class Controller extends BaseController
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
             ->with('editUrl', URL::action(get_class($this).'@postEdit', array($group)))
+            ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
             ;
     }
 
@@ -67,25 +73,29 @@ class Controller extends BaseController
 
     public function postEdit($group)
     {
-        $name = Input::get('name');
-        $value = Input::get('value');
+        if(!in_array($group, $this->manager->getConfig('exclude_groups'))) {
+            $name = Input::get('name');
+            $value = Input::get('value');
 
-        list($locale, $key) = explode('|', $name, 2);
-        $translation = Translation::firstOrNew(array(
-            'locale' => $locale,
-            'group' => $group,
-            'key' => $key,
-        ));
-        $translation->value = (string) $value ?: null;
-        $translation->status = Translation::STATUS_CHANGED;
-        $translation->save();
-        return array('status' => 'ok');
+            list($locale, $key) = explode('|', $name, 2);
+            $translation = Translation::firstOrNew(array(
+                'locale' => $locale,
+                'group' => $group,
+                'key' => $key,
+            ));
+            $translation->value = (string) $value ?: null;
+            $translation->status = Translation::STATUS_CHANGED;
+            $translation->save();
+            return array('status' => 'ok');
+        }
     }
 
     public function postDelete($group, $key)
     {
-        Translation::where('group', $group)->where('key', $key)->delete();
-        return array('status' => 'ok');
+        if(!in_array($group, $this->manager->getConfig('exclude_groups')) && !$this->manager->getConfig('delete_enabled')) {
+            Translation::where('group', $group)->where('key', $key)->delete();
+            return array('status' => 'ok');
+        }
     }
 
     public function postImport()
