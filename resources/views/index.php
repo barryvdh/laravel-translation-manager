@@ -49,9 +49,14 @@
                 }
             });
 
-
-            $('a.delete-key').on('ajax:success', function (e, data) {
-                $(this).closest('tr').remove();
+            $("a.delete-key").click(function(event){
+              event.preventDefault();
+              var row = $(this).closest('tr');
+              var url = $(this).attr('href');
+              var id = row.attr('id');
+              $.post( url, {id: id}, function(){
+                  row.remove();
+              } );
             });
 
             $('.form-import').on('ajax:success', function (e, data) {
@@ -155,7 +160,7 @@
                 <?php endforeach; ?>
                 <?php if($deleteEnabled): ?>
                     <td>
-                        <a href="<?= action('\Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>" class="delete-key"  data-method="POST" data-remote="true" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
+                        <a href="<?= action('\Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>" class="delete-key" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
                     </td>
                 <?php endif; ?>
             </tr>
