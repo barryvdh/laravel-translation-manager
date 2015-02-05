@@ -39,7 +39,7 @@ class Controller extends BaseController
         }
 
 
-        return \View::make('laravel-translation-manager::index')
+        return \View::make('translation-manager::index')
             ->with('translations', $translations)
             ->with('locales', $locales)
             ->with('groups', $groups)

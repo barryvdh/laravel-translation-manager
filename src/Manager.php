@@ -23,7 +23,7 @@ class Manager{
         $this->app = $app;
         $this->files = $files;
         $this->events = $events;
-        $this->config = $app['config']['laravel-translation-manager::config'];
+        $this->config = $app['config']['translation-manager'];
     }
 
     public function missingKey($namespace, $group, $key)

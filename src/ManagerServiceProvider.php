@@ -18,7 +18,16 @@ class ManagerServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('barryvdh/laravel-translation-manager');
+        $viewPath = __DIR__.'/../resources/views';
+        $this->loadViewsFrom($viewPath, 'translation-manager');
+        $this->publishes([
+            $viewPath => base_path('resources/views/vendor/translation-manager'),
+        ], 'views');
+        
+        $migrationPath = __DIR__.'/../database/migrations';
+        $this->publishes([
+            $migrationPath => base_path('database/migrations'),
+        ], 'migrations');
 	}
 
 	/**
@@ -28,6 +37,11 @@ class ManagerServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
+        // Register the config publish path
+        $configPath = __DIR__ . '/../config/translation-manager.php';
+        $this->mergeConfigFrom($configPath, 'translation-manager');
+        $this->publishes([$configPath => config_path('translation-manager.php')]);
+        
         $this->app['translation-manager'] = $this->app->share(function ($app){
             $manager = $app->make('Barryvdh\TranslationManager\Manager');
             return $manager;
