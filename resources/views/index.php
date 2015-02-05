@@ -19,6 +19,14 @@
     </style>
     <script>
         jQuery(document).ready(function($){
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    console.log('beforesend');
+                    settings.data += "&_token=<?= csrf_token() ?>";
+                }
+            });
+
             $('.editable').editable().on('hidden', function(e, reason){
                 var locale = $(this).data('locale');
                 if(reason === 'save'){
@@ -147,7 +155,7 @@
                 <?php endforeach; ?>
                 <?php if($deleteEnabled): ?>
                     <td>
-                        <a href="<?= action('\Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>" class="delete-key" data-method="POST" data-remote="true" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
+                        <a href="<?= action('\Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>" class="delete-key"  data-method="POST" data-remote="true" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
                     </td>
                 <?php endif; ?>
             </tr>
