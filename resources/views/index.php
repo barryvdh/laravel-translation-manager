@@ -97,7 +97,11 @@
     </p>
     <form role="form">
         <div class="form-group">
-            <?= Form::select('group', $groups, $group, array('class'=>'form-control group-select')) ?>
+            <select name="group" id="group" class="form-control group-select">
+                <?php foreach($groups as $key => $value): ?>
+                    <option value="<?= $key ?>"<?= $key == $group ? ' selected':'' ?>><?= $value ?></option>
+                <?php endforeach; ?>
+            </select>
         </div>
     </form>
     <?php if($group): ?>
