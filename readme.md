@@ -20,19 +20,19 @@ This way, translations can be saved in git history and no overhead is introduced
 
 Require this package in your composer.json and run composer update (or run `composer require barryvdh/laravel-translation-manager:*` directly):
 
-    "barryvdh/laravel-translation-manager": "0.1.x"
+    "barryvdh/laravel-translation-manager": "0.2.x"
 
 After updating composer, add the ServiceProvider to the providers array in app/config/app.php
 
     'Barryvdh\TranslationManager\ManagerServiceProvider',
 
-You need to run the migrations for this package
+You need to run the migrations for this package.
 
-    $ php artisan migrate --package="barryvdh/laravel-translation-manager"
+    $ php artisan vendor:publish --tag=migrations
 
-You need to publish the config file for this package. This will add the file `app/config/packages/barryvdh/laravel-translation-manager/config.php`, where you can configure this package.
+You need to publish the config file for this package. This will add the file `config/translation-manager.php`, where you can configure this package.
 
-    $ php artisan config:publish barryvdh/laravel-translation-manager
+    $ php artisan vendor:publish --tag=config
 
 You have to add the Controller to your routes.php, so you can set your own url/filters.
 
