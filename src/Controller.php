@@ -49,6 +49,11 @@ class Controller extends BaseController
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
 
+    public function getView($group)
+    {
+        return $this->getIndex($group);
+    }
+
     protected function loadLocales()
     {
         //Set the default locale as the first one.

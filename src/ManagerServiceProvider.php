@@ -106,6 +106,7 @@ class ManagerServiceProvider extends RouteServiceProvider {
         $router = $this->app['Illuminate\Routing\Router'];
         $router->group($config, function($router)
         {
+            $router->get('view/{group}', 'Controller@getView');
             $router->controller('/', 'Controller');
         });
     }

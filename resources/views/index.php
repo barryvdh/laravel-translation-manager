@@ -33,7 +33,12 @@
             });
 
             $('.group-select').on('change', function(){
-                window.location.href = '<?= action('\Barryvdh\TranslationManager\Controller@getIndex') ?>/'+$(this).val();
+                var group = $(this).val();
+                if (group) {
+                    window.location.href = '<?= action('\Barryvdh\TranslationManager\Controller@getView') ?>/'+$(this).val();
+                } else {
+                    window.location.href = '<?= action('\Barryvdh\TranslationManager\Controller@getIndex') ?>';
+                }
             });
 
 
