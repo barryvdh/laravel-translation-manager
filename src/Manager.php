@@ -40,7 +40,7 @@ class Manager{
     public function importTranslations($replace = false)
     {
         $counter = 0;
-        foreach($this->files->directories($this->app->make('path').'/lang') as $langPath){
+        foreach($this->files->directories(base_path('resources/lang')) as $langPath){
             $locale = basename($langPath);
 
             foreach($this->files->files($langPath) as $file){
