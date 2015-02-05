@@ -33,7 +33,7 @@
             });
 
             $('.group-select').on('change', function(){
-                window.location.href = '<?= action('Barryvdh\TranslationManager\Controller@getIndex') ?>/'+$(this).val();
+                window.location.href = '<?= action('\Barryvdh\TranslationManager\Controller@getIndex') ?>/'+$(this).val();
             });
 
 
@@ -78,19 +78,19 @@
     <?php endif; ?>
     <p>
         <?php if(!isset($group)) : ?>
-        <form class="form-inline form-import" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postImport') ?>" data-remote="true" role="form">
+        <form class="form-inline form-import" method="POST" action="<?= action('\Barryvdh\TranslationManager\Controller@postImport') ?>" data-remote="true" role="form">
             <select name="replace" class="form-control">
                 <option value="0">Append new translations</option>
                 <option value="1">Replace existing translations</option>
             </select>
             <button type="submit" class="btn btn-success"  data-disable-with="Loading..">Import groups</button>
         </form>
-        <form class="form-inline form-find" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postFind') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to scan you app folder? All found translation keys will be added to the database.">
+        <form class="form-inline form-find" method="POST" action="<?= action('\Barryvdh\TranslationManager\Controller@postFind') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to scan you app folder? All found translation keys will be added to the database.">
             <button type="submit" class="btn btn-info" data-disable-with="Searching.." >Find translations in files</button>
         </form>
         <?php endif; ?>
         <?php if(isset($group)) : ?>
-            <form class="form-inline form-publish" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?= $group ?>? This will overwrite existing language files.">
+            <form class="form-inline form-publish" method="POST" action="<?= action('\Barryvdh\TranslationManager\Controller@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?= $group ?>? This will overwrite existing language files.">
                 <button type="submit" class="btn btn-info" data-disable-with="Publishing.." >Publish translations</button>
             </form>
         <?php endif; ?>
@@ -101,7 +101,7 @@
         </div>
     </form>
     <?php if($group): ?>
-        <form action="<?= action('Barryvdh\TranslationManager\Controller@postAdd', array($group)) ?>" method="POST"  role="form">
+        <form action="<?= action('\Barryvdh\TranslationManager\Controller@postAdd', array($group)) ?>" method="POST"  role="form">
             <textarea class="form-control" rows="3" name="keys" placeholder="Add 1 key per line, without the group prefix"></textarea>
             <input type="submit" value="Add keys" class="btn btn-primary">
         </form>
@@ -133,7 +133,7 @@
                 <?php endforeach; ?>
                 <?php if($deleteEnabled): ?>
                     <td>
-                        <a href="<?= action('Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>" class="delete-key" data-method="POST" data-remote="true" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
+                        <a href="<?= action('\Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>" class="delete-key" data-method="POST" data-remote="true" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
                     </td>
                 <?php endif; ?>
             </tr>
