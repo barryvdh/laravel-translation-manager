@@ -2,6 +2,19 @@
 
 return array(
 
+    /*
+    |--------------------------------------------------------------------------
+    | Routes group config
+    |--------------------------------------------------------------------------
+    |
+    | The default group settings for the elFinder routes.
+    |
+    */
+    'route' => [
+        'prefix' => 'translations',
+        'middleware' => 'auth',
+    ],
+
 	/**
 	 * Enable deletion of translations
 	 *

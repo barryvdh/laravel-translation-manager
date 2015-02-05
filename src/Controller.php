@@ -46,7 +46,7 @@ class Controller extends BaseController
             ->with('group', $group)
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
-            ->with('editUrl', URL::action(get_class($this).'@postEdit', array($group)))
+            ->with('editUrl', action(get_class($this).'@postEdit', array($group)))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
             ;
     }

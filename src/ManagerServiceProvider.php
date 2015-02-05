@@ -1,9 +1,19 @@
 <?php namespace Barryvdh\TranslationManager;
 
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Routing\Router;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
 
-class ManagerServiceProvider extends ServiceProvider {
+class ManagerServiceProvider extends RouteServiceProvider {
 
+    /**
+     * This namespace is applied to the controller routes in your routes file.
+     *
+     * In addition, it is set as the URL generator's root namespace.
+     *
+     * @var string
+     */
+    protected $namespace = 'Barryvdh\TranslationManager';
+    
 	/**
 	 * Indicates if loading of the provider is deferred.
 	 *
@@ -14,10 +24,13 @@ class ManagerServiceProvider extends ServiceProvider {
 	/**
 	 * Bootstrap the application events.
 	 *
+     * @param  \Illuminate\Routing\Router  $router
 	 * @return void
 	 */
-	public function boot()
+	public function boot(Router $router)
 	{
+	    parent::boot($router);
+        
         $viewPath = __DIR__.'/../resources/views';
         $this->loadViewsFrom($viewPath, 'translation-manager');
         $this->publishes([
@@ -37,6 +50,8 @@ class ManagerServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
+	    parent::register();
+        
         // Register the config publish path
         $configPath = __DIR__ . '/../config/translation-manager.php';
         $this->mergeConfigFrom($configPath, 'translation-manager');
@@ -78,6 +93,22 @@ class ManagerServiceProvider extends ServiceProvider {
         $this->commands('command.translation-manager.clean');
 	}
 
+    /**
+     * Define the routes for the application.
+     *
+     * @return void
+     */
+    public function map()
+    {
+        $config = $this->app['config']->get('translation-manager.route', []);
+        $config['namespace'] = $this->namespace;
+
+        $router = $this->app['Illuminate\Routing\Router'];
+        $router->group($config, function($router)
+        {
+            $router->controller('/', 'Controller');
+        });
+    }
 	/**
 	 * Get the services provided by the provider.
 	 *
