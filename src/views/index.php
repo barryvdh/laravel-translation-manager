@@ -161,7 +161,6 @@
             <div class="modal-body">
                 <script>
                     $('#searchModel').on('ajax:success', function(event, data, status, xhr) {
-                        console.log(data);
                         $('#searchModel .results').html(data);
                     });
                 </script>
