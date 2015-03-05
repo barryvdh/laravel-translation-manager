@@ -10,14 +10,14 @@
     </thead>
     <tbody>
     <?php foreach($translations as $t): ?>
+        <?php $groupUrl = action('Barryvdh\TranslationManager\Controller@getIndex', $t->group); ?>
         <tr>
-            <td><?= $t->group ?></td>
+            <td><a href="<?= $groupUrl ?>#<?= $t->key ?>"><?= $t->group ?></a></td>
             <td><?= $t->key ?></td>
             <td><?= $t->locale ?></td>
             <td><?= htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) ?></td>
         </tr>
     <?php endforeach; ?>
-
     </tbody>
 </table>
 
