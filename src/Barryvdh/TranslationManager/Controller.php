@@ -47,8 +47,20 @@ class Controller extends BaseController
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
             ->with('editUrl', URL::action(get_class($this).'@postEdit', array($group)))
+            ->with('searchUrl', URL::action(get_class($this).'@getSearch'))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
             ;
+    }
+    
+    public function getSearch()
+    {
+        $q = \Input::get('q');
+        $translations = Translation::where('key', 'like', "%$q%")->orWhere('value', 'like', "%$q%")->orderBy('group', 'asc')->orderBy('key', 'asc')->get();
+        $numTranslations = count($translations);
+
+        return \View::make('laravel-translation-manager::search')
+          ->with('translations', $translations)
+          ->with('numTranslations', $numTranslations);
     }
 
     protected function loadLocales()

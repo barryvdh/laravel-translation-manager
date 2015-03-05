@@ -77,6 +77,9 @@
         </div>
     <?php endif; ?>
     <p>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#searchModel" style="float:right; display:inline">
+            Search
+        </button>
         <?php if(!isset($group)) : ?>
         <form class="form-inline form-import" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postImport') ?>" data-remote="true" role="form">
             <select name="replace" class="form-control">
@@ -147,5 +150,38 @@
     <?php endif; ?>
 </div>
 
+<!-- Search Modal -->
+<div class="modal fade" id="searchModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Search translations</h4>
+            </div>
+            <div class="modal-body">
+                <script>
+                    $('#searchModel').on('ajax:success', function(event, data, status, xhr) {
+                        console.log(data);
+                        $('#searchModel .results').html(data);
+                    });
+                </script>
+                <form id="search-form" class="form-inline" method="GET" action="<?= $searchUrl ?>" data-remote="true">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="search" name="q" class="form-control">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+                <div class="results">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
