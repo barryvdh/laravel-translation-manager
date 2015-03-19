@@ -185,7 +185,7 @@ class Manager
         }
         else
         {
-            $trans = str_replace("'", "\\'", $trans);
+            $trans = trim(str_replace("'", "\\'", $trans));
             if (strpos($trans, "\n") !== false)
             {
                 $text = "<<<'TEXT'\n$trans\nTEXT\n";
