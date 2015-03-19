@@ -218,7 +218,7 @@ class Manager
                     $this->files->put($path, $output);
                 }
             }
-            Translation::where('group', $group)->whereNotNull('value')->update(array('status' => Translation::STATUS_SAVED));
+            Translation::where('group', $group)->update(array('status' => Translation::STATUS_SAVED));
         }
     }
 
