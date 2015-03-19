@@ -61,8 +61,8 @@ class Manager{
                         'key' => $key,
                     ));
 
-                    // Check if the database is different then the files
-                    $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
+                    // Check if the database is different then the files, but set saved when importing a new translation
+                    $newStatus = ($translation->value === $value || !$translation->exists) ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
                     if($newStatus !== (int) $translation->status){
                         $translation->status = $newStatus;
                     }
@@ -137,7 +137,7 @@ class Manager{
             foreach($tree as $locale => $groups){
                 if(isset($groups[$group])){
                     $translations = $groups[$group];
-                    $path = $this->app->make('path').'/lang/'.$locale.'/'.$group.'.php';
+                    $path = $this->app->make('path').'/lang.corr/'.$locale.'/'.$group.'.php';
                     $output = "<?php\n\nreturn ".var_export($translations, true).";\n";
                     $this->files->put($path, $output);
                 }
