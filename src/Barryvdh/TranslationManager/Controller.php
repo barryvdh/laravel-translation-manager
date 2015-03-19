@@ -4,6 +4,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Barryvdh\TranslationManager\Models\Translation;
@@ -38,6 +39,23 @@ class Controller extends BaseController
             $translations[$translation->key][$translation->locale] = $translation;
         }
 
+        $stats = DB::select(<<<SQL
+SELECT
+    sum(missing) missing,
+    sum(changed) changed,
+    `group`
+FROM (SELECT
+          lc.locales - sum(isnull(value) = FALSE) missing,
+          sum(value + status)                     changed,
+          `group`,
+          `key`
+      FROM ltm_translations tr JOIN
+          (SELECT count(DISTINCT locale) locales FROM ltm_translations) lc
+      GROUP BY `group`, `key`) st
+GROUP BY `group`
+HAVING missing > 0 OR changed > 0
+SQL
+);
 
         return \View::make('laravel-translation-manager::index')
             ->with('translations', $translations)
@@ -49,6 +67,7 @@ class Controller extends BaseController
             ->with('editUrl', URL::action(get_class($this).'@postEdit', array($group)))
             ->with('searchUrl', URL::action(get_class($this).'@getSearch'))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
+            ->with('stats', $stats)
             ;
     }
     

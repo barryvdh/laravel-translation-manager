@@ -70,8 +70,9 @@ class Manager
                         'key' => $key,
                     ));
 
-                    // Check if the database is different then the files, but set saved when importing a new translation
-                    $newStatus = ($translation->value === $value || !$translation->exists) ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
+                    // Importing from the source, status is always saved. When it is changed by the user, then it is changed.
+                    //$newStatus = ($translation->value === $value || !$translation->exists) ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
+                    $newStatus = Translation::STATUS_SAVED;
                     if ($newStatus !== (int)$translation->status)
                     {
                         $translation->status = $newStatus;
@@ -203,7 +204,7 @@ class Manager
         if (!in_array($group, $this->config['exclude_groups']))
         {
             if ($group == '*')
-                return $this->exportAllTranslations();
+                $this->exportAllTranslations();
 
             $tree = $this->makeTree(Translation::where('group', $group)->whereNotNull('value')->get());
 
