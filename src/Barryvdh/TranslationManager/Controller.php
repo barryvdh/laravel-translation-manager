@@ -149,8 +149,11 @@ SQL
                 'group' => $group,
                 'key' => $key,
             ));
-            $translation->value = (string)$value ?: null;
-            $translation->status = Translation::STATUS_CHANGED;
+            // strip off trailing spaces and eol's
+            $value = trim((string)$value) ?: null;
+
+            $translation->value = $value;
+            $translation->status = $translation->isDirty() ? Translation::STATUS_CHANGED : Translation::STATUS_SAVED;
             $translation->save();
             return array('status' => 'ok');
         }
