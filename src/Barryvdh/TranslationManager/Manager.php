@@ -206,7 +206,7 @@ class Manager
             if ($group == '*')
                 $this->exportAllTranslations();
 
-            $tree = $this->makeTree(Translation::where('group', $group)->whereNotNull('value')->get());
+            $tree = $this->makeTree(Translation::where('group', $group)->whereNotNull('value')->orderby('key')->get());
 
             foreach ($tree as $locale => $groups)
             {
