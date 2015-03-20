@@ -213,7 +213,7 @@ class Manager
                 if (isset($groups[$group]))
                 {
                     $translations = $groups[$group];
-                    $path = $this->app->make('path') . '/lang.corr/' . $locale . '/' . $group . '.php';
+                    $path = $this->app->make('path') . '/lang/' . $locale . '/' . $group . '.php';
                     $output = "<?php\n\nreturn " . $this->formatForExport($translations) . ";\n";
                     $this->files->put($path, $output);
                 }

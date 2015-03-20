@@ -43,33 +43,21 @@ class Controller extends BaseController
         }
 
         $stats = DB::select(<<<SQL
-SELECT
-    (mx.max_keys - lcs.total) missing,
-    lcs.changed,
-    lcs.locale,
-    lcs.`group`
+SELECT (mx.total_keys - lcs.total) missing, lcs.changed, lcs.locale, lcs.`group`
 FROM
-    (SELECT
-         count(value) total,
-         sum(status) changed,
-         `group`,
-         locale
-     FROM ltm_translations
+    (SELECT sum(total) total, sum(changed) changed, `group`, locale
+     FROM
+         (SELECT count(value) total, sum(status) changed, `group`, locale FROM ltm_translations lt GROUP BY `group`, locale
+          UNION ALL
+          SELECT DISTINCT 0, 0, `group`, locale FROM (SELECT DISTINCT locale FROM ltm_translations) lc
+              CROSS JOIN (SELECT DISTINCT `group` FROM ltm_translations) lg) a
      GROUP BY `group`, locale) lcs
-    JOIN (SELECT
-              max(total) max_keys,
-              `group`
-          FROM (SELECT
-                    count(value) total,
-                    `group`,
-                    locale
-                FROM ltm_translations
-                GROUP BY `group`, locale) a
-          GROUP BY `group`) mx
+    JOIN (SELECT count(DISTINCT `key`) total_keys, `group` FROM ltm_translations GROUP BY `group`) mx
         ON lcs.`group` = mx.`group`
-WHERE lcs.total < mx.max_keys OR lcs.changed > 0
+WHERE lcs.total < mx.total_keys OR lcs.changed > 0
 SQL
         );
+
         // returned result set lists mising, changed, group, locale
         $summary = [];
         foreach ($stats as $stat)
@@ -86,6 +74,34 @@ SQL
             if ($stat->changed) $item->changed .= $stat->locale . ":" . $stat->changed . " ";
         }
 
+        // get mismatches
+        $mismatches = DB::select(<<<SQL
+SELECT DISTINCT lt.`group`, ft.*
+FROM ltm_translations lt
+    JOIN
+    (SELECT DISTINCT mt.`key`, BINARY mt.ru ru, BINARY mt.en en
+     FROM (SELECT lt.`group`, lt.`key`, group_concat(CASE lt.locale WHEN 'en' THEN VALUE ELSE NULL END) en, group_concat(CASE lt.locale WHEN 'ru' THEN VALUE ELSE NULL END) ru
+           FROM (SELECT value, `group`, `key`, locale FROM ltm_translations
+                 UNION ALL
+                 SELECT NULL, `group`, `key`, locale FROM ((SELECT DISTINCT locale FROM ltm_translations) lc
+                     CROSS JOIN (SELECT DISTINCT `group`, `key` FROM ltm_translations) lg)
+                ) lt
+           GROUP BY `group`, `key`) mt
+         JOIN (SELECT lt.`group`, lt.`key`, group_concat(CASE lt.locale WHEN 'en' THEN VALUE ELSE NULL END) en, group_concat(CASE lt.locale WHEN 'ru' THEN VALUE ELSE NULL END) ru
+               FROM (SELECT value, `group`, `key`, locale FROM ltm_translations
+                     UNION ALL
+                     SELECT NULL, `group`, `key`, locale FROM ((SELECT DISTINCT locale FROM ltm_translations) lc
+                         CROSS JOIN (SELECT DISTINCT `group`, `key` FROM ltm_translations) lg)
+                    ) lt
+               GROUP BY `group`, `key`) ht ON mt.`key` = ht.`key`
+     WHERE (mt.ru not like binary ht.ru AND mt.en like binary ht.en)
+    ) ft
+        ON (lt.locale = 'ru' AND lt.value LIKE BINARY ft.ru) AND lt.`key` = ft.key
+ORDER BY `key`, `group`
+SQL
+        );
+
+        // returned result set lists group key ru, en columns for the locale translations, ru has different values for same values in en
         return \View::make('laravel-translation-manager::index')
             ->with('translations', $translations)
             ->with('locales', $locales)
@@ -96,7 +112,9 @@ SQL
             ->with('editUrl', URL::action(get_class($this) . '@postEdit', array($group)))
             ->with('searchUrl', URL::action(get_class($this) . '@getSearch'))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
-            ->with('stats', $summary);
+            ->with('stats', $summary)
+            ->with('mismatches', $mismatches)
+            ;
     }
 
     public
@@ -106,9 +124,7 @@ SQL
         $translations = Translation::where('key', 'like', "%$q%")->orWhere('value', 'like', "%$q%")->orderBy('group', 'asc')->orderBy('key', 'asc')->get();
         $numTranslations = count($translations);
 
-        return \View::make('laravel-translation-manager::search')
-            ->with('translations', $translations)
-            ->with('numTranslations', $numTranslations);
+        return \View::make('laravel-translation-manager::search')->with('translations', $translations)->with('numTranslations', $numTranslations);
     }
 
     protected
@@ -155,8 +171,8 @@ SQL
             $translation->value = $value;
             $translation->status = $translation->isDirty() ? Translation::STATUS_CHANGED : Translation::STATUS_SAVED;
             $translation->save();
-            return array('status' => 'ok');
         }
+        return array('status' => 'ok');
     }
 
     public
@@ -165,8 +181,8 @@ SQL
         if (!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled'))
         {
             Translation::where('group', $group)->where('key', $key)->delete();
-            return array('status' => 'ok');
         }
+        return array('status' => 'ok');
     }
 
     public
