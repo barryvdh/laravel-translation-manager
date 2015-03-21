@@ -9,6 +9,54 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Barryvdh\TranslationManager\Models\Translation;
 
+include_once(__DIR__ . '/../../../scripts/finediff.php');
+
+if (!function_exists('mb_chunk_split'))
+{
+    function mb_chunk_split($body, $chunklen = 76, $end = "\r\n")
+    {
+        $split = '';
+        $pos = 0;
+        $len = mb_strlen($body);
+        while ($pos < $len)
+        {
+            $split .= mb_substr($body, $pos, $chunklen) . $end;
+            $pos += $chunklen;
+        }
+        return $split;
+    }
+}
+
+if (!function_exists('mb_unsplit'))
+{
+    function mb_unsplit($body, $end = "\r\n")
+    {
+        $split = '';
+        $pos = 0;
+        $len = mb_strlen($body);
+        $skip = mb_strlen($end);
+        while ($pos < $len)
+        {
+            $next = strpos($body, $end, $pos);
+            if ($next === false)
+            {
+                $split .= mb_substr($body, $pos);
+                break;
+            }
+
+            $split .= mb_substr($body, $pos, $next - $pos);
+            $pos = $next + $skip;
+            if (mb_substr($body, $pos, $skip) === $end)
+            {
+                // keep the second
+                $split .= mb_substr($body, $pos, $skip);
+                $pos += $skip;
+            }
+        }
+        return $split;
+    }
+}
+
 class Controller extends BaseController
 {
     /** @var \Barryvdh\TranslationManager\Manager */
@@ -18,6 +66,48 @@ class Controller extends BaseController
     function __construct(Manager $manager)
     {
         $this->manager = $manager;
+    }
+
+    /**
+     * @param      $from_text
+     * @param      $to_text
+     *
+     * @param bool $charDiff
+     *
+     * @return array
+     */
+    public static
+    function mb_renderDiffHtml($from_text, $to_text, $charDiff = null)
+    {
+        //if ($from_text === 'Lang' && $to_text === 'Language') xdebug_break();
+        if ($from_text === $to_text) return $to_text;
+
+        $removeSpaces = false;
+        if (is_null($charDiff))
+        {
+            $charDiff = mb_strtolower($from_text) === mb_strtolower($to_text)
+                || abs(mb_strlen($from_text) - mb_strlen($to_text)) <= 2
+                || (strpos($from_text, $to_text) !== false)
+                || (strpos($to_text, $from_text) !== false);
+        }
+
+        if ($charDiff)
+        {
+            //use word diff but space all entities so that we get char diff
+            $removeSpaces = true;
+            $from_text = mb_chunk_split($from_text, 1, ' ');
+            $to_text = mb_chunk_split($to_text, 1, ' ');
+        }
+        $from_text = mb_convert_encoding($from_text, 'HTML-ENTITIES', 'UTF-8');
+        $to_text = mb_convert_encoding($to_text, 'HTML-ENTITIES', 'UTF-8');
+        $opcodes = \FineDiff::getDiffOpcodes($from_text, $to_text, \FineDiff::$wordGranularity);
+        $diff = \FineDiff::renderDiffToHTMLFromOpcodes($from_text, $opcodes);
+        $diff = mb_convert_encoding($diff, 'UTF-8', 'HTML-ENTITIES');
+        if ($removeSpaces)
+        {
+            $diff = mb_unsplit($diff, ' ');
+        }
+        return $diff;
     }
 
     public
@@ -94,12 +184,87 @@ FROM ltm_translations lt
                          CROSS JOIN (SELECT DISTINCT `group`, `key` FROM ltm_translations) lg)
                     ) lt
                GROUP BY `group`, `key`) ht ON mt.`key` = ht.`key`
-     WHERE (mt.ru not like binary ht.ru AND mt.en like binary ht.en)
+     WHERE (mt.ru NOT LIKE BINARY ht.ru AND mt.en LIKE BINARY ht.en) OR (mt.ru LIKE BINARY ht.ru AND mt.en NOT LIKE BINARY ht.en)
     ) ft
         ON (lt.locale = 'ru' AND lt.value LIKE BINARY ft.ru) AND lt.`key` = ft.key
 ORDER BY `key`, `group`
 SQL
         );
+
+        $key = '';
+        $rus = [];
+        $ens = [];
+        $rubases = [];      // by key
+        $enbases = [];    // by key
+        $extra = new \stdClass();
+        $extra->key = '';
+        $mismatches[] = $extra;
+        foreach ($mismatches as $mismatch)
+        {
+            if ($mismatch->key !== $key)
+            {
+                if ($key)
+                {
+                    // process diff for key
+                    $txtru = '';
+                    $txten = '';
+                    if (count($ens) > 1)
+                    {
+                        $maxen = 0;
+                        foreach ($ens as $en => $cnt)
+                        {
+                            if ($maxen < $cnt)
+                            {
+                                $maxen = $cnt;
+                                $txten = $en;
+                            }
+                        }
+                        $enbases[$key] = $txten;
+                    }
+                    else
+                    {
+                        $txten = array_keys($ens)[0];
+                        $enbases[$key] = $txten;
+                    }
+                    if (count($rus) > 1)
+                    {
+                        $maxru = 0;
+                        foreach ($rus as $ru => $cnt)
+                        {
+                            if ($maxru < $cnt)
+                            {
+                                $maxru = $cnt;
+                                $txtru = $ru;
+                            }
+                        }
+                        $rubases[$key] = $txtru;
+                    }
+                    else
+                    {
+                        $txtru = array_keys($rus)[0];
+                        $rubases[$key] = $txtru;
+                    }
+                }
+                $key = $mismatch->key;
+                $rus = [];
+                $ens = [];
+            }
+
+            if ($mismatch->key === '') break;
+
+            if (!isset($ens[$mismatch->en])) $ens[$mismatch->en] = 1;
+            else $ens[$mismatch->en]++;
+            if (!isset($rus[$mismatch->ru])) $rus[$mismatch->ru] = 1;
+            else $rus[$mismatch->ru]++;
+        }
+
+        array_splice($mismatches, count($mismatches) - 1, 1);
+
+        foreach ($mismatches as $mismatch)
+        {
+            $mismatch->en = self::mb_renderDiffHtml($enbases[$mismatch->key], $mismatch->en);
+            $mismatch->ru = self::mb_renderDiffHtml($rubases[$mismatch->key], $mismatch->ru);
+        }
 
         // returned result set lists group key ru, en columns for the locale translations, ru has different values for same values in en
         return \View::make('laravel-translation-manager::index')
@@ -113,8 +278,7 @@ SQL
             ->with('searchUrl', URL::action(get_class($this) . '@getSearch'))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
             ->with('stats', $summary)
-            ->with('mismatches', $mismatches)
-            ;
+            ->with('mismatches', $mismatches);
     }
 
     public
@@ -169,7 +333,7 @@ SQL
             $value = trim((string)$value) ?: null;
 
             $translation->value = $value;
-            $translation->status = $translation->isDirty() ? Translation::STATUS_CHANGED : Translation::STATUS_SAVED;
+            $translation->status = ($translation->isDirty() && $value != $translation->saved_value) ? Translation::STATUS_CHANGED : Translation::STATUS_SAVED;
             $translation->save();
         }
         return array('status' => 'ok');

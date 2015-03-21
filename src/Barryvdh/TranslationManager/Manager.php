@@ -84,6 +84,8 @@ class Manager
                         $translation->value = $value;
                     }
 
+                    $translation->saved_value  = $value;
+
                     $translation->save();
 
                     $counter++;
