@@ -23,7 +23,7 @@ class ManagerServiceProvider extends ServiceProvider {
         // Register the config publish path
         $configPath = __DIR__ . '/../config/translation-manager.php';
         $this->mergeConfigFrom($configPath, 'translation-manager');
-        $this->publishes([$configPath => config_path('translation-manager.php')]);
+        $this->publishes([$configPath => config_path('translation-manager.php')], 'config');
         
         $this->app['translation-manager'] = $this->app->share(function ($app){
             $manager = $app->make('Barryvdh\TranslationManager\Manager');
