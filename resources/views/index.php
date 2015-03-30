@@ -63,7 +63,7 @@
                 $('div.success-import strong.counter').text(data.counter);
                 $('div.success-import').slideDown();
             });
-            
+
             $('.form-find').on('ajax:success', function (e, data) {
                 $('div.success-find strong.counter').text(data.counter);
                 $('div.success-find').slideDown();
@@ -71,6 +71,20 @@
 
             $('.form-publish').on('ajax:success', function (e, data) {
                 $('div.success-publish').slideDown();
+            });
+            $('#addGroup').submit(function (e) {
+                e.preventDefault();
+                var group = prompt('What Group name would you like to add');
+                if(group === ''){
+                    return false;
+                }
+                var keys = prompt('what keys would you like to add to the new group seperate by comma (,)?');
+                $('#new_group_name').val(group);
+                $('#new_group_keys').val(keys);
+                $(this).find('button').button('loading');
+                $.post($(this).attr('action'),$(this).serialize(), function () {
+                    document.location.replace('');
+                })
             });
 
         })
@@ -107,6 +121,12 @@
         <form class="form-inline form-find" method="POST" action="<?= action('\Barryvdh\TranslationManager\Controller@postFind') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to scan you app folder? All found translation keys will be added to the database.">
             <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
             <button type="submit" class="btn btn-info" data-disable-with="Searching.." >Find translations in files</button>
+        </form>
+        <form class="form-inline form-find" method="POST" id="addGroup" action="<?= action('\Barryvdh\TranslationManager\Controller@postAddGroup') ?>" data-remote="true" role="form">
+            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+            <input type="hidden" name="group" id="new_group_name"/>
+            <input type="hidden" name="keys" id="new_group_keys">
+            <button type="submit" class="btn btn-warning" data-loading="Adding.." >Add new Group</button>
         </form>
         <?php endif; ?>
         <?php if(isset($group)) : ?>
@@ -155,7 +175,7 @@
                     <?php $t = isset($translation[$locale]) ? $translation[$locale] : null?>
 
                     <td>
-                        <a href="#edit" class="editable status-<?= $t ? $t->status : 0 ?> locale-<?= $locale ?>" data-locale="<?= $locale ?>" data-name="<?= $locale . "|" . $key ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= $editUrl ?>" data-title="Enter translation"><?= $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' ?></a>
+                        <a href="#edit" class="editable status-<?= $t ? $t->status : 0 ?> locale-<?= $locale ?>" data-locale="<?= $locale ?>" data-name="<?= $locale . "|" . $key ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= $editUrl ?>" data-title="Enter translation for <?=$key?>"><?= $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' ?></a>
                     </td>
                 <?php endforeach; ?>
                 <?php if($deleteEnabled): ?>
