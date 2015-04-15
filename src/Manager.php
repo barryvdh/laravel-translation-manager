@@ -53,7 +53,7 @@ class Manager{
                 }
 
                 $translations = \Lang::getLoader()->load($locale, $group);
-                if ($translations && is_array($translation)) {
+                if ($translations && is_array($translations)) {
                     foreach(array_dot($translations) as $key => $value){
                         $value = (string) $value;
                          $translation = Translation::firstOrNew(array(
