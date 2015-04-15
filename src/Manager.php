@@ -52,29 +52,31 @@ class Manager{
                     continue;
                 }
 
-                $translations = array_dot(\Lang::getLoader()->load($locale, $group));
-                foreach($translations as $key => $value){
-                    $value = (string) $value;
-                     $translation = Translation::firstOrNew(array(
-                        'locale' => $locale,
-                        'group' => $group,
-                        'key' => $key,
-                    ));
-
-                    // Check if the database is different then the files
-                    $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
-                    if($newStatus !== (int) $translation->status){
-                        $translation->status = $newStatus;
+                $translations = \Lang::getLoader()->load($locale, $group);
+                if ($translations && is_array($translation)) {
+                    foreach(array_dot($translations) as $key => $value){
+                        $value = (string) $value;
+                         $translation = Translation::firstOrNew(array(
+                            'locale' => $locale,
+                            'group' => $group,
+                            'key' => $key,
+                        ));
+    
+                        // Check if the database is different then the files
+                        $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
+                        if($newStatus !== (int) $translation->status){
+                            $translation->status = $newStatus;
+                        }
+    
+                        // Only replace when empty, or explicitly told so
+                        if($replace || !$translation->value){
+                            $translation->value = $value;
+                        }
+    
+                        $translation->save();
+    
+                        $counter++;
                     }
-
-                    // Only replace when empty, or explicitly told so
-                    if($replace || !$translation->value){
-                        $translation->value = $value;
-                    }
-
-                    $translation->save();
-
-                    $counter++;
                 }
             }
         }
