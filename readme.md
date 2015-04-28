@@ -29,6 +29,7 @@ After updating composer, add the ServiceProvider to the providers array in confi
 You need to run the migrations for this package.
 
     $ php artisan vendor:publish --provider="Barryvdh\TranslationManager\ManagerServiceProvider" --tag=migrations
+    $ php artisan migrate
 
 You need to publish the config file for this package. This will add the file `config/translation-manager.php`, where you can configure this package.
 
