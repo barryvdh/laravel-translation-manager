@@ -1,11 +1,7 @@
 <?php namespace Barryvdh\TranslationManager;
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Response;
 use Barryvdh\TranslationManager\Models\Translation;
 
 class Controller extends BaseController
@@ -27,25 +23,25 @@ class Controller extends BaseController
             $groups->whereNotIn('group', $excludedGroups);
         }
         
-        $groups = array(''=>'Choose a group') + $groups->lists('group', 'group');
+        $groups = [''=>'Choose a group'] + $groups->lists('group', 'group');
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
 
         $allTranslations = Translation::where('group', $group)->orderBy('key', 'asc')->get();
         $numTranslations = count($allTranslations);
-        $translations = array();
+        $translations = [];
         foreach($allTranslations as $translation){
             $translations[$translation->key][$translation->locale] = $translation;
         }
 
-         return \View::make('translation-manager::index')
+         return view('translation-manager::index')
             ->with('translations', $translations)
             ->with('locales', $locales)
             ->with('groups', $groups)
             ->with('group', $group)
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
-            ->with('editUrl', action('\Barryvdh\TranslationManager\Controller@postEdit', array($group)))
+            ->with('editUrl', action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
 
@@ -57,13 +53,13 @@ class Controller extends BaseController
     protected function loadLocales()
     {
         //Set the default locale as the first one.
-        $locales = array_merge(array(Config::get('app.locale')), Translation::groupBy('locale')->lists('locale'));
+        $locales = array_merge([config('app.locale')], Translation::groupBy('locale')->lists('locale'));
         return array_unique($locales);
     }
 
-    public function postAdd($group)
+    public function postAdd(Request $request, $group)
     {
-        $keys = explode("\n", Input::get('keys'));
+        $keys = explode("\n", $request->get('keys'));
 
         foreach($keys as $key){
             $key = trim($key);
@@ -71,21 +67,21 @@ class Controller extends BaseController
                 $this->manager->missingKey('*', $group, $key);
             }
         }
-        return Redirect::back();
+        return redirect()->back();
     }
 
-    public function postEdit($group)
+    public function postEdit(Request $request, $group)
     {
         if(!in_array($group, $this->manager->getConfig('exclude_groups'))) {
-            $name = Input::get('name');
-            $value = Input::get('value');
+            $name = $request->get('name');
+            $value = $request->get('value');
 
             list($locale, $key) = explode('|', $name, 2);
-            $translation = Translation::firstOrNew(array(
+            $translation = Translation::firstOrNew([
                 'locale' => $locale,
                 'group' => $group,
                 'key' => $key,
-            ));
+            ]);
             $translation->value = (string) $value ?: null;
             $translation->status = Translation::STATUS_CHANGED;
             $translation->save();
@@ -97,29 +93,29 @@ class Controller extends BaseController
     {
         if(!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
             Translation::where('group', $group)->where('key', $key)->delete();
-            return array('status' => 'ok');
+            return ['status' => 'ok'];
         }
     }
 
-    public function postImport()
+    public function postImport(Request $request)
     {
-        $replace = Input::get('replace', false);
+        $replace = $request->get('replace', false);
         $counter = $this->manager->importTranslations($replace);
 
-        return Response::json(array('status' => 'ok', 'counter' => $counter));
+        return ['status' => 'ok', 'counter' => $counter];
     }
     
     public function postFind()
     {
         $numFound = $this->manager->findTranslations();
 
-        return Response::json(array('status' => 'ok', 'counter' => (int) $numFound));
+        return ['status' => 'ok', 'counter' => (int) $numFound];
     }
 
     public function postPublish($group)
     {
         $this->manager->exportTranslations($group);
 
-        return Response::json(array('status' => 'ok'));
+        return ['status' => 'ok'];
     }
 }
