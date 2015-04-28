@@ -28,11 +28,11 @@ After updating composer, add the ServiceProvider to the providers array in confi
 
 You need to run the migrations for this package.
 
-    $ php artisan vendor:publish --tag=migrations
+    $ php artisan vendor:publish --provider="Barryvdh\TranslationManager\ManagerServiceProvider" --tag=migrations
 
 You need to publish the config file for this package. This will add the file `config/translation-manager.php`, where you can configure this package.
 
-    $ php artisan vendor:publish --tag=config
+    $ php artisan vendor:publish --provider="Barryvdh\TranslationManager\ManagerServiceProvider" --tag=config
 
 Routes are added in the ServiceProvider. You can set the group parameters for the routes in the configuration.
 You can change the prefix or filter/middleware for the routes. If you want full customisation, you can extend the ServiceProvider and override the `map()` function.
