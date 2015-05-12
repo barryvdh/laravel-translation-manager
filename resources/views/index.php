@@ -154,8 +154,13 @@
     <?php if($group): ?>
         <form action="<?php echo action('\Barryvdh\TranslationManager\Controller@postAdd', array($group)) ?>" method="POST"  role="form">
             <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-            <textarea class="form-control" rows="3" name="keys" placeholder="Add 1 key per line, without the group prefix"></textarea>
-            <input type="submit" value="Add keys" class="btn btn-primary">
+            <div class="form-group">
+                <label>Add new keys to this group</label>
+                <textarea class="form-control" rows="3" name="keys" placeholder="Add 1 key per line, without the group prefix"></textarea>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Add keys" class="btn btn-primary">
+            </div>
         </form>
 
         <h4>Total: <?php echo $numTranslations ?>, changed: <?php echo $numChanged ?></h4>
