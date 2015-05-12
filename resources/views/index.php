@@ -75,6 +75,10 @@
                 $('div.success-publish').slideDown();
             });
 
+            $('.form-publish-all').on('ajax:success', function (e, data) {
+                $('div.success-publish-all').slideDown();
+            });
+
         })
     </script>
 </head>
@@ -104,6 +108,9 @@
     </div>
     <div class="alert alert-success success-publish" style="display:none;">
         <p>Done publishing the translations for group '<?php echo $group ?>'!</p>
+    </div>
+    <div class="alert alert-success success-publish-all" style="display:none;">
+        <p>Done publishing the translations for all group!</p>
     </div>
     <?php if(Session::has('successPublish')) : ?>
         <div class="alert alert-info">
@@ -201,7 +208,13 @@
             </tbody>
         </table>
     <?php else: ?>
-        
+        <fieldset>
+            <legend>Export all translations</legend>
+            <form class="form-inline form-publish-all" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', '*') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish all translations group? This will overwrite existing language files.">
+                <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                <button type="submit" class="btn btn-primary" data-disable-with="Publishing.." >Publish all</button>
+            </form>
+        </fieldset>
 
     <?php endif; ?>
 </div>
