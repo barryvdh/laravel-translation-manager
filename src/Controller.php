@@ -118,4 +118,18 @@ class Controller extends BaseController
 
         return ['status' => 'ok'];
     }
+
+    public function postAddGroup(Request $request)
+    {
+        $group = str_replace(".", '', $request->input('new-group'));
+        if ($group)
+        {
+            return redirect()->action('\Barryvdh\TranslationManager\Controller@getView',$group);
+        }
+        else
+        {
+            return redirect()->back();
+        }
+        
+    }
 }
