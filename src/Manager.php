@@ -18,12 +18,15 @@ class Manager{
 
     protected $config;
 
+    protected $locales;
+
     public function __construct(Application $app, Filesystem $files, Dispatcher $events)
     {
         $this->app = $app;
         $this->files = $files;
         $this->events = $events;
         $this->config = $app['config']['translation-manager'];
+        $this->locales = [];
     }
 
     public function missingKey($namespace, $group, $key)
@@ -166,6 +169,41 @@ class Manager{
     public function truncateTranslations()
     {
         Translation::truncate();
+    }
+
+    public function getLocales()
+    {
+        if (empty($this->locales))
+        {
+            $locales = array_merge([config('app.locale')], Translation::groupBy('locale')->lists('locale'));
+            foreach ($this->files->directories($this->app->langPath()) as $localeDir) 
+            {
+                $locales[] = $this->files->name($localeDir);
+            }
+            $this->locales = array_unique($locales);
+            sort($this->locales);
+        }
+        return $this->locales;
+    }
+
+    public function addLocale($locale) 
+    {
+        $localeDir = $this->app->langPath() . '/' . $locale;
+        return $this->files->makeDirectory($localeDir);
+    }
+
+    public function removeLocale($locale)
+    {
+        if (!$locale) 
+        {
+            return false;
+        }
+        $localeDir = $this->app->langPath() . '/' . $locale;
+        if ($this->files->exists($localeDir))
+        {
+            $this->files->deleteDirectory($localeDir);
+        }
+        Translation::where('locale', $locale)->delete();
     }
 
     protected function makeTree($translations)
