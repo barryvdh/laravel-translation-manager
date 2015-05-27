@@ -4,6 +4,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Events\Dispatcher;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Finder\Finder;
 
@@ -85,7 +86,13 @@ class Manager{
     
     public function findTranslations($path = null)
     {
+        if (is_null($path)) {
+            $directory = Config::get('translation-manager.base_path');
 
+            if (is_dir($directory)) {
+                $path = $directory;
+            }
+        }
 
         $path = $path ?: base_path();
         $keys = array();
@@ -137,12 +144,17 @@ class Manager{
 
             $tree = $this->makeTree(Translation::where('group', $group)->whereNotNull('value')->get());
 
+            $path = Config::get('translation-manager.lang_path');
+
+            if (!is_dir($path)) {
+                $path = $this->app->langPath();
+            }
+
             foreach($tree as $locale => $groups){
                 if(isset($groups[$group])){
                     $translations = $groups[$group];
-                    $path = $this->app->langPath().'/'.$locale.'/'.$group.'.php';
                     $output = "<?php\n\nreturn ".var_export($translations, true).";\n";
-                    $this->files->put($path, $output);
+                    $this->files->put(($path.'/'.$locale.'/'.$group.'.php'), $output);
                 }
             }
             Translation::where('group', $group)->whereNotNull('value')->update(array('status' => Translation::STATUS_SAVED));
