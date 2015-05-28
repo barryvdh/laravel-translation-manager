@@ -20,13 +20,19 @@ class Manager{
 
     protected $locales;
 
+    protected $ignoreLocales;
+
+    protected $ignoreFilePath;
+
     public function __construct(Application $app, Filesystem $files, Dispatcher $events)
     {
         $this->app = $app;
         $this->files = $files;
         $this->events = $events;
         $this->config = $app['config']['translation-manager'];
+        $this->ignoreFilePath = storage_path('.ignore_locales');
         $this->locales = [];
+        $this->ignoreLocales = $this->getIgnoredLocales();
     }
 
     public function missingKey($namespace, $group, $key)
@@ -183,7 +189,7 @@ class Manager{
             $this->locales = array_unique($locales);
             sort($this->locales);
         }
-        return $this->locales;
+        return array_diff($this->locales, $this->ignoreLocales);
     }
 
     public function addLocale($locale) 
@@ -198,11 +204,9 @@ class Manager{
         {
             return false;
         }
-        $localeDir = $this->app->langPath() . '/' . $locale;
-        if ($this->files->exists($localeDir))
-        {
-            $this->files->deleteDirectory($localeDir);
-        }
+        $this->ignoreLocales = array_merge($this->ignoreLocales, [$locale]);
+        $this->saveIgnoredLocales();
+        $this->ignoreLocales = $this->getIgnoredLocales();
         Translation::where('locale', $locale)->delete();
     }
 
@@ -223,6 +227,21 @@ class Manager{
         else {
             return $this->config[$key];
         }
+    }
+
+    protected function getIgnoredLocales()
+    {
+        if (!$this->files->exists($this->ignoreFilePath))
+        {
+            return [];
+        }
+        $result = json_decode($this->files->get($this->ignoreFilePath));
+        return ($result && is_array($result)) ? $result : [];
+    }
+
+    protected function saveIgnoredLocales()
+    {
+        return $this->files->put($this->ignoreFilePath, json_encode($this->ignoreLocales));
     }
 
 }
