@@ -195,7 +195,17 @@ class Manager{
     public function addLocale($locale) 
     {
         $localeDir = $this->app->langPath() . '/' . $locale;
-        return $this->files->makeDirectory($localeDir);
+
+        $this->ignoreLocales = array_diff($this->ignoreLocales, [$locale]);
+        $this->saveIgnoredLocales();
+        $this->ignoreLocales = $this->getIgnoredLocales();
+
+        if (!$this->files->exists($localeDir) || !$this->files->isDirectory($localeDir))
+        {
+            return $this->files->makeDirectory($localeDir);
+        }
+        return true;
+        
     }
 
     public function removeLocale($locale)
@@ -207,6 +217,7 @@ class Manager{
         $this->ignoreLocales = array_merge($this->ignoreLocales, [$locale]);
         $this->saveIgnoredLocales();
         $this->ignoreLocales = $this->getIgnoredLocales();
+
         Translation::where('locale', $locale)->delete();
     }
 
