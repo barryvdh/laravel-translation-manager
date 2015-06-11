@@ -53,7 +53,7 @@ class Controller extends BaseController
     protected function loadLocales()
     {
         //Set the default locale as the first one.
-        $locales = array_merge([config('app.locale')], Translation::groupBy('locale')->lists('locale'));
+        $locales = array_merge([config('app.locale')], Translation::groupBy('locale')->lists('locale')->all());
         return array_unique($locales);
     }
 
