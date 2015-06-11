@@ -23,7 +23,7 @@ class Controller extends BaseController
             $groups->whereNotIn('group', $excludedGroups);
         }
         
-        $groups = [''=>'Choose a group'] + $groups->lists('group', 'group');
+        $groups = [''=>'Choose a group'] + $groups->lists('group', 'group')->all();
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
 
