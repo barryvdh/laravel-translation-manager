@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Barryvdh\TranslationManager\Models\Translation;
+use Illuminate\Support\Collection;
 
 class Controller extends BaseController
 {
@@ -22,8 +23,12 @@ class Controller extends BaseController
         if($excludedGroups){
             $groups->whereNotIn('group', $excludedGroups);
         }
-        
-        $groups = [''=>'Choose a group'] + $groups->lists('group', 'group')->all();
+
+        $groups = $groups->lists('group', 'group');
+        if ($groups instanceof Collection) {
+            $groups = $groups->all();
+        }
+        $groups = [''=>'Choose a group'] + $groups;
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
 
@@ -53,7 +58,11 @@ class Controller extends BaseController
     protected function loadLocales()
     {
         //Set the default locale as the first one.
-        $locales = array_merge([config('app.locale')], Translation::groupBy('locale')->lists('locale')->all());
+        $locales = Translation::groupBy('locale')->lists('locale');
+        if ($locales instanceof Collection) {
+            $locales = $locales->all();
+        }
+        $locales = array_merge([config('app.locale')], $locales);
         return array_unique($locales);
     }
 
