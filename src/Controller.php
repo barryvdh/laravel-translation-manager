@@ -23,7 +23,7 @@ class Controller extends BaseController
             $groups->whereNotIn('group', $excludedGroups);
         }
         
-        $groups = [''=>'Choose a group'] + $groups->lists('group', 'group');
+        $groups = [''=>'Choose a group'] + $groups->lists('group', 'group')->all();
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
 
@@ -53,7 +53,7 @@ class Controller extends BaseController
     protected function loadLocales()
     {
         //Set the default locale as the first one.
-        $locales = array_merge([config('app.locale')], Translation::groupBy('locale')->lists('locale'));
+        $locales = array_merge([config('app.locale')], Translation::groupBy('locale')->lists('locale')->all());
         return array_unique($locales);
     }
 
