@@ -91,7 +91,7 @@ class Controller extends BaseController
                 'group' => $group,
                 'key' => $key,
             ]);
-            $translation->value = (string) $value ?: null;
+            $translation->value = trim((string) $value) ?: null;
             $translation->status = Translation::STATUS_CHANGED;
             $translation->save();
             return array('status' => 'ok');
