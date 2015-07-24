@@ -45,7 +45,7 @@
                 $('div.success-import strong.counter').text(data.counter);
                 $('div.success-import').slideDown();
             });
-            
+
             $('.form-find').on('ajax:success', function (e, data) {
                 $('div.success-find strong.counter').text(data.counter);
                 $('div.success-find').slideDown();
@@ -110,7 +110,9 @@
     <table class="table">
         <thead>
         <tr>
-            <th width="15%">Key</th>
+            <?php if($showKeys) : ?>
+                <th width="15%">Key</th>
+            <?php endif; ?>
             <?php foreach($locales as $locale): ?>
                 <th><?= $locale ?></th>
             <?php endforeach; ?>
@@ -123,7 +125,9 @@
 
         <?php foreach($translations as $key => $translation): ?>
             <tr id="<?= $key ?>">
-                <td><?= $key ?></td>
+                <?php if($showKeys) : ?>
+                    <td><?= $key ?></td>
+                <?php endif; ?>
                 <?php foreach($locales as $locale): ?>
                     <?php $t = isset($translation[$locale]) ? $translation[$locale] : null?>
 

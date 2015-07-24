@@ -23,4 +23,8 @@ return array(
 	 */
 	'exclude_groups' => array(),
 
+	/**
+	 * If keys should be visible
+	 */
+	'show_keys' => false
 );

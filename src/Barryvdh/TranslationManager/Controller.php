@@ -48,6 +48,7 @@ class Controller extends BaseController
             ->with('numChanged', $numChanged)
             ->with('editUrl', URL::action(get_class($this).'@postEdit', array($group)))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
+            ->with('showKeys', $this->manager->getConfig('show_keys'))
             ;
     }
 
