@@ -49,6 +49,7 @@ class Controller extends BaseController
             ->with('editUrl', URL::action(get_class($this).'@postEdit', array($group)))
             ->with('searchUrl', URL::action(get_class($this).'@getSearch'))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
+            ->with('showKeys', $this->manager->getConfig('show_keys'))
             ;
     }
     
