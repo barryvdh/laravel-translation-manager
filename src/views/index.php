@@ -128,11 +128,18 @@
             <tr id="<?= $key ?>">
                 <td><?= $key ?></td>
                 <?php foreach($locales as $locale): ?>
-                    <?php $t = isset($translation[$locale]) ? $translation[$locale] : null?>
+                    <?php
+                        $t = isset($translation[$locale]) ? $translation[$locale] : null;
+                        $editable = !in_array($locale, $readOnly);
+                    ?>
 
                     <td>
-                        <a href="#edit" class="editable status-<?= $t ? $t->status : 0 ?> locale-<?= $locale ?>" data-locale="<?= $locale ?>" data-name="<?= $locale . "|" . $key ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= $editUrl ?>" data-title="Enter translation"><?= $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' ?></a>
-                    </td>
+                        <?php if($editable) : ?>
+                            <a href="#edit" class="editable status-<?= $t ? $t->status : 0 ?> locale-<?= $locale ?>" data-locale="<?= $locale ?>" data-name="<?= $locale . "|" . $key ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= $editUrl ?>" data-title="Enter translation"><?= $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' ?></a>
+                        <?php else : ?>
+                            <span><?php echo $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' ?></span>
+                        <?php endif; ?>
+                        </td>
                 <?php endforeach; ?>
                 <?php if($deleteEnabled): ?>
                     <td>
