@@ -49,6 +49,7 @@ class Controller extends BaseController
             ->with('editUrl', URL::action(get_class($this).'@postEdit', array($group)))
             ->with('searchUrl', URL::action(get_class($this).'@getSearch'))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
+            ->with('readOnly', $this->manager->getConfig('read_only'))
             ;
     }
     
@@ -90,6 +91,11 @@ class Controller extends BaseController
             $value = Input::get('value');
 
             list($locale, $key) = explode('|', $name, 2);
+
+            if(in_array($locale, $this->manager->getConfig('read_only'))){
+                return array('status' => 'error');
+            }
+
             $translation = Translation::firstOrNew(array(
                 'locale' => $locale,
                 'group' => $group,

@@ -22,5 +22,8 @@ return array(
 	 *	)
 	 */
 	'exclude_groups' => array(),
-
+	/**
+	 * this allows certain languages to being disabled for editing
+	 */
+	'read_only' => array()
 );
