@@ -10,6 +10,11 @@ return array(
 	'delete_enabled' => true,
 
 	/**
+	 * Enable adding translations
+	 */
+	'add_enabled' => true,
+
+	/**
 	 * Exclude specific groups from Laravel Translation Manager. 
 	 * This is useful if, for example, you want to avoid editing the official Laravel language files.
 	 *
@@ -22,5 +27,4 @@ return array(
 	 *	)
 	 */
 	'exclude_groups' => array(),
-
 );
