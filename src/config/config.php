@@ -26,5 +26,5 @@ return array(
 	/**
 	 * If keys should be visible
 	 */
-	'show_keys' => false
+	'show_keys' => true
 );
