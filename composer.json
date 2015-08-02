@@ -16,9 +16,6 @@
         "symfony/finder": "~2.3"
     },
     "autoload": {
-        "classmap": [
-            "database/migrations"
-        ],
         "psr-4": {
             "Barryvdh\\TranslationManager\\": "src/"
         }
