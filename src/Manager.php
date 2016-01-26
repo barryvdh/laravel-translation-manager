@@ -61,20 +61,20 @@ class Manager{
                             'group' => $group,
                             'key' => $key,
                         ));
-    
+
                         // Check if the database is different then the files
                         $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
                         if($newStatus !== (int) $translation->status){
                             $translation->status = $newStatus;
                         }
-    
+
                         // Only replace when empty, or explicitly told so
                         if($replace || !$translation->value){
                             $translation->value = $value;
                         }
-    
+
                         $translation->save();
-    
+
                         $counter++;
                     }
                 }
@@ -82,7 +82,7 @@ class Manager{
         }
         return $counter;
     }
-    
+
     public function findTranslations($path = null)
     {
 
@@ -128,7 +128,7 @@ class Manager{
         // Return the number of found translations
         return count($keys);
     }
-    
+
     public function exportTranslations($group)
     {
         if(!in_array($group, $this->config['exclude_groups'])) {
@@ -148,10 +148,10 @@ class Manager{
             Translation::where('group', $group)->whereNotNull('value')->update(array('status' => Translation::STATUS_SAVED));
         }
     }
-    
+
     public function exportAllTranslations()
     {
-        $groups = Translation::whereNotNull('value')->select(DB::raw('DISTINCT `group`'))->get('group');
+      $groups = Translation::distinct()->select('group')->whereNotNull('value')->get('group');
 
         foreach($groups as $group){
             $this->exportTranslations($group->group);
