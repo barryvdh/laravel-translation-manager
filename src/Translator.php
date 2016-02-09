@@ -14,9 +14,10 @@ class Translator extends LaravelTranslator {
      * @param  string  $key
      * @param  array   $replace
      * @param  string  $locale
+     * @param  bool $fallback
      * @return string
      */
-    public function get($key, array $replace = array(), $locale = null)
+    public function get($key, array $replace = array(), $locale = null, $fallback = true)
     {
         $result = parent::get($key, $replace, $locale);
         if($result === $key){
