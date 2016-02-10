@@ -18,14 +18,14 @@ class Translator extends LaravelTranslator {
      */
     public function get($key, array $replace = array(), $locale = null, $fallback = true)
     {
-        $result = parent::get($key, $replace, $locale);
+        // Get without fallback
+        $result = parent::get($key, $replace, $locale, false);
         if($result === $key){
             $this->notifyMissingKey($key);
 
-            // Reget with fallback if true
-            if ($fallback) {
-                $result = parent::get($key, $replace, $locale, $fallback);
-            }
+            // Reget with fallback
+            $result = parent::get($key, $replace, $locale, $fallback);
+            
         }
 
         return $result;
