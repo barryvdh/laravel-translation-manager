@@ -63,6 +63,9 @@ class Controller extends BaseController
             $locales = $locales->all();
         }
         $locales = array_merge([config('app.locale')], $locales);
+
+        $locales = array_diff($locales, $this->manager->getConfig('hide_languages'));
+
         return array_unique($locales);
     }
 
