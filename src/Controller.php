@@ -17,7 +17,7 @@ class Controller extends BaseController
 
     public function getIndex($group = null)
     {
-        $locales = $this->loadLocales();
+        $locales = $this->manager->getLocales();
         $groups = Translation::groupBy('group');
         $excludedGroups = $this->manager->getConfig('exclude_groups');
         if($excludedGroups){
@@ -126,5 +126,37 @@ class Controller extends BaseController
         $this->manager->exportTranslations($group);
 
         return ['status' => 'ok'];
+    }
+
+    public function postAddGroup(Request $request)
+    {
+        $group = str_replace(".", '', $request->input('new-group'));
+        if ($group)
+        {
+            return redirect()->action('\Barryvdh\TranslationManager\Controller@getView',$group);
+        }
+        else
+        {
+            return redirect()->back();
+        }       
+    }
+
+    public function postAddLocale(Request $request)
+    {
+        $locales = $this->manager->getLocales();
+        $newLocale = str_replace([], '-', trim($request->input('new-locale')));
+        if (!$newLocale || in_array($newLocale, $locales)) {
+            return redirect()->back();
+        }
+        $this->manager->addLocale($newLocale);
+        return redirect()->back();
+    }
+
+    public function postRemoveLocale(Request $request)
+    {
+        foreach ($request->input('remove-locale', []) as $locale => $val) {
+            $this->manager->removeLocale($locale);
+        }
+        return redirect()->back();
     }
 }
