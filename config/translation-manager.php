@@ -36,4 +36,18 @@ return array(
 	 */
 	'exclude_groups' => array(),
 
+    /**
+     * Laravel base path (path that should be scanned for translatable strings). Default is this installation itself.
+     *
+     * @type string
+     */
+    // 'base_path' => (__DIR__) . '/../../../some_path',
+
+    /**
+     * Laravel language directory path (path language files will be exported to). Default is this installation itself.
+     *
+     * @type string
+     */
+    // 'lang_path' => (__DIR__) . '/../../../some_path/resources/lang',
+
 );
