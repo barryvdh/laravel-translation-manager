@@ -16,11 +16,16 @@ class Translator extends LaravelTranslator {
      * @param  string  $locale
      * @return string
      */
-    public function get($key, array $replace = array(), $locale = null)
+    public function get($key, array $replace = array(), $locale = null, $fallback = true)
     {
-        $result = parent::get($key, $replace, $locale);
+        // Get without fallback
+        $result = parent::get($key, $replace, $locale, false);
         if($result === $key){
             $this->notifyMissingKey($key);
+
+            // Reget with fallback
+            $result = parent::get($key, $replace, $locale, $fallback);
+            
         }
 
         return $result;

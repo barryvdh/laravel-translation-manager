@@ -11,9 +11,9 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "5.0.x|5.1.x",
-        "illuminate/translation": "5.0.x|5.1.x",
-        "symfony/finder": "~2.3"
+        "illuminate/support": "5.0.x|5.1.x|5.2.x",
+        "illuminate/translation": "5.0.x|5.1.x|5.2.x",
+        "symfony/finder": "~2.3|~3.0"
     },
     "autoload": {
         "psr-4": {

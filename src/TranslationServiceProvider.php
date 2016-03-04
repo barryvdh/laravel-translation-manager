@@ -15,7 +15,7 @@ class TranslationServiceProvider extends BaseTranslationServiceProvider {
 
         $this->registerLoader();
 
-        $this->app->bindShared('translator', function($app)
+        $this->app->singleton('translator', function($app)
         {
             $loader = $app['translation.loader'];
 
