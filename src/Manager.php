@@ -43,13 +43,18 @@ class Manager{
         foreach($this->files->directories($this->app->langPath()) as $langPath){
             $locale = basename($langPath);
 
-            foreach($this->files->files($langPath) as $file){
+            foreach($this->files->files($langPath) as $file) {
 
                 $info = pathinfo($file);
                 $group = $info['filename'];
 
                 if(in_array($group, $this->config['exclude_groups'])) {
                     continue;
+                }
+
+                $subLangPath = str_replace($langPath . "/", "", $info['dirname']);
+                if ($subLangPath != $langPath) {
+                    $group = $subLangPath . "/" . $group;
                 }
 
                 $translations = \Lang::getLoader()->load($locale, $group);
