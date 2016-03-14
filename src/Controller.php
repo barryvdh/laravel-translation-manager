@@ -50,8 +50,12 @@ class Controller extends BaseController
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
 
-    public function getView($group)
+    public function getView($group, $sub_group)
     {
+        if ($sub_group) {
+            return $this->getIndex($group.'/'.$sub_group);
+        }
+
         return $this->getIndex($group);
     }
 
