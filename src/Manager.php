@@ -43,7 +43,7 @@ class Manager{
         foreach($this->files->directories($this->app->langPath()) as $langPath){
             $locale = basename($langPath);
 
-            foreach($this->files->files($langPath) as $file) {
+            foreach($this->files->allfiles($langPath) as $file) {
 
                 $info = pathinfo($file);
                 $group = $info['filename'];
