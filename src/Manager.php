@@ -52,7 +52,7 @@ class Manager{
                     continue;
                 }
 
-                $subLangPath = str_replace($langPath . "/", "", $info['dirname']);
+                $subLangPath = str_replace($langPath . "\\", "", $info['dirname']);
                 if ($subLangPath != $langPath) {
                     $group = $subLangPath . "/" . $group;
                 }
@@ -61,25 +61,25 @@ class Manager{
                 if ($translations && is_array($translations)) {
                     foreach(array_dot($translations) as $key => $value){
                         $value = (string) $value;
-                         $translation = Translation::firstOrNew(array(
+                        $translation = Translation::firstOrNew(array(
                             'locale' => $locale,
                             'group' => $group,
                             'key' => $key,
                         ));
-    
+
                         // Check if the database is different then the files
                         $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
                         if($newStatus !== (int) $translation->status){
                             $translation->status = $newStatus;
                         }
-    
+
                         // Only replace when empty, or explicitly told so
                         if($replace || !$translation->value){
                             $translation->value = $value;
                         }
-    
+
                         $translation->save();
-    
+
                         $counter++;
                     }
                 }
@@ -87,11 +87,9 @@ class Manager{
         }
         return $counter;
     }
-    
+
     public function findTranslations($path = null)
     {
-
-
         $path = $path ?: base_path();
         $keys = array();
         $functions =  array('trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice', '@lang', '@choice');
@@ -133,7 +131,7 @@ class Manager{
         // Return the number of found translations
         return count($keys);
     }
-    
+
     public function exportTranslations($group)
     {
         if(!in_array($group, $this->config['exclude_groups'])) {
@@ -153,7 +151,7 @@ class Manager{
             Translation::where('group', $group)->whereNotNull('value')->update(array('status' => Translation::STATUS_SAVED));
         }
     }
-    
+
     public function exportAllTranslations()
     {
         $groups = Translation::whereNotNull('value')->select(DB::raw('DISTINCT `group`'))->get('group');
