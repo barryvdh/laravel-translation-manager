@@ -176,9 +176,12 @@
     <button type="button" id="auto-translate" class="btn btn-primary" data-loading-text="Translating...">Auto Translate</button>
     <script>
         jQuery(document).ready(function($){
+            $.expr[':']['hasText'] = function(node, index, props){
+                return node.innerText == props[3];
+            }
             $("#auto-translate").click(function(){
                 var $btn = $(this),
-                    $empties = $(".editable.status-0").not(".locale-en"),
+                    $empties = $(".editable.status-0:hasText('Empty')").not(".locale-en"),
                     done = 0;
                 if($empties.length) {
                     $btn.button('loading');
