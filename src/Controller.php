@@ -51,8 +51,12 @@ class Controller extends BaseController
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
 
-    public function getView($group)
+    public function getView($group, $sub_group = null)
     {
+        if ($sub_group) {
+            return $this->getIndex($group.'/'.$sub_group);
+        }
+
         return $this->getIndex($group);
     }
 
@@ -67,9 +71,13 @@ class Controller extends BaseController
         return array_unique($locales);
     }
 
-    public function postAdd(Request $request, $group)
+    public function postAdd(Request $request, $group, $sub_group = null)
     {
         $keys = explode("\n", $request->get('keys'));
+
+        if ($sub_group) {
+            $group = $group . "/" . $sub_group;
+        }
 
         foreach($keys as $key){
             $key = trim($key);
@@ -80,7 +88,7 @@ class Controller extends BaseController
         return redirect()->back();
     }
 
-    public function postEdit(Request $request, $group)
+    public function postEdit(Request $request, $group, $sub_group = null)
     {
         if(!in_array($group, $this->manager->getConfig('exclude_groups'))) {
             $name = $request->get('name');
@@ -90,7 +98,7 @@ class Controller extends BaseController
             list($locale, $key) = explode('|', $name, 2);
             $translation = Translation::firstOrNew([
                 'locale' => $locale,
-                'group' => $group,
+                'group' => $sub_group ? $group . "/" . $sub_group: $group,
                 'key' => $key,
             ]);
 
@@ -106,7 +114,7 @@ class Controller extends BaseController
         }
     }
 
-    public function postDelete($group, $key)
+    public function postDelete($group, $sub_group = null, $key)
     {
         if(!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
             Translation::where('group', $group)->where('key', $key)->delete();
@@ -121,7 +129,7 @@ class Controller extends BaseController
 
         return ['status' => 'ok', 'counter' => $counter];
     }
-    
+
     public function postFind()
     {
         $numFound = $this->manager->findTranslations();
@@ -129,9 +137,13 @@ class Controller extends BaseController
         return ['status' => 'ok', 'counter' => (int) $numFound];
     }
 
-    public function postPublish($group)
+    public function postPublish($group, $sub_group = null)
     {
-        $this->manager->exportTranslations($group);
+        if ($sub_group) {
+            $this->manager->exportTranslations($group.'/'.$sub_group);
+        } else {
+            $this->manager->exportTranslations($group);
+        }
 
         return ['status' => 'ok'];
     }
