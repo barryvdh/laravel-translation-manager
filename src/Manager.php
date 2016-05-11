@@ -60,6 +60,10 @@ class Manager{
                 $translations = \Lang::getLoader()->load($locale, $group);
                 if ($translations && is_array($translations)) {
                     foreach(array_dot($translations) as $key => $value){
+                        // process only string values
+                        if(is_array($value)){
+                            continue;
+                        }
                         $value = (string) $value;
                         $translation = Translation::firstOrNew(array(
                             'locale' => $locale,
