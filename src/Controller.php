@@ -52,11 +52,7 @@ class Controller extends BaseController
 
     public function getView($group, $sub_group = null)
     {
-        if ($sub_group) {
-            return $this->getIndex($group.'/'.$sub_group);
-        }
-
-        return $this->getIndex($group);
+        return $this->getIndex(implode('/', func_get_args()));
     }
 
     protected function loadLocales()
