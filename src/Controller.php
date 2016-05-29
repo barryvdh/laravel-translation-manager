@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;
+use Stichoza\GoogleTranslate\TranslateClient;
 
 class Controller extends BaseController
 {
@@ -92,6 +93,7 @@ class Controller extends BaseController
         if(!in_array($group, $this->manager->getConfig('exclude_groups'))) {
             $name = $request->get('name');
             $value = $request->get('value');
+            $translate = $request->get('translate');
 
             list($locale, $key) = explode('|', $name, 2);
             $translation = Translation::firstOrNew([
@@ -99,10 +101,16 @@ class Controller extends BaseController
                 'group' => $sub_group ? $group . "/" . $sub_group: $group,
                 'key' => $key,
             ]);
+
+            if($translate == 'auto') {
+                $tr = new TranslateClient('en', $locale);
+                $value = $tr->translate($value);
+                $value = preg_replace('#\[__(.+?)__\]#i', ':$1', $value);
+            }
             $translation->value = (string) $value ?: null;
             $translation->status = Translation::STATUS_CHANGED;
             $translation->save();
-            return array('status' => 'ok');
+            return array('status' => 'ok', 'value' => $value);
         }
     }
 

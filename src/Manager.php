@@ -149,7 +149,10 @@ class Manager{
                 if(isset($groups[$group])){
                     $translations = $groups[$group];
                     $path = $this->app->langPath().'/'.$locale.'/'.$group.'.php';
-                    $output = "<?php\n\nreturn ".var_export($translations, true).";\n";
+                    $str = json_decode(str_replace(array('(',')'), array('&#40','&#41'), json_encode($translations)), true);
+                    $str = var_export($str, true);
+                    $str = str_replace(array('array (',')','&#40','&#41'), array('[',']','(',')'), $str);
+                    $output = "<?php\n\nreturn ".$str.";\n";
                     $this->files->put($path, $output);
                 }
             }
