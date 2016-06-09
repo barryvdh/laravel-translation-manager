@@ -52,9 +52,8 @@ class Manager{
                     continue;
                 }
 
-                $subLangPath = str_replace($langPath . "\\", "", $info['dirname']);
-                if ($subLangPath != $langPath) {
-                    $group = $subLangPath . "/" . $group;
+                if ($langPath != $info['dirname']) {
+                    $group = basename($info['dirname'])."/".$info['filename'];
                 }
 
                 $translations = \Lang::getLoader()->load($locale, $group);
