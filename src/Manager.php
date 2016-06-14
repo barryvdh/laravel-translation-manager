@@ -53,7 +53,7 @@ class Manager{
                 }
 
                 if ($langPath != $info['dirname']) {
-                    $group = basename($info['dirname'])."/".$info['filename'];
+                    $group = basename($info['dirname']).'/'.$info['filename'];
                 }
 
                 $translations = \Lang::getLoader()->load($locale, $group);
@@ -153,6 +153,11 @@ class Manager{
                 }
             }
             Translation::where('group', $group)->whereNotNull('value')->update(array('status' => Translation::STATUS_SAVED));
+
+            if(Translation::where('group', $group)->get()->isEmpty())
+            {
+                $this->deleteLangFile($group);
+            }
         }
     }
 
@@ -191,6 +196,14 @@ class Manager{
         }
         else {
             return $this->config[$key];
+        }
+    }
+
+    public function deleteLangFile($group)
+    {
+        foreach($this->files->directories($this->app->langPath()) as $langPath){
+            $path = "$langPath/$group.php";
+            $this->files->delete($path);
         }
     }
 
