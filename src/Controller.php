@@ -53,8 +53,8 @@ class Controller extends BaseController
     public function getView()
     {
         $groups = func_get_args();
-        $path = implode('/', $groups);
-        return $this->getIndex($path);
+        $group = implode('/', $groups);
+        return $this->getIndex($group);
     }
 
     protected function loadLocales()
@@ -68,13 +68,13 @@ class Controller extends BaseController
         return array_unique($locales);
     }
 
-    public function postAdd(Request $request, $group, $sub_group = null)
+    public function postAdd(Request $request)
     {
         $keys = explode("\n", $request->get('keys'));
 
-        if ($sub_group) {
-            $group = $group . "/" . $sub_group;
-        }
+        $groups = func_get_args();
+        array_shift($groups); // remove the $request
+        $group = implode('/', $groups);
 
         foreach($keys as $key){
             $key = trim($key);
@@ -85,16 +85,19 @@ class Controller extends BaseController
         return redirect()->back();
     }
 
-    public function postEdit(Request $request, $group, $sub_group = null)
+    public function postEdit(Request $request, $group)
     {
         if(!in_array($group, $this->manager->getConfig('exclude_groups'))) {
+            $groups = func_get_args();
+            array_shift($groups); // remove the $request
+            $group = implode('/', $groups);
             $name = $request->get('name');
             $value = $request->get('value');
 
             list($locale, $key) = explode('|', $name, 2);
             $translation = Translation::firstOrNew([
                 'locale' => $locale,
-                'group' => $sub_group ? $group . "/" . $sub_group: $group,
+                'group' => $group,
                 'key' => $key,
             ]);
             $translation->value = (string) $value ?: null;
@@ -104,8 +107,11 @@ class Controller extends BaseController
         }
     }
 
-    public function postDelete($group, $key, $sub_group = null)
+    public function postDelete()
     {
+        $groups = func_get_args();
+        $key = array_pop($groups); // the last arg is the key
+        $group = implode('/', $groups);
         if(!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
             Translation::where('group', $group)->where('key', $key)->delete();
             return ['status' => 'ok'];
@@ -127,13 +133,11 @@ class Controller extends BaseController
         return ['status' => 'ok', 'counter' => (int) $numFound];
     }
 
-    public function postPublish($group, $sub_group = null)
+    public function postPublish()
     {
-        if ($sub_group) {
-            $this->manager->exportTranslations($group.'/'.$sub_group);
-        } else {
-            $this->manager->exportTranslations($group);
-        }
+        $groups = func_get_args();
+        $group = implode('/', $groups);
+        $this->manager->exportTranslations($group);
 
         return ['status' => 'ok'];
     }
