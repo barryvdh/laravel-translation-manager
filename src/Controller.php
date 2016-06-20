@@ -50,13 +50,11 @@ class Controller extends BaseController
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
 
-    public function getView($group, $sub_group = null)
+    public function getView()
     {
-        if ($sub_group) {
-            return $this->getIndex($group.'/'.$sub_group);
-        }
-
-        return $this->getIndex($group);
+        $groups = func_get_args();
+        $path = implode('/', $groups);
+        return $this->getIndex($path);
     }
 
     protected function loadLocales()
