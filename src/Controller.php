@@ -1,8 +1,8 @@
 <?php namespace Barryvdh\TranslationManager;
 
+use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;
 
 class Controller extends BaseController
@@ -20,7 +20,7 @@ class Controller extends BaseController
         $locales = $this->loadLocales();
         $groups = Translation::groupBy('group');
         $excludedGroups = $this->manager->getConfig('exclude_groups');
-        if($excludedGroups){
+        if ($excludedGroups) {
             $groups->whereNotIn('group', $excludedGroups);
         }
 
@@ -28,18 +28,17 @@ class Controller extends BaseController
         if ($groups instanceof Collection) {
             $groups = $groups->all();
         }
-        $groups = [''=>'Choose a group'] + $groups;
+        $groups = ['' => 'Choose a group'] + $groups;
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
-
 
         $allTranslations = Translation::where('group', $group)->orderBy('key', 'asc')->get();
         $numTranslations = count($allTranslations);
         $translations = [];
-        foreach($allTranslations as $translation){
+        foreach ($allTranslations as $translation) {
             $translations[$translation->key][$translation->locale] = $translation;
         }
 
-         return view('translation-manager::index')
+        return view('translation-manager::index')
             ->with('translations', $translations)
             ->with('locales', $locales)
             ->with('groups', $groups)
@@ -52,11 +51,7 @@ class Controller extends BaseController
 
     public function getView($group, $sub_group = null)
     {
-        if ($sub_group) {
-            return $this->getIndex($group.'/'.$sub_group);
-        }
-
-        return $this->getIndex($group);
+        return $this->getIndex(implode('/', func_get_args()));
     }
 
     protected function loadLocales()
@@ -75,12 +70,12 @@ class Controller extends BaseController
         $keys = explode("\n", $request->get('keys'));
 
         if ($sub_group) {
-            $group = $group . "/" . $sub_group;
+            $group = implode('/', array_slice(func_get_args(), 1));
         }
 
-        foreach($keys as $key){
+        foreach ($keys as $key) {
             $key = trim($key);
-            if($group && $key){
+            if ($group && $key) {
                 $this->manager->missingKey('*', $group, $key);
             }
         }
@@ -89,14 +84,14 @@ class Controller extends BaseController
 
     public function postEdit(Request $request, $group, $sub_group = null)
     {
-        if(!in_array($group, $this->manager->getConfig('exclude_groups'))) {
+        if (!in_array($group, $this->manager->getConfig('exclude_groups'))) {
             $name = $request->get('name');
             $value = $request->get('value');
 
             list($locale, $key) = explode('|', $name, 2);
             $translation = Translation::firstOrNew([
                 'locale' => $locale,
-                'group' => $sub_group ? $group . "/" . $sub_group: $group,
+                'group' => $sub_group ? implode('/', array_slice(func_get_args(), 1)) : $group,
                 'key' => $key,
             ]);
             $translation->value = (string) $value ?: null;
@@ -108,7 +103,11 @@ class Controller extends BaseController
 
     public function postDelete($group, $key, $sub_group = null)
     {
-        if(!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
+        $groups = func_get_args();
+        $key = array_pop($groups);
+        $group = implode('/', $groups);
+
+        if (!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
             Translation::where('group', $group)->where('key', $key)->delete();
             return ['status' => 'ok'];
         }
@@ -131,8 +130,8 @@ class Controller extends BaseController
 
     public function postPublish($group, $sub_group = null)
     {
-        if ($sub_group) {
-            $this->manager->exportTranslations($group.'/'.$sub_group);
+        if (func_num_args() > 0) {
+            $this->manager->exportTranslations(implode('/', func_get_args()));
         } else {
             $this->manager->exportTranslations($group);
         }
