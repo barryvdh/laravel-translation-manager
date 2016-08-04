@@ -109,6 +109,10 @@ class Controller extends BaseController
     public function postDelete($group, $key, $sub_group = null)
     {
         if(!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
+            if ($sub_group) {
+                $group = $group . '/' . $key;
+                $key = $sub_group;
+            }
             Translation::where('group', $group)->where('key', $key)->delete();
             return ['status' => 'ok'];
         }
