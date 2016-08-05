@@ -182,7 +182,7 @@
 <script type="text/javascript">
     $(function(){
         $('#translationDatatable').DataTable({
-            { "targets": [0], "searchable": false, "orderable": false, "visible": true }
+            "targets": [0], "searchable": false, "orderable": false, "visible": true 
         });
     })
 </script>
