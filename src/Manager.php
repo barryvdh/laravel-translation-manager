@@ -159,7 +159,7 @@ class Manager{
 
     public function exportAllTranslations()
     {
-        $groups = Translation::whereNotNull('value')->select(DB::raw('DISTINCT `group`'))->get('group');
+      $groups = Translation::distinct()->select('group')->whereNotNull('value')->get('group');
 
         foreach($groups as $group){
             $this->exportTranslations($group->group);
