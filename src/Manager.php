@@ -52,7 +52,7 @@ class Manager{
                     continue;
                 }
 
-                $subLangPath = str_replace($langPath . "\\", "", $info['dirname']);
+                $subLangPath = str_replace($langPath . DIRECTORY_SEPARATOR, "", $info['dirname']);
                 if ($subLangPath != $langPath) {
                     $group = $subLangPath . "/" . $group;
                 }
@@ -159,7 +159,19 @@ class Manager{
 
     public function exportAllTranslations()
     {
-        $groups = Translation::whereNotNull('value')->select(DB::raw('DISTINCT `group`'))->get('group');
+        $select = '';
+
+        switch (DB::getDriverName()) {
+            case 'mysql':
+                $select = 'DISTINCT `group`';
+                break;
+
+            default:
+                $select = 'DISTINCT "group"';
+                break;
+        }
+
+        $groups = Translation::whereNotNull('value')->select(DB::raw($select))->get('group');
 
         foreach($groups as $group){
             $this->exportTranslations($group->group);
