@@ -96,18 +96,23 @@ class Manager{
     {
         $path = $path ?: base_path();
         $keys = array();
-        $functions =  array('trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice', '@lang', '@choice');
-        $pattern =                              // See http://regexr.com/392hu
-            "[^\w|>]".                          // Must not have an alphanum or _ or > before real method
-            "(".implode('|', $functions) .")".  // Must start with one of the functions
-            "\(".                               // Match opening parenthese
-            "[\'\"]".                           // Match " or '
-            "(".                                // Start a new group to match:
-                "[a-zA-Z0-9_-]+".               // Must start with group
-                "([.][^\1)]+)+".                // Be followed by one or more items/keys
-            ")".                                // Close group
-            "[\'\"]".                           // Closing quote
-            "[\),]";                            // Close parentheses or new parameter
+        $functions =  array('trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice');
+        $functionsInline = array('@lang', '@choice');
+        $pattern =                                         // http://regexr.com/3e38g
+            "(?:".                                         // Start a new group to match:
+                "(?:".implode('|', $functionsInline) .")". // Must start with one of the functions
+                "|".                                       // Or
+                "[^\w|>]".                                 // Must not have an alphanum or _ or > before real method
+                "(?:".implode('|', $functions) .")".       // Must start with one of the functions
+            ")".                                           // Close group
+            "\(".                                          // Match opening parenthese
+            "[\'\"]".                                      // Match " or '
+            "(".                                           // Start a new group to match:
+                "[a-zA-Z0-9_-]+".                          // Must start with group
+                "(?:[.][^\1)]+)+".                         // Be followed by one or more items/keys
+            ")".                                           // Close group
+            "[\'\"]".                                      // Closing quote
+            "[\),]";                                       // Close parentheses or new parameter
 
         // Find all PHP + Twig files in the app folder, except for storage
         $finder = new Finder();
@@ -118,7 +123,7 @@ class Manager{
             // Search the current file for the pattern
             if(preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
                 // Get all matches
-                foreach ($matches[2] as $key) {
+                foreach ($matches[1] as $key) {
                     $keys[] = $key;
                 }
             }
