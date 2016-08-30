@@ -4,8 +4,6 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
 class ManagerServiceProvider extends ServiceProvider {
-
-
 	/**
 	 * Indicates if loading of the provider is deferred.
 	 *
@@ -70,7 +68,6 @@ class ManagerServiceProvider extends ServiceProvider {
 	 */
 	public function boot(Router $router)
 	{
-//        dd($router);
         $viewPath = __DIR__.'/../resources/views';
         $this->loadViewsFrom($viewPath, 'translation-manager');
         $this->publishes([
@@ -87,8 +84,14 @@ class ManagerServiceProvider extends ServiceProvider {
 
         $router->group($config, function($router)
         {
-            $router->get('view/{group}', 'Controller@getView');
-            $router->resource('/', 'Controller');
+            $router->get('view/{group?}', 'Controller@getView');
+            $router->get('/{group?}', 'Controller@getIndex');
+            $router->post('/add/{group}', 'Controller@postAdd');
+            $router->post('/edit/{group}', 'Controller@postEdit');
+            $router->post('/delete/{group}/{key}', 'Controller@postDelete');
+            $router->post('/import', 'Controller@postImport');
+            $router->post('/find', 'Controller@postFind');
+            $router->post('/publish/{group}', 'Controller@postPublish');
         });
 	}
 
