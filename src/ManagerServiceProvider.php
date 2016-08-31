@@ -4,7 +4,6 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
 class ManagerServiceProvider extends ServiceProvider {
-  
 	/**
 	 * Indicates if loading of the provider is deferred.
 	 *
