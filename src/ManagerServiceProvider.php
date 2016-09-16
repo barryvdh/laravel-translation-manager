@@ -75,6 +75,7 @@ class ManagerServiceProvider extends ServiceProvider {
         ], 'views');
         
         $migrationPath = __DIR__.'/../database/migrations';
+        $this->loadMigrationsFrom($migrationPath);
         $this->publishes([
             $migrationPath => base_path('database/migrations'),
         ], 'migrations');
