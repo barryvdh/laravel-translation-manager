@@ -32,8 +32,21 @@ return array(
 	 *		'pagination',
 	 *		'reminders',
 	 *		'validation',
+	 * 		'package::main'
 	 *	)
 	 */
 	'exclude_groups' => array(),
+
+	/**
+	 * Exclude specific vendor packages from Laravel Translation Manager.
+	 * This is useful if, for example, you want to avoid editing the package language files.
+	 *
+	 * @type array
+	 *
+	 * 	array(
+	 *		'translator-manager',
+	 *	)
+	 */
+	'exclude_packages' => array(),
 
 );
