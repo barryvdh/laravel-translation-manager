@@ -59,8 +59,8 @@ class Controller extends BaseController
 
     protected function loadLocales()
     {
-        //Set the default locale as the first one.
-        $locales = Translation::groupBy('locale')->pluck('locale');
+        //Set the default locale as the first one. 
+        $locales = Translation::groupBy('locale')->get()->pluck('locale');
 
         if ($locales instanceof Collection) {
             $locales = $locales->all();
