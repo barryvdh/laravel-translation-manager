@@ -36,4 +36,11 @@ return array(
 	 */
 	'exclude_groups' => array(),
 
+	/**
+	 * Add a default group for translations
+	 *
+	 * @type string
+	 */
+	'default_group' => 'default',
+
 );
