@@ -122,6 +122,7 @@
         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
         <div class="form-group">
             <select name="group" id="group" class="form-control group-select">
+                <option value="">Choose a group</option>
                 <?php foreach($groups as $key => $value): ?>
                     <option value="<?= $key ?>"<?= $key == $group ? ' selected':'' ?>><?= $value ?></option>
                 <?php endforeach; ?>
