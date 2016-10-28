@@ -28,7 +28,6 @@ class Controller extends BaseController
         if ($groups instanceof Collection) {
             $groups = $groups->all();
         }
-        $groups = [''=>'Choose a group'] + $groups;
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
 
