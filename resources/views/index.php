@@ -73,6 +73,26 @@
                 $('div.success-publish').slideDown();
             });
 
+            $("#filter").keyup(function () {
+                var data = this.value.toUpperCase().split(" ");
+                var jo = $(".table tbody").find("tr");
+                if (this.value == "") {
+                    jo.show();
+                    return;
+                }
+                jo.hide();
+
+                jo.filter(function (i, v) {
+                    var $t = $(this);
+                    for (var d = 0; d < data.length; ++d) {
+                        if ($t.text().toUpperCase().indexOf(data[d]) > -1) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }).show();
+            });
+
         })
     </script>
 </head>
@@ -138,6 +158,13 @@
         </form>
         <hr>
     <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
+        <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-filter"></i></span>
+            <input id="filter" type="text" class="form-control" placeholder="Enter keywords">
+            <span class="input-group-btn">
+                <button class="btn btn-danger" type="button" onclick="$('#filter').val('').trigger('keyup');">Clear</button>
+            </span>
+        </div>
     <table class="table">
         <thead>
         <tr>
