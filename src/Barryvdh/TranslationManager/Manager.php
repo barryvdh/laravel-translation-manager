@@ -131,8 +131,9 @@ class Manager{
         if(!in_array($group, $this->config['exclude_groups'])) {
             if($group == '*')
                 return $this->exportAllTranslations();
-            //TODO: CHANGE THIS for make magic
+            
             $tree = $this->makeTree(Translation::where('group', $group)->whereNotNull('value')->get());
+            
             foreach($tree as $locale => $groups){
                 if(isset($groups[$group])){
                     $this->exportFiles($locale,$group,$groups[$group]);
