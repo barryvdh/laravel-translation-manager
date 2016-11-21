@@ -185,7 +185,7 @@ class Manager{
         }
     }
 
-    protected function exportFiles(&$locale, &$name, &$group)
+    protected function exportFiles($locale, $name, $group)
     {
         $translations = $group;
         $path = $this->app->make('path').'/lang/'.$locale.'/'.$name.'.php';
