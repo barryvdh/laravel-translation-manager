@@ -40,7 +40,7 @@ class Manager{
     public function importTranslations($replace = false)
     {
         $counter = 0;
-        foreach($this->files->directories($this->app->langPath()) as $langPath){
+        foreach($this->files->directories($this->app['path.lang']) as $langPath){
             $locale = basename($langPath);
 
             foreach($this->files->allfiles($langPath) as $file) {
@@ -148,7 +148,7 @@ class Manager{
             foreach($tree as $locale => $groups){
                 if(isset($groups[$group])){
                     $translations = $groups[$group];
-                    $path = $this->app->langPath().'/'.$locale.'/'.$group.'.php';
+                    $path = $this->app['path.lang'].'/'.$locale.'/'.$group.'.php';
                     $output = "<?php\n\nreturn ".var_export($translations, true).";\n";
                     $this->files->put($path, $output);
                 }
