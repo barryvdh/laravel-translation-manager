@@ -43,7 +43,7 @@
             $('.group-select').on('change', function(){
                 var group = $(this).val();
                 if (group) {
-                    window.location.href = '<?= action('\Barryvdh\TranslationManager\Controller@getView') ?>/'+$(this).val();
+                    window.location.href = '<?= action('\Barryvdh\TranslationManager\Controller@getView') ?>?file='+$(this).val();
                 } else {
                     window.location.href = '<?= action('\Barryvdh\TranslationManager\Controller@getIndex') ?>';
                 }
