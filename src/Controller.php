@@ -50,9 +50,11 @@ class Controller extends BaseController
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
 
-    public function getView(Request $request)
+    public function getView()
     {
-        return $this->getIndex($request->input('file'));
+        $groups = func_get_args();
+        $group = implode('/', $groups);
+        return $this->getIndex($group);
     }
 
     protected function loadLocales()
