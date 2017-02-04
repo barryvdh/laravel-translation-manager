@@ -141,5 +141,5 @@ This package is still very alpha. Few thinks that are on the todo-list:
 
     - Add locales/groups via webinterface
     - Improve webinterface (more selection/filtering, behavior of popup after save etc)
-    - Seed existing languages (https://github.com/caouecs/Laravel4-lang)
+    - Seed existing languages (https://github.com/caouecs/Laravel-lang)
     - Suggestions are welcome :)
