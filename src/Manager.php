@@ -157,6 +157,24 @@ class Manager{
         }
     }
 
+    private function beautyPrint($langValue, $indent="") {
+        switch (gettype($langValue)) {
+            case 'string':
+                return str_replace("\"","'", '"' . addcslashes($langValue, "\\\"\r\n\t\v\f") . '"');
+            case 'array':
+                $indexed = array_keys($langValue) === range(0, count($langValue) - 1);
+                $r = [];
+                foreach ($langValue as $key => $value) {
+                    $r[] = "$indent    "
+                        . ($indexed ? "" : $this->beautyPrint($key) . " => ")
+                        . $this->beautyPrint($value, "$indent    ");
+                }
+                return "[\n" . implode(",\n", $r) . "\n" . $indent . "]";
+            default:
+                return var_export($langValue, true);
+        }
+    }
+
     public function exportAllTranslations()
     {
         $select = '';
