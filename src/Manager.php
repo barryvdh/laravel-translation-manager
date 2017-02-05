@@ -149,7 +149,8 @@ class Manager{
                 if(isset($groups[$group])){
                     $translations = $groups[$group];
                     $path = $this->app['path.lang'].'/'.$locale.'/'.$group.'.php';
-                    $output = "<?php\n\nreturn ".var_export($translations, true).";\n";
+                    $output = "<?php\n\nreturn " . ($this->config['beauty_output'] ? $this->beautyPrintArray($translations) : var_export($translations, true)).";\n";
+                
                     $this->files->put($path, $output);
                 }
             }
@@ -157,7 +158,7 @@ class Manager{
         }
     }
 
-    private function beautyPrint($langValue, $indent="") {
+    private function beautyPrintArray($langValue, $indent="") {
         switch (gettype($langValue)) {
             case 'string':
                 return str_replace("\"","'", '"' . addcslashes($langValue, "\\\"\r\n\t\v\f") . '"');
@@ -166,8 +167,8 @@ class Manager{
                 $r = [];
                 foreach ($langValue as $key => $value) {
                     $r[] = "$indent    "
-                        . ($indexed ? "" : $this->beautyPrint($key) . " => ")
-                        . $this->beautyPrint($value, "$indent    ");
+                        . ($indexed ? "" : $this->beautyPrintArray($key) . " => ")
+                        . $this->beautyPrintArray($value, "$indent    ");
                 }
                 return "[\n" . implode(",\n", $r) . "\n" . $indent . "]";
             default:
