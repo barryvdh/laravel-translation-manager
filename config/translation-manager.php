@@ -44,5 +44,5 @@ return array(
 	 * @type boolean
 	 *
 	 */
-	'beauty_output' => true
+	'beauty_arrays' => false
 );

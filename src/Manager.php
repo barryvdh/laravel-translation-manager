@@ -149,7 +149,7 @@ class Manager{
                 if(isset($groups[$group])){
                     $translations = $groups[$group];
                     $path = $this->app['path.lang'].'/'.$locale.'/'.$group.'.php';
-                    $output = "<?php\n\nreturn " . ($this->config['beauty_output'] ? $this->beautyPrintArray($translations) : var_export($translations, true)).";\n";
+                    $output = "<?php\n\nreturn " . ($this->config['beauty_arrays'] ? $this->beautyPrintArray($translations) : var_export($translations, true)).";\n";
                 
                     $this->files->put($path, $output);
                 }
