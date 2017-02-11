@@ -36,4 +36,13 @@ return array(
 	 */
 	'exclude_groups' => array(),
 
+	/**
+	 * Determine output arrays in lang files, not support php < 5.4
+ 	 * By default, its using array syntax php < 5.4, (standart var_export function)
+	 * If true, set short version of array and 4 space delimeter
+	 *
+	 * @type boolean
+	 *
+	 */
+	'beauty_arrays' => false
 );
