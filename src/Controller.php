@@ -58,15 +58,15 @@ class Controller extends BaseController
         return $this->getIndex($group);
     }
 
-    public function getSearch(Request $request)
+    public function getSearch()
     {
-        $q = $request->get('q');
+        $q = \Input::get('q');
         $translations = Translation::where('key', 'like', "%$q%")->orWhere('value', 'like', "%$q%")->orderBy('group', 'asc')->orderBy('key', 'asc')->get();
         $numTranslations = count($translations);
 
-        return view('laravel-translation-manager::search')
-          ->with('translations', $translations)
-          ->with('numTranslations', $numTranslations);
+        return view('translation-manager::search')
+            ->with('translations', $translations)
+            ->with('numTranslations', $numTranslations);
     }
 
     protected function loadLocales()
