@@ -47,6 +47,7 @@ class Controller extends BaseController
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
             ->with('editUrl', action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]))
+            ->with('searchUrl', action('\Barryvdh\TranslationManager\Controller@getSearch'))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
 
@@ -57,9 +58,20 @@ class Controller extends BaseController
         return $this->getIndex($group);
     }
 
+    public function getSearch()
+    {
+        $q = \Input::get('q');
+        $translations = Translation::where('key', 'like', "%$q%")->orWhere('value', 'like', "%$q%")->orderBy('group', 'asc')->orderBy('key', 'asc')->get();
+        $numTranslations = count($translations);
+
+        return view('translation-manager::search')
+            ->with('translations', $translations)
+            ->with('numTranslations', $numTranslations);
+    }
+
     protected function loadLocales()
     {
-        //Set the default locale as the first one. 
+        //Set the default locale as the first one.
         $locales = Translation::groupBy('locale')
             ->select('locale')
             ->get()

@@ -78,6 +78,7 @@ class ManagerServiceProvider extends ServiceProvider {
 
         $router->group($config, function($router)
         {
+            $router->get('/search', 'Controller@getSearch');
             $router->get('view/{group?}', 'Controller@getView');
             $router->get('/{group?}', 'Controller@getIndex');
             $router->post('/add/{group}', 'Controller@postAdd');
