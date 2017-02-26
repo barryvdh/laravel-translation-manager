@@ -7,15 +7,15 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property integer $id
  * @property integer $status
- * @property string  $locale
- * @property string  $group
- * @property string  $key
- * @property string  $value
+ * @property string $locale
+ * @property string $group
+ * @property string $key
+ * @property string $value
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
-class Translation extends Model{
-
+class Translation extends Model
+{
     const STATUS_SAVED = 0;
     const STATUS_CHANGED = 1;
 
