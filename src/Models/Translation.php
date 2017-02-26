@@ -22,4 +22,25 @@ class Translation extends Model{
     protected $table = 'ltm_translations';
     protected $guarded = array('id', 'created_at', 'updated_at');
 
+    public function scopeOfTranslatedGroup($query, $group)
+    {
+        return $query->where('group', $group)->whereNotNull('value');
+    }
+
+    public function scopeSelectDistinctGroup($query)
+    {
+        $select = '';
+
+        switch (DB::getDriverName()){
+            case 'mysql':
+                $select = 'DISTINCT `group`';
+                break;
+            default:
+                $select = 'DISTINCT "group"';
+                break;
+        }
+
+        return $query->select(DB::raw($select));
+    }
+
 }

@@ -143,7 +143,7 @@ class Manager{
             if($group == '*')
                 return $this->exportAllTranslations();
 
-            $tree = $this->makeTree(Translation::where('group', $group)->whereNotNull('value')->get());
+            $tree = $this->makeTree(Translation::ofTranslatedGroup($group)->get());
 
             foreach($tree as $locale => $groups){
                 if(isset($groups[$group])){
@@ -153,25 +153,13 @@ class Manager{
                     $this->files->put($path, $output);
                 }
             }
-            Translation::where('group', $group)->whereNotNull('value')->update(array('status' => Translation::STATUS_SAVED));
+            Translation::ofTranslatedGroup($group)->update(array('status' => Translation::STATUS_SAVED));
         }
     }
 
     public function exportAllTranslations()
     {
-        $select = '';
-
-        switch (DB::getDriverName()) {
-            case 'mysql':
-                $select = 'DISTINCT `group`';
-                break;
-
-            default:
-                $select = 'DISTINCT "group"';
-                break;
-        }
-
-        $groups = Translation::whereNotNull('value')->select(DB::raw($select))->get('group');
+        $groups = Translation::whereNotNull('value')->selectDistinctGroup()->get('group');
 
         foreach($groups as $group){
             $this->exportTranslations($group->group);
