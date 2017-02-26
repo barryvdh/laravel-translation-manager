@@ -27,6 +27,14 @@ class Translation extends Model{
         return $query->where('group', $group)->whereNotNull('value');
     }
 
+    public function scopeOrderByGroupKeys($query, $ordered) {
+        if ($ordered) {
+            $query->orderBy('group')->orderBy('key');
+        }
+
+        return $query;
+    }
+
     public function scopeSelectDistinctGroup($query)
     {
         $select = '';

@@ -36,4 +36,9 @@ return array(
 	 */
 	'exclude_groups' => array(),
 
+	/**
+	 * Export translations with keys output alphabetically.
+	 */
+	'sort_keys ' => false,
+
 );

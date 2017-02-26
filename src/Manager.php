@@ -143,7 +143,7 @@ class Manager{
             if($group == '*')
                 return $this->exportAllTranslations();
 
-            $tree = $this->makeTree(Translation::ofTranslatedGroup($group)->get());
+            $tree = $this->makeTree(Translation::ofTranslatedGroup($group)->orderByGroupKeys($this->config['sort_keys'])->get());
 
             foreach($tree as $locale => $groups){
                 if(isset($groups[$group])){
