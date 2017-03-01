@@ -88,7 +88,7 @@ class ManagerServiceProvider extends ServiceProvider {
             $router->get('/{group?}', 'Controller@getIndex')->where('group', '.*');
             $router->post('/add/{group}', 'Controller@postAdd')->where('group', '.*');
             $router->post('/edit/{group}', 'Controller@postEdit')->where('group', '.*');
-            $router->post('/delete/{group}/{key}', 'Controller@postDelete');->where('group', '.*')
+            $router->post('/delete/{group}/{key}', 'Controller@postDelete')->where('group', '.*');
             $router->post('/import', 'Controller@postImport');
             $router->post('/find', 'Controller@postFind');
             $router->post('/publish/{group}', 'Controller@postPublish')->where('group', '.*');
