@@ -104,7 +104,7 @@ class Manager{
             "[\'\"]".                           // Match " or '
             "(".                                // Start a new group to match:
                 "[a-zA-Z0-9_-]+".               // Must start with group
-                "([.][^\1)]+)+".                // Be followed by one or more items/keys
+                "([.|\/][^\1)]+)+".             // Be followed by one or more items/keys
             ")".                                // Close group
             "[\'\"]".                           // Closing quote
             "[\),]";                            // Close parentheses or new parameter
