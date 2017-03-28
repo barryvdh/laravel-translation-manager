@@ -73,7 +73,7 @@ to
 
 ### Web interface
 
-When you have imported your translation (via buttons or command), you can view them in the webinterface (on the url you defined the with the controller).
+When you have imported your translation (via buttons or command), you can view them in the webinterface (on the url you defined with the controller).
 You can click on a translation and an edit field will popup. Just click save and it is saved :)
 When a translation is not yet created in a different locale, you can also just edit it to create it.
 
