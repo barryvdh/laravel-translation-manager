@@ -1,12 +1,16 @@
-<?php namespace Barryvdh\TranslationManager;
+<?php
+
+namespace Barryvdh\TranslationManager;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;
 
+
 class Controller extends BaseController
 {
+
     /** @var \Barryvdh\TranslationManager\Manager  */
     protected $manager;
 
@@ -39,7 +43,7 @@ class Controller extends BaseController
             $translations[$translation->key][$translation->locale] = $translation;
         }
 
-         return view('translation-manager::index')
+         return view('editors.translations.index')
             ->with('translations', $translations)
             ->with('locales', $locales)
             ->with('groups', $groups)
