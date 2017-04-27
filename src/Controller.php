@@ -18,7 +18,7 @@ class Controller extends BaseController
     public function getIndex($group = null)
     {
         $locales = $this->loadLocales();
-        $groups = Translation::groupBy('group');
+        $groups = Translation::groupBy('group')->select('group');
         $excludedGroups = $this->manager->getConfig('exclude_groups');
         if($excludedGroups){
             $groups->whereNotIn('group', $excludedGroups);
