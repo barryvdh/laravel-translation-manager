@@ -45,7 +45,7 @@
                 $('div.success-import strong.counter').text(data.counter);
                 $('div.success-import').slideDown();
             });
-            
+
             $('.form-find').on('ajax:success', function (e, data) {
                 $('div.success-find strong.counter').text(data.counter);
                 $('div.success-find').slideDown();
@@ -81,22 +81,22 @@
             Search
         </button>
         <?php if(!isset($group)) : ?>
-        <form class="form-inline form-import" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postImport') ?>" data-remote="true" role="form">
-            <select name="replace" class="form-control">
-                <option value="0">Append new translations</option>
-                <option value="1">Replace existing translations</option>
-            </select>
-            <button type="submit" class="btn btn-success"  data-disable-with="Loading..">Import groups</button>
+    <form class="form-inline form-import" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postImport') ?>" data-remote="true" role="form">
+        <select name="replace" class="form-control">
+            <option value="0">Append new translations</option>
+            <option value="1">Replace existing translations</option>
+        </select>
+        <button type="submit" class="btn btn-success"  data-disable-with="Loading..">Import groups</button>
+    </form>
+    <form class="form-inline form-find" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postFind') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to scan you app folder? All found translation keys will be added to the database.">
+        <button type="submit" class="btn btn-info" data-disable-with="Searching.." >Find translations in files</button>
+    </form>
+<?php endif; ?>
+    <?php if(isset($group)) : ?>
+        <form class="form-inline form-publish" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?= $group ?>? This will overwrite existing language files.">
+            <button type="submit" class="btn btn-info" data-disable-with="Publishing.." >Publish translations</button>
         </form>
-        <form class="form-inline form-find" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postFind') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to scan you app folder? All found translation keys will be added to the database.">
-            <button type="submit" class="btn btn-info" data-disable-with="Searching.." >Find translations in files</button>
-        </form>
-        <?php endif; ?>
-        <?php if(isset($group)) : ?>
-            <form class="form-inline form-publish" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?= $group ?>? This will overwrite existing language files.">
-                <button type="submit" class="btn btn-info" data-disable-with="Publishing.." >Publish translations</button>
-            </form>
-        <?php endif; ?>
+    <?php endif; ?>
     </p>
     <form role="form">
         <div class="form-group">
@@ -109,41 +109,41 @@
             <input type="submit" value="Add keys" class="btn btn-primary">
         </form>
 
-    <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
-    <table class="table">
-        <thead>
-        <tr>
-            <th width="15%">Key</th>
-            <?php foreach($locales as $locale): ?>
-                <th><?= $locale ?></th>
-            <?php endforeach; ?>
-            <?php if($deleteEnabled): ?>
-                <th>&nbsp;</th>
-            <?php endif; ?>
-        </tr>
-        </thead>
-        <tbody>
-
-        <?php foreach($translations as $key => $translation): ?>
-            <tr id="<?= $key ?>">
-                <td><?= $key ?></td>
+        <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
+        <table class="table">
+            <thead>
+            <tr>
+                <th width="15%">Key</th>
                 <?php foreach($locales as $locale): ?>
-                    <?php $t = isset($translation[$locale]) ? $translation[$locale] : null?>
-
-                    <td>
-                        <a href="#edit" class="editable status-<?= $t ? $t->status : 0 ?> locale-<?= $locale ?>" data-locale="<?= $locale ?>" data-name="<?= $locale . "|" . $key ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= $editUrl ?>" data-title="Enter translation"><?= $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' ?></a>
-                    </td>
+                    <th><?= e($locale) ?></th>
                 <?php endforeach; ?>
                 <?php if($deleteEnabled): ?>
-                    <td>
-                        <a href="<?= action('Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>" class="delete-key" data-method="POST" data-remote="true" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
-                    </td>
+                    <th>&nbsp;</th>
                 <?php endif; ?>
             </tr>
-        <?php endforeach; ?>
+            </thead>
+            <tbody>
 
-        </tbody>
-    </table>
+            <?php foreach($translations as $key => $translation): ?>
+                <tr id="<?= e($key) ?>">
+                    <td><?= e($key) ?></td>
+                    <?php foreach($locales as $locale): ?>
+                        <?php $t = isset($translation[$locale]) ? $translation[$locale] : null?>
+
+                        <td>
+                            <a href="#edit" class="editable status-<?= $t ? e($t->status) : 0 ?> locale-<?= e($locale) ?>" data-locale="<?= e($locale) ?>" data-name="<?= $locale . "|" . e($key) ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= $editUrl ?>" data-title="Enter translation"><?= $t ? e($t->value) : '' ?></a>
+                        </td>
+                    <?php endforeach; ?>
+                    <?php if($deleteEnabled): ?>
+                        <td>
+                            <a href="<?= action('Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>" class="delete-key" data-method="POST" data-remote="true" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
+                        </td>
+                    <?php endif; ?>
+                </tr>
+            <?php endforeach; ?>
+
+            </tbody>
+        </table>
     <?php else: ?>
         <p>Choose a group to display the group translations. If no groups are visisble, make sure you have run the migrations and imported the translations.</p>
 
