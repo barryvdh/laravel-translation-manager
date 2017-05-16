@@ -49,6 +49,7 @@ class Controller extends BaseController
             ->with('editUrl', URL::action(get_class($this).'@postEdit', array($group)))
             ->with('searchUrl', URL::action(get_class($this).'@getSearch'))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
+            ->with('addEnabled', $this->manager->getConfig('add_enabled'))
             ;
     }
     
@@ -72,6 +73,10 @@ class Controller extends BaseController
 
     public function postAdd($group)
     {
+        if(!$this->manager->getConfig('add_enabled')){
+            return array('status' => 'error');
+        }
+
         $keys = explode("\n", Input::get('keys'));
 
         foreach($keys as $key){
