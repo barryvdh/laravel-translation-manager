@@ -12,7 +12,10 @@ return array(
     */
     'route' => [
         'prefix' => 'translations',
-        'middleware' => 'auth',
+        'middleware' => [
+	        'web',
+	        'auth',
+		],
     ],
 
 	/**
