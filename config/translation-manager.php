@@ -40,5 +40,13 @@ return array(
 	 * Export translations with keys output alphabetically.
 	 */
 	'sort_keys ' => false,
+	/**
+	 * create default value from key.
+	 */
+	'default_value_key' => false,
+	/**
+	 * auto export default value if default value is key.
+	*/
+	'auto_export_default_value' => false,
 
 );

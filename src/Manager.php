@@ -18,6 +18,8 @@ class Manager{
 
     protected $config;
 
+    protected $auto_export = array();
+
     public function __construct(Application $app, Filesystem $files, Dispatcher $events)
     {
         $this->app = $app;
@@ -29,11 +31,25 @@ class Manager{
     public function missingKey($namespace, $group, $key)
     {
         if(!in_array($group, $this->config['exclude_groups'])) {
-            Translation::firstOrCreate(array(
+            $Trans = Translation::firstOrCreate(array(
                 'locale' => $this->app['config']['app.locale'],
                 'group' => $group,
                 'key' => $key,
             ));
+
+            if ($this->config['default_value_key']) {
+
+                if ($Trans->wasRecentlyCreated) {
+
+                     $Trans->value = $key;      
+                     $Trans->save();
+
+                     if ($this->config['auto_export_default_value']) {
+                         $this->auto_export[$group] = $group;
+                     }
+                }
+            }
+
         }
     }
 
@@ -194,5 +210,15 @@ class Manager{
             return $this->config[$key];
         }
     }
+   function __destruct() {
+        if(count($this->auto_export) > 0) {
 
+            foreach($this->auto_export as $group) {
+
+                $this->exportTranslations($group);
+
+            }
+
+        }
+   }
 }
