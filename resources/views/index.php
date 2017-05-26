@@ -130,7 +130,7 @@
                 <label for="new-locale">Add new locale</label>
                 <select name="new-locale" id="new-locale" class="form-control">
                     <?php $locale_arr = config('app.available_locales'); foreach ($locale_arr as $loc): ?>
-                        <option value="<?= $loc ?>"><?= $loc ?></option>
+                        <option value="<?= $loc ?>" <?= $newLocale == $loc ? ' selected':'' ?>><?= $loc ?></option>
                     <?php endforeach; ?>
                 </select>
                 <button type="button" class="btn btn-primary" id="btn-new-locale" style="margin-right: 5px;">Go</button>

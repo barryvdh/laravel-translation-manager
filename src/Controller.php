@@ -18,11 +18,8 @@ class Controller extends BaseController
     public function getIndex($group = null)
     {
         $locales = $this->loadLocales();
-        $newLocale = request()->get('newlocale');
-        if( !array_search($newLocale,$locales) && $newLocale!='' && $newLocale!=null)
-        {
-            array_push($locales, $newLocale);
-        }
+        $newLocale = request()->get('new-locale');
+        if( !in_array($newLocale,$locales) && $newLocale!='' && $newLocale!=null) array_push($locales, $newLocale);
         $groups = Translation::groupBy('group');
         $excludedGroups = $this->manager->getConfig('exclude_groups');
         if($excludedGroups){
@@ -49,6 +46,7 @@ class Controller extends BaseController
             ->with('locales', $locales)
             ->with('groups', $groups)
             ->with('group', $group)
+            ->with('newLocale', $newLocale)
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
             ->with('editUrl', action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]))
