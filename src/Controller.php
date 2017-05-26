@@ -18,6 +18,11 @@ class Controller extends BaseController
     public function getIndex($group = null)
     {
         $locales = $this->loadLocales();
+        $newLocale = request()->get('newlocale');
+        if( !array_search($newLocale,$locales) && $newLocale!='' && $newLocale!=null)
+        {
+            array_push($locales, $newLocale);
+        }
         $groups = Translation::groupBy('group');
         $excludedGroups = $this->manager->getConfig('exclude_groups');
         if($excludedGroups){

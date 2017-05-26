@@ -73,6 +73,20 @@
                 $('div.success-publish').slideDown();
             });
 
+            $('#btn-new-locale').on('click', function () {
+                var locale = $('#new-locale').val();
+                var key = 'new-locale';
+                var uri = window.location.href;
+                var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+                var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+                if (uri.match(re)) {
+                    uri = uri.replace(re, '$1' + key + "=" + locale + '$2');
+                }
+                else {
+                    uri = uri + separator + key + "=" + locale;
+                }
+                window.location = uri;
+            });
         })
     </script>
 </head>
@@ -113,6 +127,13 @@
         <?php if(isset($group)) : ?>
             <form class="form-inline form-publish" method="POST" action="<?= action('\Barryvdh\TranslationManager\Controller@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?= $group ?>? This will overwrite existing language files.">
                 <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                <label for="new-locale">Add new locale</label>
+                <select name="new-locale" id="new-locale" class="form-control">
+                    <?php $locale_arr = config('app.available_locales'); foreach ($locale_arr as $loc): ?>
+                        <option value="<?= $loc ?>"><?= $loc ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <button type="button" class="btn btn-primary" id="btn-new-locale" style="margin-right: 5px;">Go</button>
                 <button type="submit" class="btn btn-info" data-disable-with="Publishing.." >Publish translations</button>
                 <a href="<?= action('\Barryvdh\TranslationManager\Controller@getIndex') ?>" class="btn btn-default">Back</a>
             </form>

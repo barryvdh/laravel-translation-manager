@@ -149,6 +149,7 @@ class Manager{
                 if(isset($groups[$group])){
                     $translations = $groups[$group];
                     $path = $this->app['path.lang'].'/'.$locale.'/'.$group.'.php';
+                    if(!\File::exists($path)) \File::makeDirectory($this->app['path.lang'].'/'.$locale.'/', 0775, true, true);
                     $output = "<?php\n\nreturn ".var_export($translations, true).";\n";
                     $this->files->put($path, $output);
                 }
