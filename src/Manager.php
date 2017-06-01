@@ -92,22 +92,34 @@ class Manager{
         return $counter;
     }
 
-    public function findTranslations($path = null)
+    public function findTranslations($path = null, $string = false)
     {
         $path = $path ?: base_path();
         $keys = array();
         $functions =  array('trans', 'trans_choice', 'Lang::get', 'Lang::choice', 'Lang::trans', 'Lang::transChoice', '@lang', '@choice', '__');
-        $pattern =                              // See http://regexr.com/392hu
-            "[^\w|>]".                          // Must not have an alphanum or _ or > before real method
-            "(".implode('|', $functions) .")".  // Must start with one of the functions
-            "\(".                               // Match opening parenthese
-            "[\'\"]".                           // Match " or '
-            "(".                                // Start a new group to match:
-                "[a-zA-Z0-9_-]+".               // Must start with group
-                "([.][^\1)]+)+".                // Be followed by one or more items/keys
-            ")".                                // Close group
-            "[\'\"]".                           // Closing quote
-            "[\),]";                            // Close parentheses or new parameter
+
+        if (!$string) {
+            $pattern =                              // See http://regexr.com/392hu
+                "[^\w|>]".                          // Must not have an alphanum or _ or > before real method
+                "(".implode('|', $functions) .")".  // Must start with one of the functions
+                "\(".                               // Match opening parenthese
+                "[\'\"]".                           // Match " or '
+                "(".                                // Start a new group to match:
+                "[a-zA-Z0-9_-]+".                   // Must start with group
+                "([.][^\1)]+)+".                    // Be followed by one or more items/keys
+                ")".                                // Close group
+                "[\'\"]".                           // Closing quote
+                "[\),]";                            // Close parentheses or new parameter
+        } else {
+            $pattern =
+                "[^\w|>]".                                     // Must not have an alphanum or _ or > before real method
+                "(".implode('|', $functions) .")".             // Must start with one of the functions
+                "\(".                                          // Match opening parenthese
+                "(?P<quote>['\"])".                            // Match " or ' and store in {quote}
+                "(?P<string>(?:\\\k{quote}|(?!\k{quote}).)*)". // Match any string that can be {quote} escaped
+                "\k{quote}".                                   // Match " or ' previously matched
+                "[\),]";                                       // Close parentheses or new parameter
+        }
 
         // Find all PHP + Twig files in the app folder, except for storage
         $finder = new Finder();
@@ -118,8 +130,14 @@ class Manager{
             // Search the current file for the pattern
             if(preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
                 // Get all matches
-                foreach ($matches[2] as $key) {
-                    $keys[] = $key;
+                if (!$string) {
+                    foreach ($matches[2] as $key) {
+                        $keys[] = $key;
+                    }
+                } else {
+                    foreach ($matches['string'] as $key) {
+                        $keys[] = $key;
+                    }
                 }
             }
         }
@@ -127,10 +145,18 @@ class Manager{
         $keys = array_unique($keys);
 
         // Add the translations to the database, if not existing.
-        foreach($keys as $key){
-            // Split the group and item
-            list($group, $item) = explode('.', $key, 2);
-            $this->missingKey('', $group, $item);
+        if (!$string) {
+            foreach($keys as $key) {
+                // Split the group and item
+                list($group, $item) = explode('.', $key, 2);
+                $this->missingKey('', $group, $item);
+            }
+        } else {
+            foreach($keys as $key){
+                $group = 'anonymous_string';
+                $item = $key;
+                $this->missingKey('', $group, $item);
+            }
         }
 
         // Return the number of found translations

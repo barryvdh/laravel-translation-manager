@@ -37,7 +37,8 @@ class FindCommand extends Command {
      */
     public function fire()
     {
-        $counter = $this->manager->findTranslations();
+        $string = $this->option('string');
+        $counter = $this->manager->findTranslations(null, $string);
         $this->info('Done importing, processed '.$counter. ' items!');
 
     }
