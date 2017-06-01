@@ -43,5 +43,17 @@ class FindCommand extends Command {
 
     }
 
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return array(
+            array('string', "S", InputOption::VALUE_NONE, 'Find anonymous translation strings'),
+        );
+    }
+
 
 }
