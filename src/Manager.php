@@ -6,6 +6,7 @@ use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Console\Input\InputOption;
 
 class Manager{
 
