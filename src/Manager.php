@@ -163,23 +163,38 @@ class Manager{
         return count($keys);
     }
 
-    public function exportTranslations($group)
+    public function exportTranslations($group, $json = false)
     {
-        if(!in_array($group, $this->config['exclude_groups'])) {
-            if($group == '*')
-                return $this->exportAllTranslations();
+        if (!$json) {
+            if(!in_array($group, $this->config['exclude_groups'])) {
+                if($group == '*')
+                    return $this->exportAllTranslations();
 
-            $tree = $this->makeTree(Translation::ofTranslatedGroup($group)->orderByGroupKeys(array_get($this->config, 'sort_keys', false))->get());
+                $tree = $this->makeTree(Translation::ofTranslatedGroup($group)->orderByGroupKeys(array_get($this->config, 'sort_keys', false))->get());
+
+                foreach($tree as $locale => $groups){
+                    if(isset($groups[$group])){
+                        $translations = $groups[$group];
+                        $path = $this->app['path.lang'].'/'.$locale.'/'.$group.'.php';
+                        $output = "<?php\n\nreturn ".var_export($translations, true).";\n";
+                        $this->files->put($path, $output);
+                    }
+                }
+                Translation::ofTranslatedGroup($group)->update(array('status' => Translation::STATUS_SAVED));
+            }
+        } else {
+            $tree = $this->makeTree(Translation::ofTranslatedGroup('anonymous_string')->orderByGroupKeys(array_get($this->config, 'sort_keys', false))->get());
 
             foreach($tree as $locale => $groups){
-                if(isset($groups[$group])){
-                    $translations = $groups[$group];
-                    $path = $this->app['path.lang'].'/'.$locale.'/'.$group.'.php';
-                    $output = "<?php\n\nreturn ".var_export($translations, true).";\n";
+                if(isset($groups['anonymous_string'])){
+                    $translations = $groups['anonymous_string'];
+                    $path = $this->app['path.lang'].'/'.$locale.'.json';
+                    $output = json_encode($translations, true);
                     $this->files->put($path, $output);
                 }
             }
-            Translation::ofTranslatedGroup($group)->update(array('status' => Translation::STATUS_SAVED));
+
+            Translation::ofTranslatedGroup('anonymous_string')->update(array('status' => Translation::STATUS_SAVED));
         }
     }
 
