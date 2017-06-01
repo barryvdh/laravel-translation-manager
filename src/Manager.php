@@ -153,7 +153,7 @@ class Manager{
             }
         } else {
             foreach($keys as $key){
-                $group = 'anonymous_string';
+                $group = $this->config['anonymous_translations_group'];
                 $item = $key;
                 $this->missingKey('', $group, $item);
             }
@@ -183,18 +183,18 @@ class Manager{
                 Translation::ofTranslatedGroup($group)->update(array('status' => Translation::STATUS_SAVED));
             }
         } else {
-            $tree = $this->makeTree(Translation::ofTranslatedGroup('anonymous_string')->orderByGroupKeys(array_get($this->config, 'sort_keys', false))->get());
+            $tree = $this->makeTree(Translation::ofTranslatedGroup($this->config['anonymous_translations_group'])->orderByGroupKeys(array_get($this->config, 'sort_keys', false))->get());
 
             foreach($tree as $locale => $groups){
-                if(isset($groups['anonymous_string'])){
-                    $translations = $groups['anonymous_string'];
+                if(isset($groups[$this->config['anonymous_translations_group']])){
+                    $translations = $groups[$this->config['anonymous_translations_group']];
                     $path = $this->app['path.lang'].'/'.$locale.'.json';
                     $output = json_encode($translations, true);
                     $this->files->put($path, $output);
                 }
             }
 
-            Translation::ofTranslatedGroup('anonymous_string')->update(array('status' => Translation::STATUS_SAVED));
+            Translation::ofTranslatedGroup($this->config['anonymous_translations_group'])->update(array('status' => Translation::STATUS_SAVED));
         }
     }
 
