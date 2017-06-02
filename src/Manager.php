@@ -74,7 +74,7 @@ class Manager{
                 $translations = \Lang::getLoader()->load($locale, '*', '*'); // Retrieves JSON entries of the given locale only
                 if ($translations && is_array($translations)) {
                     foreach ($translations as $key => $value) {
-                        $importedTranslation = $this->importTranslation($key, $value, $group, $locale, $replace);
+                        $importedTranslation = $this->importTranslation($key, $value, $locale, $group, $replace);
                         $counter += $importedTranslation ? 1 : 0;
                     }
                 }
