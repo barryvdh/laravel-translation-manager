@@ -41,12 +41,12 @@ class ExportCommand extends Command {
         $json = $this->option('json');
 
         if (is_null($group) && !$json) {
-            $this->warning("You must either specify a --group or export as -json");
+            $this->warn("You must either specify a group argument or export as --json");
             return;
         }
 
         if (!is_null($group) && $json) {
-            $this->warning("You cannot use both --group argument and -json option at the same time");
+            $this->warn("You cannot use both group argument and --json option at the same time");
             return;
         }
 
