@@ -87,7 +87,7 @@ The import command will search through app/lang and load all strings in the data
 
     $ php artisan translations:import
 
-To import translation strings from app/lang/locale.json files, use the `--json` (or `-J`) option: `php artisan translations:import --json`. It will import strings from all the locale files found to the _anonymous_translations_group_ configured in translation-manager.php (default _anonymous_strings_).
+Translation strings from app/lang/locale.json files will be imported to the __json_ group.
     
 Note: By default, only new strings are added. Translations already in the DB are kept the same. If you want to replace all values with the ones from the files, 
 add the `--replace` (or `-R`) option: `php artisan translations:import --replace`
@@ -100,8 +100,7 @@ This can be done through the webinterface, or via an Artisan command.
 
     $ php artisan translations:find
     
-If your project uses translation strings as keys, instead of messages, you can find them using the `--string` (or `-S`) option: `php artisan translations:find --string`. 
-(Note that this will also match group messages as translations strings, so you probably want to use this option only if your project in fully based on translations strings as keys.)
+If your project uses translation strings as keys, these will be stored into then __json_ group. 
 
 ### Export command
 
@@ -113,7 +112,7 @@ Supply the group name to define which groups you want to publish.
 
 For example, `php artisan translations:export reminders` when you have 2 locales (en/nl), will write to `app/lang/en/reminders.php` and `app/lang/nl/reminders.php`
 
-To export translation strings as keys to JSON files , use the `--json` (or `-J`) option: `php artisan translations:import --json`. This will import every entries from the _anonymous_translations_group_ configured in translation-manager.php (default _anonymous_strings_).
+To export translation strings as keys to JSON files , use the `--json` (or `-J`) option: `php artisan translations:import --json`. This will import every entries from the __json_ group.
 
 ### Clean command
 
