@@ -69,6 +69,11 @@
                 $('div.success-find').slideDown();
             });
 
+            $('.form-find-db').on('ajax:success', function (e, data) {
+                $('div.success-find-db strong.counter').text(data.counter);
+                $('div.success-find-db').slideDown();
+            });
+
             $('.form-publish').on('ajax:success', function (e, data) {
                 $('div.success-publish').slideDown();
             });
@@ -97,6 +102,10 @@
     <div class="alert alert-success success-import" style="display:none;">
         <p>Done importing, processed <strong class="counter">N</strong> items! Reload this page to refresh the groups!</p>
     </div>
+    <div class="alert alert-success success-find-db" style="display:none;">
+        <p>Done searching for translations, processed <strong class="counter">N</strong> items in Database! Reload this page and proceed to group '<?= config('translation-manager.database_group') ?>'!
+        </p>
+    </div>
     <div class="alert alert-success success-find" style="display:none;">
         <p>Done searching for translations, found <strong class="counter">N</strong> items!</p>
     </div>
@@ -117,6 +126,11 @@
                 <option value="1">Replace existing translations</option>
             </select>
             <button type="submit" class="btn btn-success"  data-disable-with="Loading..">Import groups</button>
+        </form>
+        <form class="pull-left form-inline form-find-db" style="margin-right:20px;margin-bottom: 10px;" method="POST" action="<?= action('\Barryvdh\TranslationManager\Controller@postFindDB') ?>" data-remote="true" role="form">
+            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+            <p></p>
+            <button type="submit" class="btn btn-info" data-disable-with="Loading..">Find translations in database</button>
         </form>
         <form class="form-inline form-find" method="POST" action="<?= action('\Barryvdh\TranslationManager\Controller@postFind') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to scan you app folder? All found translation keys will be added to the database.">
             <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">

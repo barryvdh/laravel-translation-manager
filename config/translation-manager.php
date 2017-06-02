@@ -41,4 +41,12 @@ return array(
 	 */
 	'sort_keys ' => false,
 
+    'database_group' => 'database_translations',
+
+    'translations_tables' =>[
+        'users' => [
+            'name'
+        ],
+    ],
+
 );

@@ -128,6 +128,13 @@ class Controller extends BaseController
         return ['status' => 'ok', 'counter' => (int) $numFound];
     }
 
+    public function postFindDb()
+    {
+        $numFound = $this->manager->findDBTranslations();
+
+        return ['status' => 'ok', 'counter' => $numFound];
+    }
+
     public function postPublish($group = null)
     {
         $this->manager->exportTranslations($group);
