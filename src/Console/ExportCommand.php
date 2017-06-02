@@ -52,8 +52,11 @@ class ExportCommand extends Command {
 
         $this->manager->exportTranslations($group, $json);
 
-        $this->info("Done writing language files for " . (($group == '*') ? 'ALL groups' : $group . " group") );
-
+        if (!is_null($group)) {
+            $this->info("Done writing language files for " . (($group == '*') ? 'ALL groups' : $group . " group") );
+        } else if ($json) {
+            $this->info("Done writing JSON language files for translation strings");
+        }
     }
 
     /**

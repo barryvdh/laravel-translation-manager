@@ -2,7 +2,6 @@
 
 use Barryvdh\TranslationManager\Manager;
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
 
 class FindCommand extends Command {
 
@@ -37,22 +36,9 @@ class FindCommand extends Command {
      */
     public function fire()
     {
-        $string = $this->option('string');
-        $counter = $this->manager->findTranslations(null, $string);
+        $counter = $this->manager->findTranslations(null);
         $this->info('Done importing, processed '.$counter. ' items!');
 
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return array(
-            array('string', "S", InputOption::VALUE_NONE, 'Find anonymous translation strings'),
-        );
     }
 
 

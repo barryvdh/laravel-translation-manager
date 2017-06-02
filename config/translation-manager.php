@@ -41,9 +41,4 @@ return array(
 	 */
 	'sort_keys ' => false,
 
-    /**
-     * Group in which will be stored anonymous translations
-     */
-    'anonymous_translations_group' => 'anonymous_strings'
-
 );
