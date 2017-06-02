@@ -37,59 +37,77 @@ class Manager{
         }
     }
 
-    public function importTranslations($replace = false)
+    public function importTranslations($replace = false, $json = false)
     {
         $counter = 0;
-        foreach($this->files->directories($this->app['path.lang']) as $langPath){
-            $locale = basename($langPath);
+        if (!$json) {
+            foreach ($this->files->directories($this->app['path.lang']) as $langPath) {
+                $locale = basename($langPath);
 
-            foreach($this->files->allfiles($langPath) as $file) {
+                foreach ($this->files->allfiles($langPath) as $file) {
 
-                $info = pathinfo($file);
-                $group = $info['filename'];
+                    $info = pathinfo($file);
+                    $group = $info['filename'];
 
-                if(in_array($group, $this->config['exclude_groups'])) {
-                    continue;
+                    if (in_array($group, $this->config['exclude_groups'])) {
+                        continue;
+                    }
+
+                    $subLangPath = str_replace($langPath . DIRECTORY_SEPARATOR, "", $info['dirname']);
+                    if ($subLangPath != $langPath) {
+                        $group = $subLangPath . "/" . $group;
+                    }
+
+                    $translations = \Lang::getLoader()->load($locale, $group);
+                    if ($translations && is_array($translations)) {
+                        foreach (array_dot($translations) as $key => $value) {
+                            $importedTranslation = $this->importTranslation($key, $value, $group, $locale, $replace);
+                            $counter += $importedTranslation ? 1 : 0;
+                        }
+                    }
                 }
-
-                $subLangPath = str_replace($langPath . DIRECTORY_SEPARATOR, "", $info['dirname']);
-                if ($subLangPath != $langPath) {
-                    $group = $subLangPath . "/" . $group;
-                }
-
-                $translations = \Lang::getLoader()->load($locale, $group);
+            }
+        } else {
+            foreach ($this->files->files($this->app['path.lang']) as $jsonTranslationFile) {
+                $locale = basename($jsonTranslationFile, '.json');
+                $group = $this->config['anonymous_translations_group'];
+                $translations = \Lang::getLoader()->load($locale, '*', '*'); // Retrieves JSON entries of the given locale only
                 if ($translations && is_array($translations)) {
-                    foreach(array_dot($translations) as $key => $value){
-                        // process only string values
-                        if(is_array($value)){
-                            continue;
-                        }
-                        $value = (string) $value;
-                        $translation = Translation::firstOrNew(array(
-                            'locale' => $locale,
-                            'group' => $group,
-                            'key' => $key,
-                        ));
-
-                        // Check if the database is different then the files
-                        $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
-                        if($newStatus !== (int) $translation->status){
-                            $translation->status = $newStatus;
-                        }
-
-                        // Only replace when empty, or explicitly told so
-                        if($replace || !$translation->value){
-                            $translation->value = $value;
-                        }
-
-                        $translation->save();
-
-                        $counter++;
+                    foreach ($translations as $key => $value) {
+                        $importedTranslation = $this->importTranslation($key, $value, $group, $locale, $replace);
+                        $counter += $importedTranslation ? 1 : 0;
                     }
                 }
             }
         }
         return $counter;
+    }
+
+    public function importTranslation($key, $value, $locale, $group, $replace = false) {
+        // process only string values
+        if (is_array($value)) {
+            return false;
+        }
+        $value = (string)$value;
+        $translation = Translation::firstOrNew(array(
+            'locale' => $locale,
+            'group'  => $group,
+            'key'    => $key,
+        ));
+
+        // Check if the database is different then the files
+        $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
+        if ($newStatus !== (int)$translation->status) {
+            $translation->status = $newStatus;
+        }
+
+        // Only replace when empty, or explicitly told so
+        if ($replace || !$translation->value) {
+            $translation->value = $value;
+        }
+
+        $translation->save();
+        return true;
     }
 
     public function findTranslations($path = null, $string = false)
@@ -102,7 +120,7 @@ class Manager{
             $pattern =                              // See http://regexr.com/392hu
                 "[^\w|>]".                          // Must not have an alphanum or _ or > before real method
                 "(".implode('|', $functions) .")".  // Must start with one of the functions
-                "\(".                               // Match opening parenthese
+                "\(".                               // Match opening parenthesis
                 "[\'\"]".                           // Match " or '
                 "(".                                // Start a new group to match:
                 "[a-zA-Z0-9_-]+".                   // Must start with group
@@ -114,7 +132,7 @@ class Manager{
             $pattern =
                 "[^\w|>]".                                     // Must not have an alphanum or _ or > before real method
                 "(".implode('|', $functions) .")".             // Must start with one of the functions
-                "\(".                                          // Match opening parenthese
+                "\(".                                          // Match opening parenthesis
                 "(?P<quote>['\"])".                            // Match " or ' and store in {quote}
                 "(?P<string>(?:\\\k{quote}|(?!\k{quote}).)*)". // Match any string that can be {quote} escaped
                 "\k{quote}".                                   // Match " or ' previously matched

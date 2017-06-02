@@ -38,7 +38,8 @@ class ImportCommand extends Command {
     public function fire()
     {
         $replace = $this->option('replace');
-        $counter = $this->manager->importTranslations($replace);
+        $json = $this->option('json');
+        $counter = $this->manager->importTranslations($replace, $json);
         $this->info('Done importing, processed '.$counter. ' items!');
 
     }
@@ -52,6 +53,7 @@ class ImportCommand extends Command {
     {
         return array(
             array('replace', "R", InputOption::VALUE_NONE, 'Replace existing keys'),
+            array('json', "J", InputOption::VALUE_NONE, 'Import from JSON translation files'),
         );
     }
 
