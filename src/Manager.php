@@ -61,7 +61,7 @@ class Manager{
                     $translations = \Lang::getLoader()->load($locale, $group);
                     if ($translations && is_array($translations)) {
                         foreach (array_dot($translations) as $key => $value) {
-                            $importedTranslation = $this->importTranslation($key, $value, $group, $locale, $replace);
+                            $importedTranslation = $this->importTranslation($key, $value, $locale, $group, $replace);
                             $counter += $importedTranslation ? 1 : 0;
                         }
                     }
