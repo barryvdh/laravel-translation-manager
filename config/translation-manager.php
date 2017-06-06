@@ -23,7 +23,7 @@ return array(
 	'delete_enabled' => true,
 
 	/**
-	 * Exclude specific groups from Laravel Translation Manager. 
+	 * Exclude specific groups from Laravel Translation Manager.
 	 * This is useful if, for example, you want to avoid editing the official Laravel language files.
 	 *
 	 * @type array
@@ -40,5 +40,12 @@ return array(
 	 * Export translations with keys output alphabetically.
 	 */
 	'sort_keys ' => false,
+
+    /**
+     * The database connection to use.
+     *
+     * @type string|null
+     */
+    'db_connection' => null,
 
 );
