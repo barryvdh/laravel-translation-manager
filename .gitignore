@@ -1,3 +1,9 @@
+# IDE
+/.idea
+/_ide_helper.php
+/.phpstorm.meta.php
+
+# PHP Composer
 /vendor
 composer.phar
 composer.lock
