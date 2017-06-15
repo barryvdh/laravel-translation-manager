@@ -92,6 +92,42 @@ class Manager{
         return $counter;
     }
 
+    public function findDBTranslations()
+    {
+        $defaultGroup = $this->config['database_group'];
+        $keys = array();
+        $tables = $this->config['translations_tables'];
+        //get tables to search from config
+        foreach ( $tables as $table => $columns )
+        {
+            //transform columns to fetch into query
+            $cols = implode(",",$columns);
+            $ret = \DB::select( "select $cols from $table" );
+            foreach($ret as $k){
+                //transform results into index based
+                $tableKeys = array_values(get_object_vars($k));
+                for($i=0;$i<count($columns);$i++)
+                {
+                    //push results to new keys
+                    $newKey = "$defaultGroup.".$tableKeys[$i];
+                    array_push($keys, $newKey);
+                }
+            }
+        }
+
+        // Remove duplicates
+        $keys = array_unique($keys);
+
+        // Add the translations to the database, if not existing.
+        foreach($keys as $key){
+            // Split the group and item
+            list($group, $item) = explode('.', $key, 2);
+            $this->missingKey('', $group, $item);
+        }
+
+        return count($keys);
+    }
+
     public function findTranslations($path = null)
     {
         $path = $path ?: base_path();
@@ -149,6 +185,7 @@ class Manager{
                 if(isset($groups[$group])){
                     $translations = $groups[$group];
                     $path = $this->app['path.lang'].'/'.$locale.'/'.$group.'.php';
+                    if(!\File::exists($path)) \File::makeDirectory($this->app['path.lang'].'/'.$locale.'/', 0775, true, true);
                     $output = "<?php\n\nreturn ".var_export($translations, true).";\n";
                     $this->files->put($path, $output);
                 }

@@ -69,10 +69,29 @@
                 $('div.success-find').slideDown();
             });
 
+            $('.form-find-db').on('ajax:success', function (e, data) {
+                $('div.success-find-db strong.counter').text(data.counter);
+                $('div.success-find-db').slideDown();
+            });
+
             $('.form-publish').on('ajax:success', function (e, data) {
                 $('div.success-publish').slideDown();
             });
 
+            $('#btn-new-locale').on('click', function () {
+                var locale = $('#new-locale').val();
+                var key = 'new-locale';
+                var uri = window.location.href;
+                var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+                var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+                if (uri.match(re)) {
+                    uri = uri.replace(re, '$1' + key + "=" + locale + '$2');
+                }
+                else {
+                    uri = uri + separator + key + "=" + locale;
+                }
+                window.location = uri;
+            });
         })
     </script>
 </head>
@@ -82,6 +101,10 @@
     <p>Warning, translations are not visible until they are exported back to the app/lang file, using 'php artisan translation:export' command or publish button.</p>
     <div class="alert alert-success success-import" style="display:none;">
         <p>Done importing, processed <strong class="counter">N</strong> items! Reload this page to refresh the groups!</p>
+    </div>
+    <div class="alert alert-success success-find-db" style="display:none;">
+        <p>Done searching for translations, processed <strong class="counter">N</strong> items in Database! Reload this page and proceed to group '<?= config('translation-manager.database_group') ?>'!
+        </p>
     </div>
     <div class="alert alert-success success-find" style="display:none;">
         <p>Done searching for translations, found <strong class="counter">N</strong> items!</p>
@@ -104,6 +127,11 @@
             </select>
             <button type="submit" class="btn btn-success"  data-disable-with="Loading..">Import groups</button>
         </form>
+        <form class="pull-left form-inline form-find-db" style="margin-right:20px;margin-bottom: 10px;" method="POST" action="<?= action('\Barryvdh\TranslationManager\Controller@postFindDB') ?>" data-remote="true" role="form">
+            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+            <p></p>
+            <button type="submit" class="btn btn-info" data-disable-with="Loading..">Find translations in database</button>
+        </form>
         <form class="form-inline form-find" method="POST" action="<?= action('\Barryvdh\TranslationManager\Controller@postFind') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to scan you app folder? All found translation keys will be added to the database.">
             <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
             <p></p>
@@ -113,6 +141,13 @@
         <?php if(isset($group)) : ?>
             <form class="form-inline form-publish" method="POST" action="<?= action('\Barryvdh\TranslationManager\Controller@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?= $group ?>? This will overwrite existing language files.">
                 <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                <label for="new-locale">Add new locale</label>
+                <select name="new-locale" id="new-locale" class="form-control">
+                    <?php $locale_arr = config('app.available_locales'); foreach ($locale_arr as $loc): ?>
+                        <option value="<?= $loc ?>" <?= $newLocale == $loc ? ' selected':'' ?>><?= $loc ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <button type="button" class="btn btn-primary" id="btn-new-locale" style="margin-right: 5px;">Go</button>
                 <button type="submit" class="btn btn-info" data-disable-with="Publishing.." >Publish translations</button>
                 <a href="<?= action('\Barryvdh\TranslationManager\Controller@getIndex') ?>" class="btn btn-default">Back</a>
             </form>
