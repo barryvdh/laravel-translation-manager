@@ -3,6 +3,7 @@
 use Barryvdh\TranslationManager\Manager;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class ExportCommand extends Command {
 
@@ -37,11 +38,25 @@ class ExportCommand extends Command {
     public function fire()
     {
         $group = $this->argument('group');
+        $json = $this->option('json');
 
-        $this->manager->exportTranslations($group);
+        if (is_null($group) && !$json) {
+            $this->warn("You must either specify a group argument or export as --json");
+            return;
+        }
 
-        $this->info("Done writing language files for " . (($group == '*') ? 'ALL groups' : $group . " group") );
+        if (!is_null($group) && $json) {
+            $this->warn("You cannot use both group argument and --json option at the same time");
+            return;
+        }
 
+        $this->manager->exportTranslations($group, $json);
+
+        if (!is_null($group)) {
+            $this->info("Done writing language files for " . (($group == '*') ? 'ALL groups' : $group . " group") );
+        } else if ($json) {
+            $this->info("Done writing JSON language files for translation strings");
+        }
     }
 
     /**
@@ -52,11 +67,21 @@ class ExportCommand extends Command {
     protected function getArguments()
     {
         return array(
-            array('group', InputArgument::REQUIRED, 'The group to export (`*` for all).'),
+            array('group', InputArgument::OPTIONAL, 'The group to export (`*` for all).'),
         );
     }
 
-
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return array(
+            array('json', "J", InputOption::VALUE_NONE, 'Export anonymous strings to JSON'),
+        );
+    }
 
 
 }
