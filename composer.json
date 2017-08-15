@@ -22,7 +22,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.3-dev"
+            "dev-master": "dev-lang_subdirectories_support"
         },
         "laravel": {
             "providers": [
