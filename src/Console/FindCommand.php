@@ -2,7 +2,6 @@
 
 use Barryvdh\TranslationManager\Manager;
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
 
 class FindCommand extends Command {
 
@@ -37,7 +36,7 @@ class FindCommand extends Command {
      */
     public function fire()
     {
-        $counter = $this->manager->findTranslations();
+        $counter = $this->manager->findTranslations(null);
         $this->info('Done importing, processed '.$counter. ' items!');
 
     }
