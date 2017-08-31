@@ -207,7 +207,7 @@ class Manager{
         }
 
         if ($json) {
-            $tree = $this->makeTree(Translation::ofTranslatedGroup(self::JSON_GROUP)->orderByGroupKeys(array_get($this->config, 'sort_keys', false))->get());
+            $tree = $this->makeTree(Translation::ofTranslatedGroup(self::JSON_GROUP)->orderByGroupKeys(array_get($this->config, 'sort_keys', false))->get(), true);
 
             foreach($tree as $locale => $groups){
                 if(isset($groups[self::JSON_GROUP])){
@@ -245,11 +245,15 @@ class Manager{
         Translation::truncate();
     }
 
-    protected function makeTree($translations)
+    protected function makeTree($translations, $json = false)
     {
         $array = array();
         foreach($translations as $translation){
-            array_set($array[$translation->locale][$translation->group], $translation->key, $translation->value);
+            if ($json) {
+                $this->jsonSet($array[$translation->locale][$translation->group], $translation->key, $translation->value);
+            } else {
+                array_set($array[$translation->locale][$translation->group], $translation->key, $translation->value);
+            }
         }
         return $array;
     }
@@ -262,6 +266,17 @@ class Manager{
         else {
             return $this->config[$key];
         }
+    }
+
+    public function jsonSet(&$array, $key, $value)
+    {
+        if (is_null($key)) {
+            return $array = $value;
+        }
+
+        $array[$key] = $value;
+
+        return $array;
     }
 
 }
