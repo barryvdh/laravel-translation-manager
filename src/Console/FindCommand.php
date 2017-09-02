@@ -1,10 +1,12 @@
-<?php namespace Barryvdh\TranslationManager\Console;
+<?php
+
+namespace Barryvdh\TranslationManager\Console;
 
 use Barryvdh\TranslationManager\Manager;
 use Illuminate\Console\Command;
 
-class FindCommand extends Command {
-
+class FindCommand extends Command
+{
     /**
      * The console command name.
      *
@@ -19,7 +21,7 @@ class FindCommand extends Command {
      */
     protected $description = 'Find translations in php/twig files';
 
-    /** @var  \Barryvdh\TranslationManager\Manager  */
+    /** @var \Barryvdh\TranslationManager\Manager */
     protected $manager;
 
     public function __construct(Manager $manager)
@@ -28,18 +30,12 @@ class FindCommand extends Command {
         parent::__construct();
     }
 
-
     /**
      * Execute the console command.
-     *
-     * @return void
      */
-    public function fire()
+    public function handle()
     {
         $counter = $this->manager->findTranslations(null);
-        $this->info('Done importing, processed '.$counter. ' items!');
-
+        $this->info('Done importing, processed '.$counter.' items!');
     }
-
-
 }
