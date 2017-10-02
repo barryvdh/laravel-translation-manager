@@ -10,7 +10,7 @@ return array(
 	'delete_enabled' => true,
 
 	/**
-	 * Exclude specific groups from Laravel Translation Manager. 
+	 * Exclude specific groups from Laravel Translation Manager.
 	 * This is useful if, for example, you want to avoid editing the official Laravel language files.
 	 *
 	 * @type array
@@ -21,6 +21,5 @@ return array(
 	 *		'validation',
 	 *	)
 	 */
-	'exclude_groups' => array(),
-
+	'exclude_groups' => array()
 );
