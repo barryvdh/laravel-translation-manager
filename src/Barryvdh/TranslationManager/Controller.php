@@ -21,15 +21,14 @@ class Controller extends BaseController
     public function getIndex($group = null)
     {
         $locales = $this->loadLocales();
-        $groups = Translation::groupBy('group');
+        $groups = Translation::groupBy('group')->orderBy('group', 'asc');
         $excludedGroups = $this->manager->getConfig('exclude_groups');
         if($excludedGroups){
             $groups->whereNotIn('group', $excludedGroups);
         }
-        
+
         $groups = array(''=>'Choose a group') + $groups->lists('group', 'group');
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
-
 
         $allTranslations = Translation::where('group', $group)->orderBy('key', 'asc')->get();
         $numTranslations = count($allTranslations);
@@ -51,7 +50,7 @@ class Controller extends BaseController
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
             ;
     }
-    
+
     public function getSearch()
     {
         $q = \Input::get('q');
@@ -117,7 +116,7 @@ class Controller extends BaseController
 
         return Response::json(array('status' => 'ok', 'counter' => $counter));
     }
-    
+
     public function postFind()
     {
         $numFound = $this->manager->findTranslations();
