@@ -131,7 +131,7 @@ The reset command simply clears all translation in the database, so you can star
 ### Detect missing translations
 
 Most translations can be found by using the Find command (see above), but in case you have dynamic keys (variables/automatic forms etc), it can be helpful to 'listen' to the missing translations.
-To detect missing translations, we can swap the Laravel TranslationServicepProvider with a custom provider.
+To detect missing translations, we can swap the Laravel TranslationServiceProvider with a custom provider.
 In your config/app.php, comment out the original TranslationServiceProvider and add the one from this package:
 
     //'Illuminate\Translation\TranslationServiceProvider',
@@ -139,7 +139,7 @@ In your config/app.php, comment out the original TranslationServiceProvider and 
 
 This will extend the Translator and will create a new database entry, whenever a key is not found, so you have to visit the pages that use them.
 This way it shows up in the webinterface and can be edited and later exported.
-You shouldn't use this in production, just in production to translate your views, then just switch back.
+You shouldn't use this in production, just in development to translate your views, then just switch back.
 
 ## TODO
 
