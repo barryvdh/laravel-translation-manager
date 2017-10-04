@@ -127,7 +127,13 @@ class Controller extends BaseController
 
     public function postPublish($group = null)
     {
-        $this->manager->exportTranslations($group);
+         $json = false;
+
+        if($group === '_json'){
+            $json = true;
+        }
+
+        $this->manager->exportTranslations($group, $json);
 
         return ['status' => 'ok'];
     }

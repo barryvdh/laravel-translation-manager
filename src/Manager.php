@@ -188,7 +188,7 @@ class Manager{
 
     public function exportTranslations($group = null, $json = false)
     {
-        if (!is_null($group)) {
+        if (!is_null($group) && !$json) {
             if (!in_array($group, $this->config['exclude_groups'])) {
                 if ($group == '*')
                     return $this->exportAllTranslations();
@@ -199,7 +199,7 @@ class Manager{
                     if (isset($groups[$group])) {
                         $translations = $groups[$group];
                         $path = $this->app['path.lang'] . '/' . $locale . '/' . $group . '.php';
-                        $output = "<?php\n\nreturn " . var_export($translations, true) . ";\n";
+                        $output = "<?php\n\nreturn " . var_export($translations, true) . ";".\PHP_EOL;
                         $this->files->put($path, $output);
                     }
                 }
@@ -214,7 +214,7 @@ class Manager{
                 if(isset($groups[self::JSON_GROUP])){
                     $translations = $groups[self::JSON_GROUP];
                     $path = $this->app['path.lang'].'/'.$locale.'.json';
-                    $output = json_encode($translations, true);
+                    $output = json_encode($translations, \JSON_PRETTY_PRINT);
                     $this->files->put($path, $output);
                 }
             }
