@@ -52,6 +52,7 @@ class Manager{
                     continue;
                 }
                 $subLangPath = str_replace($langPath . DIRECTORY_SEPARATOR, "", $info['dirname']);
+                $subLangPath = str_replace(DIRECTORY_SEPARATOR, "/", $subLangPath);
                 if ($subLangPath != $langPath) {
                     $group = $subLangPath . "/" . $group;
                 }
