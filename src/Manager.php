@@ -214,7 +214,7 @@ class Manager{
                 if(isset($groups[self::JSON_GROUP])){
                     $translations = $groups[self::JSON_GROUP];
                     $path = $this->app['path.lang'].'/'.$locale.'.json';
-                    $output = json_encode($translations, \JSON_PRETTY_PRINT);
+                    $output = json_encode($translations, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE);
                     $this->files->put($path, $output);
                 }
             }
