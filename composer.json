@@ -1,5 +1,5 @@
 {
-    "name": "donatix/laravel-translation-manager",
+    "name": "barryvdh/laravel-translation-manager",
     "description": "Manage Laravel Translations",
     "keywords": ["laravel", "translations", "translator"],
     "license": "MIT",
@@ -21,6 +21,9 @@
         }
     },
     "extra": {
+        "branch-alias": {
+            "dev-master": "0.4-dev"
+        },
         "laravel": {
             "providers": [
                 "Barryvdh\\TranslationManager\\TranslationServiceProvider"
