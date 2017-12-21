@@ -62,6 +62,8 @@ class Manager{
                 }
                 $subLangPath = str_replace($langPath . DIRECTORY_SEPARATOR, "", $info['dirname']);
                 $subLangPath = str_replace(DIRECTORY_SEPARATOR, "/", $subLangPath);
+                $langPath = str_replace(DIRECTORY_SEPARATOR, "/", $langPath);
+
                 if ($subLangPath != $langPath) {
                     $group = $subLangPath . "/" . $group;
                 }
@@ -262,16 +264,15 @@ class Manager{
 
     public function getLocales()
     {
-        if (empty($this->locales))
-        {
-            $locales = array_merge([config('app.locale')], Translation::groupBy('locale')->lists('locale'));
-            foreach ($this->files->directories($this->app->langPath()) as $localeDir) 
-            {
+        if (empty($this->locales)) {
+            $locales = array_merge([config('app.locale')], Translation::groupBy('locale')->pluck('locale')->toArray());
+            foreach ($this->files->directories($this->app->langPath()) as $localeDir) {
                 $locales[] = $this->files->name($localeDir);
             }
             $this->locales = array_unique($locales);
             sort($this->locales);
         }
+
         return array_diff($this->locales, $this->ignoreLocales);
     }
 
@@ -283,18 +284,16 @@ class Manager{
         $this->saveIgnoredLocales();
         $this->ignoreLocales = $this->getIgnoredLocales();
 
-        if (!$this->files->exists($localeDir) || !$this->files->isDirectory($localeDir))
-        {
+        if (!$this->files->exists($localeDir) || !$this->files->isDirectory($localeDir)) {
             return $this->files->makeDirectory($localeDir);
         }
+
         return true;
-        
     }
 
     public function removeLocale($locale)
     {
-        if (!$locale) 
-        {
+        if (!$locale) {
             return false;
         }
         $this->ignoreLocales = array_merge($this->ignoreLocales, [$locale]);

@@ -181,53 +181,45 @@
         </form>
         <hr>
     <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
-    <table class="table">
-        <thead>
-        <tr>
-            <th width="15%">Key</th>
-            <?php foreach($locales as $locale): ?>
-                <th><?= $locale ?></th>
-            <?php endforeach; ?>
-            <?php if($deleteEnabled): ?>
-                <th>&nbsp;</th>
-            <?php endif; ?>
-        </tr>
-        </thead>
-        <tbody>
-
-        <?php foreach($translations as $key => $translation): ?>
-            <tr id="<?= $key ?>">
-                <td><?= $key ?></td>
-                <?php foreach($locales as $locale): ?>
-                    <th><?php echo $locale ?></th>
+        <table class="table">
+            <thead>
+            <tr>
+                <th width="15%">Key</th>
+                <?php foreach ($locales as $locale): ?>
+                    <th><?= $locale ?></th>
                 <?php endforeach; ?>
-                <?php if($deleteEnabled): ?>
-                    <td>
-                        <a href="<?= action('\Barryvdh\TranslationManager\Controller@postDelete', [urlencode($group), urlencode($key)]) ?>" class="delete-key" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
-                    </td>
+                <?php if ($deleteEnabled): ?>
+                    <th>&nbsp;</th>
                 <?php endif; ?>
             </tr>
             </thead>
             <tbody>
 
-            <?php foreach($translations as $key => $translation): ?>
+            <?php foreach ($translations as $key => $translation): ?>
                 <tr id="<?php echo $key ?>">
                     <td><?php echo $key ?></td>
-                    <?php foreach($locales as $locale): ?>
-                        <?php $t = isset($translation[$locale]) ? $translation[$locale] : null?>
+                    <?php foreach ($locales as $locale): ?>
+                        <?php $t = isset($translation[$locale]) ? $translation[$locale] : null ?>
 
                         <td>
-                            <a href="#edit" class="editable status-<?php echo $t ? $t->status : 0 ?> locale-<?php echo $locale ?>" data-locale="<?php echo $locale ?>" data-name="<?php echo $locale . "|" . $key ?>" id="username" data-type="textarea" data-pk="<?php echo $t ? $t->id : 0 ?>" data-url="<?php echo $editUrl ?>" data-title="Enter translation"><?php echo $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' ?></a>
+                            <a href="#edit"
+                               class="editable status-<?php echo $t ? $t->status : 0 ?> locale-<?php echo $locale ?>"
+                               data-locale="<?php echo $locale ?>" data-name="<?php echo $locale . "|" . $key ?>"
+                               id="username" data-type="textarea" data-pk="<?php echo $t ? $t->id : 0 ?>"
+                               data-url="<?php echo $editUrl ?>"
+                               data-title="Enter translation"><?php echo $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' ?></a>
                         </td>
                     <?php endforeach; ?>
-                    <?php if($deleteEnabled): ?>
+                    <?php if ($deleteEnabled): ?>
                         <td>
-                            <a href="<?php echo action('\Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>" class="delete-key" data-confirm="Are you sure you want to delete the translations for '<?php echo $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
+                            <a href="<?php echo action('\Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>"
+                               class="delete-key"
+                               data-confirm="Are you sure you want to delete the translations for '<?php echo $key ?>?"><span
+                                        class="glyphicon glyphicon-trash"></span></a>
                         </td>
                     <?php endif; ?>
                 </tr>
             <?php endforeach; ?>
-
             </tbody>
         </table>
     <?php else: ?>
