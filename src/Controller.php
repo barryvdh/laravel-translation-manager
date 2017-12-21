@@ -102,7 +102,7 @@ class Controller extends BaseController
         }
     }
 
-    public function postDelete($group = null)
+    public function postDelete($group = null, $key)
     {
         if(!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
             Translation::where('group', $group)->where('key', $key)->delete();
@@ -127,7 +127,13 @@ class Controller extends BaseController
 
     public function postPublish($group = null)
     {
-        $this->manager->exportTranslations($group);
+         $json = false;
+
+        if($group === '_json'){
+            $json = true;
+        }
+
+        $this->manager->exportTranslations($group, $json);
 
         return ['status' => 'ok'];
     }

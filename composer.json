@@ -11,8 +11,8 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "5.0.x|5.1.x|5.2.x|5.3.x|5.4.x",
-        "illuminate/translation": "5.0.x|5.1.x|5.2.x|5.3.x|5.4.x",
+        "illuminate/support": "5.0.x|5.1.x|5.2.x|5.3.x|5.4.x|5.5.x",
+        "illuminate/translation": "5.0.x|5.1.x|5.2.x|5.3.x|5.4.x|5.5.x",
         "symfony/finder": "~2.3|~3.0"
     },
     "autoload": {
@@ -22,7 +22,12 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.4-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Barryvdh\\TranslationManager\\ManagerServiceProvider"
+            ]
         }
     },
     "minimum-stability": "stable"

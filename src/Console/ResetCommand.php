@@ -1,10 +1,12 @@
-<?php namespace Barryvdh\TranslationManager\Console;
+<?php
+
+namespace Barryvdh\TranslationManager\Console;
 
 use Illuminate\Console\Command;
 use Barryvdh\TranslationManager\Manager;
 
-class ResetCommand extends Command {
-
+class ResetCommand extends Command
+{
     /**
      * The console command name.
      *
@@ -19,7 +21,7 @@ class ResetCommand extends Command {
      */
     protected $description = 'Delete all translations from the database';
 
-    /** @var \Barryvdh\TranslationManager\Manager  */
+    /** @var \Barryvdh\TranslationManager\Manager */
     protected $manager;
 
     public function __construct(Manager $manager)
@@ -30,14 +32,10 @@ class ResetCommand extends Command {
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
-    public function fire()
+    public function handle()
     {
         $this->manager->truncateTranslations();
-        $this->info("All translations are deleted");
+        $this->info('All translations are deleted');
     }
-
-
 }

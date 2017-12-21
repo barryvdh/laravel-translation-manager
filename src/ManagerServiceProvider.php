@@ -78,14 +78,14 @@ class ManagerServiceProvider extends ServiceProvider {
 
         $router->group($config, function($router)
         {
-            $router->get('view/{group?}', 'Controller@getView')->where('group', '.*');
-            $router->get('/{group?}', 'Controller@getIndex')->where('group', '.*');
-            $router->post('/add/{group}', 'Controller@postAdd')->where('group', '.*');
-            $router->post('/edit/{group}', 'Controller@postEdit')->where('group', '.*');
-            $router->post('/delete/{group}/{key}', 'Controller@postDelete')->where('group', '.*');
+            $router->get('view/{groupKey?}', 'Controller@getView')->where('groupKey', '.*');
+            $router->get('/{groupKey?}', 'Controller@getIndex')->where('groupKey', '.*');
+            $router->post('/add/{groupKey}', 'Controller@postAdd')->where('groupKey', '.*');
+            $router->post('/edit/{groupKey}', 'Controller@postEdit')->where('groupKey', '.*');
+            $router->post('/delete/{groupKey}/{translationKey}', 'Controller@postDelete')->where('groupKey', '.*');
             $router->post('/import', 'Controller@postImport');
             $router->post('/find', 'Controller@postFind');
-            $router->post('/publish/{group}', 'Controller@postPublish')->where('group', '.*');
+            $router->post('/publish/{groupKey}', 'Controller@postPublish')->where('groupKey', '.*');
         });
 	}
 
