@@ -231,10 +231,16 @@ class Manager
 
     public function exportTranslations($group = null, $json = false)
     {
+        $basePath = $this->app['path.lang'];
+
+
         if (!is_null($group) && !$json) {
             if (!in_array($group, $this->config['exclude_groups'])) {
+                $vendor = false;
                 if ($group == '*') {
                     return $this->exportAllTranslations();
+                } else if(starts_with($group, "vendor")) {
+                    $vendor = true;
                 }
 
                 $tree = $this->makeTree(Translation::ofTranslatedGroup($group)->orderByGroupKeys(array_get($this->config, 'sort_keys', false))->get());
@@ -242,11 +248,20 @@ class Manager
                 foreach ($tree as $locale => $groups) {
                     if (isset($groups[$group])) {
                         $translations = $groups[$group];
-                        $path = $this->app['path.lang'] . '/' . $locale;
+                        $path = $basePath . '/' . $locale;
+                        $filename = $group;
+
+                        if($vendor) {
+                            $path = $basePath . '/' . $group . '/' . $locale;
+                            $filename = str_after($group, "/");
+                        }
+                        
+
                         if (!is_dir($path)) {
                             mkdir($path, 0777, true);
                         }
-                        $path = $path . '/' . $group . '.php';
+                        $path = $path . '/' . $filename . '.php';
+                        
 
                         $output = "<?php\n\nreturn " . var_export($translations, true) . ';' . \PHP_EOL;
                         $this->files->put($path, $output);
