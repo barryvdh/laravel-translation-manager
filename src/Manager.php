@@ -197,7 +197,14 @@ class Manager
                         // do nothing, it has to be treated as a group
                         continue;
                     }
-                    $stringKeys[] = $key;
+
+                    //TODO: This can probably be done in the regex, but I couldn't do it.
+                    //skip keys which contain namespacing characters, unless they also contain a
+                    //space, which makes it JSON.
+                    if (!(str_contains($key, '::') && str_contains($key, '.')) 
+                    || str_contains($key, ' ')) {
+                        $stringKeys[] = $key;
+                    }
                 }
             }
         }
