@@ -92,7 +92,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="<?php echo action('\Barryvdh\TranslationManager\Controller@getIndex') ?>" class="navbar-brand">
+            <a href="{{ action('\Barryvdh\TranslationManager\Controller@getIndex') }}" class="navbar-brand">
                 Translation Manager
             </a>
         </div>
@@ -107,20 +107,20 @@
         <p>Done searching for translations, found <strong class="counter">N</strong> items!</p>
     </div>
     <div class="alert alert-success success-publish" style="display:none;">
-        <p>Done publishing the translations for group '<?php echo $group ?>'!</p>
+        <p>Done publishing the translations for group '{{$group}}'!</p>
     </div>
     <div class="alert alert-success success-publish-all" style="display:none;">
         <p>Done publishing the translations for all group!</p>
     </div>
-    <?php if(Session::has('successPublish')) : ?>
+    @if(Session::has('successPublish')) 
         <div class="alert alert-info">
-            <?php echo Session::get('successPublish'); ?>
+            {{ Session::get('successPublish') }}
         </div>
-    <?php endif; ?>
+    @endif
     <p>
-        <?php if(!isset($group)) : ?>
-        <form class="form-import" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postImport') ?>" data-remote="true" role="form">
-            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+        @if(!isset($group)) 
+        <form class="form-import" method="POST" action="{{ action('\Barryvdh\TranslationManager\Controller@postImport') }}" data-remote="true" role="form">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <div class="form-group">
                 <div class="row">
                     <div class="col-sm-3">
@@ -135,29 +135,29 @@
                 </div>
             </div>
         </form>
-        <form class="form-find" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postFind') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to scan you app folder? All found translation keys will be added to the database.">
+        <form class="form-find" method="POST" action="{{ action('\Barryvdh\TranslationManager\Controller@postFind') }}" data-remote="true" role="form" data-confirm="Are you sure you want to scan you app folder? All found translation keys will be added to the database.">
             <div class="form-group">
-                <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                <input type="hidden" name="_token" value="{{csrf_token()}} ">
                 <button type="submit" class="btn btn-info" data-disable-with="Searching.." >Find translations in files</button>
             </div>
         </form>
-        <?php endif; ?>
-        <?php if(isset($group)) : ?>
-            <form class="form-inline form-publish" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?php echo $group ?>? This will overwrite existing language files.">
-                <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+        @endif
+        @if(isset($group)) 
+            <form class="form-inline form-publish" method="POST" action="{{action('\Barryvdh\TranslationManager\Controller@postPublish', $group) }}" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '{{$group}}? This will overwrite existing language files.">
+                <input type="hidden" name="_token" value="{{csrf_token() }}">
                 <button type="submit" class="btn btn-info" data-disable-with="Publishing.." >Publish translations</button>
-                <a href="<?= action('\Barryvdh\TranslationManager\Controller@getIndex') ?>" class="btn btn-default">Back</a>
+                <a href="{{action('\Barryvdh\TranslationManager\Controller@getIndex') }}" class="btn btn-default">Back</a>
             </form>
-        <?php endif; ?>
+        @endif
     </p>
-    <form role="form" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postAddGroup') ?>">
-        <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+    <form role="form" method="POST" action="{{ action('\Barryvdh\TranslationManager\Controller@postAddGroup') }}">
+        <input type="hidden" name="_token" value="{{ csrf_token() }}">
         <div class="form-group">
             <p>Choose a group to display the group translations. If no groups are visisble, make sure you have run the migrations and imported the translations.</p>
             <select name="group" id="group" class="form-control group-select">
-                <?php foreach($groups as $key => $value): ?>
-                    <option value="<?php echo $key ?>"<?php echo $key == $group ? ' selected':'' ?>><?php echo $value ?></option>
-                <?php endforeach; ?>
+                @foreach($groups as $key => $value)
+                    <option value="{{$key}}" {{$key == $group ? ' selected':'' }}>{{$value}}</option>
+                @endforeach
             </select>
         </div>
         <div class="form-group">
@@ -168,9 +168,9 @@
             <input type="submit" class="btn btn-default" name="add-group" value="Add and edit keys" />
         </div>
     </form>
-    <?php if($group): ?>
-        <form action="<?php echo action('\Barryvdh\TranslationManager\Controller@postAdd', array($group)) ?>" method="POST"  role="form">
-            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+    @if($group)
+        <form action="{{ action('\Barryvdh\TranslationManager\Controller@postAdd', array($group))}}" method="POST"  role="form">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <div class="form-group">
                 <label>Add new keys to this group</label>
                 <textarea class="form-control" rows="3" name="keys" placeholder="Add 1 key per line, without the group prefix"></textarea>
@@ -180,72 +180,72 @@
             </div>
         </form>
         <hr>
-    <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
+    <h4>Total: {{ $numTranslations }}, changed: {{ $numChanged }}</h4>
         <table class="table">
             <thead>
             <tr>
                 <th width="15%">Key</th>
-                <?php foreach ($locales as $locale): ?>
-                    <th><?= $locale ?></th>
-                <?php endforeach; ?>
-                <?php if ($deleteEnabled): ?>
+                @foreach ($locales as $locale)
+                    <th>{{ $locale }}</th>
+                @endforeach
+                @if ($deleteEnabled)
                     <th>&nbsp;</th>
-                <?php endif; ?>
+                @endif
             </tr>
             </thead>
             <tbody>
 
-            <?php foreach ($translations as $key => $translation): ?>
-                <tr id="<?php echo $key ?>">
-                    <td><?php echo $key ?></td>
-                    <?php foreach ($locales as $locale): ?>
+            @foreach ($translations as $key => $translation)
+                <tr id="{{$key}}">
+                    <td>{{$key}}</td>
+                    @foreach ($locales as $locale)
                         <?php $t = isset($translation[$locale]) ? $translation[$locale] : null ?>
 
                         <td>
                             <a href="#edit"
-                               class="editable status-<?php echo $t ? $t->status : 0 ?> locale-<?php echo $locale ?>"
-                               data-locale="<?php echo $locale ?>" data-name="<?php echo $locale . "|" . $key ?>"
-                               id="username" data-type="textarea" data-pk="<?php echo $t ? $t->id : 0 ?>"
-                               data-url="<?php echo $editUrl ?>"
-                               data-title="Enter translation"><?php echo $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' ?></a>
+                               class="editable status-{{ $t ? $t->status : 0 }} locale-{{ $locale }}"
+                               data-locale="{{ $locale }}" data-name="{{ $locale . "|" . $key }}"
+                               id="username" data-type="textarea" data-pk="{{ $t ? $t->id : 0 }}"
+                               data-url="{{ $editUrl }}"
+                               data-title="Enter translation">{{ $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' }}</a>
                         </td>
-                    <?php endforeach; ?>
-                    <?php if ($deleteEnabled): ?>
+                    @endforeach
+                    @if ($deleteEnabled)
                         <td>
-                            <a href="<?php echo action('\Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>"
+                            <a href="{{action('\Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) }}"
                                class="delete-key"
-                               data-confirm="Are you sure you want to delete the translations for '<?php echo $key ?>?"><span
+                               data-confirm="Are you sure you want to delete the translations for '{{$key }}?"><span
                                         class="glyphicon glyphicon-trash"></span></a>
                         </td>
-                    <?php endif; ?>
+                    @endif
                 </tr>
-            <?php endforeach; ?>
+            @endforeach
             </tbody>
         </table>
-    <?php else: ?>
+    @else
         <fieldset>
             <legend>Supported locales</legend>
             <p>
                 Current supported locales:
             </p>
-            <form  class="form-remove-locale" method="POST" role="form" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postRemoveLocale') ?>" data-confirm="Are you sure to remove this locale and all of data?">
-                <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+            <form  class="form-remove-locale" method="POST" role="form" action="{{ action('\Barryvdh\TranslationManager\Controller@postRemoveLocale') }}" data-confirm="Are you sure to remove this locale and all of data?">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <ul class="list-locales">
-                <?php foreach($locales as $locale): ?>
+                @foreach($locales as $locale)
                     <li>
                         <div class="form-group">
-                            <button type="submit" name="remove-locale[<?php echo $locale ?>]" class="btn btn-danger btn-xs" data-disable-with="...">
+                            <button type="submit" name="remove-locale[{{$locale}}]" class="btn btn-danger btn-xs" data-disable-with="...">
                                 &times;
                             </button>
-                            <?php echo $locale ?>
+                            {{$locale}}
                             
                         </div>
                     </li>
-                <?php endforeach; ?>
+                @endforeach
                 </ul>
             </form>
-            <form class="form-add-locale" method="POST" role="form" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postAddLocale') ?>">
-                <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+            <form class="form-add-locale" method="POST" role="form" action="{{action('\Barryvdh\TranslationManager\Controller@postAddLocale') }}">
+                <input type="hidden" name="_token" value="{{csrf_token()}}">
                 <div class="form-group">
                     <p>
                         Enter new locale key:
@@ -263,13 +263,13 @@
         </fieldset>
         <fieldset>
             <legend>Export all translations</legend>
-            <form class="form-inline form-publish-all" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', '*') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish all translations group? This will overwrite existing language files.">
-                <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+            <form class="form-inline form-publish-all" method="POST" action="{{action('\Barryvdh\TranslationManager\Controller@postPublish', '*') }}" data-remote="true" role="form" data-confirm="Are you sure you want to publish all translations group? This will overwrite existing language files.">
+                <input type="hidden" name="_token" value="{{csrf_token() }}">
                 <button type="submit" class="btn btn-primary" data-disable-with="Publishing.." >Publish all</button>
             </form>
         </fieldset>
 
-    <?php endif; ?>
+    @endif
 </div>
 
 </body>
