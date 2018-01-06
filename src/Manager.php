@@ -315,6 +315,15 @@ class Manager{
         }
         return $array;
     }
+    
+    public function jsonSet(&$array, $key, $value)
+    {
+        if (is_null($key)) {
+            return $array = $value;
+        }
+        $array[$key] = $value;
+        return $array;
+    }
 
     public function getConfig($key = null)
     {
