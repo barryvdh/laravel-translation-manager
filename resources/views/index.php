@@ -270,6 +270,44 @@
         </fieldset>
 
     <?php endif; ?>
+
+    <button type="button" id="auto-translate" class="btn btn-primary" data-loading-text="Translating...">Auto Translate</button>
+    <script>
+        jQuery(document).ready(function($){
+            $.expr[':']['hasText'] = function(node, index, props){
+                return node.innerText == props[3];
+            }
+            $("#auto-translate").click(function(){
+                var $btn = $(this),
+                    $empties = $(".editable.status-0:hasText('Empty')").not(".locale-en"),
+                    done = 0;
+                if($empties.length) {
+                    $btn.button('loading');
+                    $empties.each(function(){
+                        var $this = $(this),
+                            nameNow = $this.data("name"),
+                            nameEn = nameNow.replace(/.+?\|/, "en|"),
+                            enTxt = $("[data-name='"+nameEn+"']").text().replace(/(\:([^\s|\.]+))/g, "[__$2__]");
+
+                        $.post($this.data("url"), {
+                            name: nameNow,
+                            value: enTxt,
+                            translate: "auto",
+                            pk: $this.data("pk")
+                        }, "json").done(function(data){
+                            $this.html(data.value);
+                            $this.editable('option', {value: data.value});
+                            $this.removeClass('status-0').addClass('status-1 text-danger');
+                            done++;
+                            if(done == $empties.length) {
+                                $btn.button('reset');
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    </script>
 </div>
 
 </body>
