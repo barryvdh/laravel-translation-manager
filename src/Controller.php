@@ -98,9 +98,22 @@ class Controller extends BaseController
                 'key' => $key,
             ]);
 
-            if($translate == 'auto') {
-                $tr = new TranslateClient('en', $locale);
-                $value = $tr->translate($value);
+            if($translate === 'auto') {
+                // https://github.com/fzaninotto/Faker#fakerprovideruseragent
+                $userAgents = [
+                    'Mozilla/5.0 (Windows CE) AppleWebKit/5350 (KHTML, like Gecko) Chrome/13.0.888.0 Safari/5350',
+                    'Mozilla/5.0 (Macintosh; PPC Mac OS X 10_6_5) AppleWebKit/5312 (KHTML, like Gecko) Chrome/14.0.894.0 Safari/5312',
+                    'Mozilla/5.0 (X11; Linuxi686; rv:7.0) Gecko/20101231 Firefox/3.6',
+                    'Mozilla/5.0 (Macintosh; U; PPC Mac OS X 10_7_1 rv:3.0; en-US) AppleWebKit/534.11.3 (KHTML, like Gecko) Version/4.0 Safari/534.11.3',
+                    'Opera/8.25 (Windows NT 5.1; en-US) Presto/2.9.188 Version/10.00',
+                    'Mozilla/5.0 (compatible; MSIE 7.0; Windows 98; Win 9x 4.90; Trident/3.0)',
+                ];
+                $translateClient = new TranslateClient('en', $locale, [
+                    'headers' => [
+                        'User-Agent' => $userAgents[array_rand($userAgents)]
+                    ]
+                ]);
+                $value = $translateClient->translate($value);
                 $value = preg_replace('#\[__(.+?)__\]#i', ':$1', $value);
             }
             $translation->value = (string) $value ?: null;
