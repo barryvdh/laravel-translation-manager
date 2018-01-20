@@ -292,7 +292,6 @@
                 var btn = $(this);
                 var empties = $("a.editable.editable-empty:hasText('Empty')").not(".locale-en");
                 var done = 0;
-                console.log(empties);
                 if(empties.length) {
                     btn.button('loading');
                     empties.each(function(){
