@@ -87,9 +87,9 @@ class Controller extends BaseController
     public function postEdit($group = null)
     {
         if(!in_array($group, $this->manager->getConfig('exclude_groups'))) {
-            $name = $request->get('name');
-            $value = $request->get('value');
-            $translate = $request->get('translate');
+            $name = request()->get('name');
+            $value = request()->get('value');
+            $translate = request()->get('translate');
 
             list($locale, $key) = explode('|', $name, 2);
             $translation = Translation::firstOrNew([
