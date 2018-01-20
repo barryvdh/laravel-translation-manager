@@ -289,12 +289,13 @@
                 return node.innerText == props[3];
             }
             $("#auto-translate").click(function(){
-                var $btn = $(this),
-                    $empties = $(".editable.status-0:hasText('Empty')").not(".locale-en"),
-                    done = 0;
-                if($empties.length) {
-                    $btn.button('loading');
-                    $empties.each(function(){
+                var btn = $(this);
+                var empties = $("a.editable.editable-empty:hasText('Empty')").not(".locale-en");
+                var done = 0;
+                console.log(empties);
+                if(empties.length) {
+                    btn.button('loading');
+                    empties.each(function(){
                         var $this = $(this),
                             nameNow = $this.data("name"),
                             nameEn = nameNow.replace(/.+?\|/, "en|"),
@@ -310,8 +311,8 @@
                             $this.editable('option', {value: data.value});
                             $this.removeClass('status-0').addClass('status-1 text-danger');
                             done++;
-                            if(done == $empties.length) {
-                                $btn.button('reset');
+                            if(done == empties.length) {
+                                btn.button('reset');
                             }
                         });
                     });
