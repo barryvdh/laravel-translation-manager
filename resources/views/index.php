@@ -270,7 +270,19 @@
 
     <?php endif; ?>
 
-    <button type="button" id="auto-translate" class="btn btn-primary" data-loading-text="Translating...">Auto Translate</button>
+    <div class="form-group">
+        <div class="row" style="margin-left: inherit">
+            <label>Auto translate</label>
+        </div>
+        <div class="row" style="margin-left: inherit">
+            Translate this group with Google Translate. The english translation must be available.
+        </div>
+        <div class="row" style="margin-left: inherit; padding-top: 5px">
+            <button type="button" id="auto-translate" class="btn btn-primary" data-loading-text="Translating...">Auto Translate</button>
+            <small><a target="_blank" href="https://github.com/Stichoza/google-translate-php#disclaimer">Do not overuse this function!</a></small>
+        </div>
+    </div>
+
     <script>
         jQuery(document).ready(function($){
             $.expr[':']['hasText'] = function(node, index, props){
