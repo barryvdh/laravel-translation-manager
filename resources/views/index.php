@@ -22,7 +22,6 @@
 
             $.ajaxSetup({
                 beforeSend: function(xhr, settings) {
-                    console.log('beforesend');
                     settings.data += "&_token=<?php echo csrf_token() ?>";
                 }
             });
