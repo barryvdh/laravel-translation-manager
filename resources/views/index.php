@@ -271,7 +271,7 @@
                         </form>
                     </div>
                     <div class="col-sm-1">
-                        <a target="_blank" class="btn btn-link" href="<?php echo action('\Barryvdh\TranslationManager\Controller@downloadLangFiles') ?>">Download translations</a>
+                        <a target="_blank" class="btn btn-link" href="<?php echo action('\Barryvdh\TranslationManager\Controller@downloadLangFiles') ?>">Download published translations</a>
                     </div>
                 </div>
             </div>
