@@ -78,6 +78,7 @@ class ManagerServiceProvider extends ServiceProvider {
 
         $router->group($config, function($router)
         {
+            $router->get('/locales/download', 'Controller@downloadLangFiles');
             $router->get('view/{groupKey?}', 'Controller@getView')->where('groupKey', '.*');
             $router->get('/{groupKey?}', 'Controller@getIndex')->where('groupKey', '.*');
             $router->post('/add/{groupKey}', 'Controller@postAdd')->where('groupKey', '.*');

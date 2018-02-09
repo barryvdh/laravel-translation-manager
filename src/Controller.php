@@ -190,4 +190,9 @@ class Controller extends BaseController
         }
         return redirect()->back();
     }
+
+    public function downloadLangFiles()
+    {
+        return response()->download($this->manager->zipLangFiles(),'lang.zip')->deleteFileAfterSend(true);
+    }
 }

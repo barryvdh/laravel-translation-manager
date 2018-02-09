@@ -6,6 +6,7 @@ use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Finder\Finder;
+use ZipArchive;
 
 class Manager{
 
@@ -350,4 +351,28 @@ class Manager{
         return $this->files->put($this->ignoreFilePath, json_encode($this->ignoreLocales));
     }
 
+    public function zipLangFiles()
+    {
+        $zip = new ZipArchive();
+        $filePath = public_path('lang.zip');
+
+        if (!$zip->open($filePath, ZipArchive::CREATE) === TRUE) {
+            die("Cannot write to directory");
+        }
+
+        $folderName = 'lang';
+        $zip->addEmptyDir($folderName);
+
+        foreach ($this->files->directories($this->app['path.lang']) as $langPath) {
+            foreach ($this->files->allfiles($langPath) as $file) {
+                $zip->addFile($file->getRealPath(), $folderName . '/' . basename($langPath) . '/' . $file->getFilename());
+            }
+        }
+
+        if(!$zip->close()){
+            die("Cannot close file");
+        }
+
+        return $filePath;
+    }
 }

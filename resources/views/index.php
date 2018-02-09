@@ -262,12 +262,20 @@
         </fieldset>
         <fieldset>
             <legend>Export all translations</legend>
-            <form class="form-inline form-publish-all" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', '*') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish all translations group? This will overwrite existing language files.">
-                <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-                <button type="submit" class="btn btn-primary" data-disable-with="Publishing.." >Publish all</button>
-            </form>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-1">
+                        <form class="form-inline form-publish-all" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', '*') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish all translations group? This will overwrite existing language files.">
+                            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                            <button type="submit" class="btn btn-primary" data-disable-with="Publishing.." >Publish all</button>
+                        </form>
+                    </div>
+                    <div class="col-sm-1">
+                        <a target="_blank" class="btn btn-link" href="<?php echo action('\Barryvdh\TranslationManager\Controller@downloadLangFiles') ?>">Download translations</a>
+                    </div>
+                </div>
+            </div>
         </fieldset>
-
     <?php endif; ?>
 
     <div class="form-group">
