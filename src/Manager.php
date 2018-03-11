@@ -62,11 +62,11 @@ class Manager{
             foreach ($this->files->allfiles($langPath) as $file) {
                 $info = pathinfo($file);
                 $group = $info['filename'];
-                
+
                 if (in_array($group, $this->config['exclude_groups'])) {
                     continue;
                 }
-
+                
                 $subLangPath = str_replace($langPath . DIRECTORY_SEPARATOR, "", $info['dirname']);
                 $subLangPath = str_replace(DIRECTORY_SEPARATOR, "/", $subLangPath);
                 $langPath = str_replace(DIRECTORY_SEPARATOR, "/", $langPath);
