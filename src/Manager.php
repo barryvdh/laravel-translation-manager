@@ -5,6 +5,7 @@ use Illuminate\Events\Dispatcher;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Finder\Finder;
 
 class Manager{
@@ -40,11 +41,15 @@ class Manager{
     public function missingKey($namespace, $group, $key)
     {
         if(!in_array($group, $this->config['exclude_groups'])) {
-            Translation::firstOrCreate(array(
+            $translation = Translation::firstOrCreate(array(
                 'locale' => $this->app['config']['app.locale'],
                 'group' => $group,
                 'key' => $key,
             ));
+            if($translation->wasRecentlyCreated){
+                $message = "Missing translation located. Locale: ". $this->app['config']['app.locale'] ." Group: ". $group ." Key: ". $key;
+                Log::warning($message);
+            }
         }
     }
 
