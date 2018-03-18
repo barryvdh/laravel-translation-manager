@@ -209,12 +209,11 @@ class Manager{
                 foreach ($tree as $locale => $groups) {
                     if (isset($groups[$group])) {
                         $translations = $groups[$group];
-
                         $path = $this->app['path.lang'] . DIRECTORY_SEPARATOR . $locale;
+                        
                         $locale_path = $locale . DIRECTORY_SEPARATOR . $group;
-
                         $subfolders = explode(DIRECTORY_SEPARATOR, $locale_path);
-                        unset($subfolders[count($subfolders)-1]);
+                        array_pop($subfolders);
 
                         $subfolder_level = '';
                         foreach($subfolders as $subfolder){
