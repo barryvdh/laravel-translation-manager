@@ -210,11 +210,25 @@ class Manager{
                     if (isset($groups[$group])) {
                         $translations = $groups[$group];
                         $path = $this->app['path.lang'] . '/' . $locale;
+
                         if(!is_dir($path)){
                             mkdir($path, 0777, true);
                         }
+
+                        $subfolders = explode(DIRECTORY_SEPARATOR, $group);
+                        unset($subfolders[count($subfolders)-1]);
+
+                        $subfolder_level = '';
+                        foreach($subfolders as $subfolder){
+                            $subfolder_level = $subfolder_level . $subfolder . DIRECTORY_SEPARATOR;
+
+                            if(!is_dir($path . DIRECTORY_SEPARATOR . $subfolder_level)){
+                                mkdir($path . DIRECTORY_SEPARATOR . $subfolder_level, 0777, true);
+                            }
+                        }
+
                         $path = $path . '/' . $group . '.php';
-                        
+
                         $output = "<?php\n\nreturn " . var_export($translations, true) . ";".\PHP_EOL;
                         $this->files->put($path, $output);
                     }
