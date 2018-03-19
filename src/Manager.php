@@ -209,8 +209,8 @@ class Manager{
                 foreach ($tree as $locale => $groups) {
                     if (isset($groups[$group])) {
                         $translations = $groups[$group];
-                        $path = $this->app['path.lang'] . DIRECTORY_SEPARATOR . $locale;
-                        
+                        $path = $this->app['path.lang'];
+
                         $locale_path = $locale . DIRECTORY_SEPARATOR . $group;
                         $subfolders = explode(DIRECTORY_SEPARATOR, $locale_path);
                         array_pop($subfolders);
@@ -219,12 +219,13 @@ class Manager{
                         foreach($subfolders as $subfolder){
                             $subfolder_level = $subfolder_level . $subfolder . DIRECTORY_SEPARATOR;
 
-                            if(!is_dir($path . DIRECTORY_SEPARATOR . $subfolder_level)){
-                                mkdir($path . DIRECTORY_SEPARATOR . $subfolder_level, 0777, true);
+                            $temp_path = rtrim($path . DIRECTORY_SEPARATOR . $subfolder_level, DIRECTORY_SEPARATOR);
+                            if(!is_dir($temp_path)){
+                                mkdir($temp_path, 0777, true);
                             }
                         }
 
-                        $path = $path . DIRECTORY_SEPARATOR . $group . '.php';
+                        $path = $path . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . $group . '.php';
 
                         $output = "<?php\n\nreturn " . var_export($translations, true) . ";".\PHP_EOL;
                         $this->files->put($path, $output);
