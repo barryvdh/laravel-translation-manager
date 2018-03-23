@@ -1,9 +1,9 @@
 <?php namespace Barryvdh\TranslationManager;
 
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Events\Dispatcher;
 use Barryvdh\TranslationManager\Models\Translation;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Finder\Finder;
 
@@ -11,11 +11,11 @@ class Manager{
 
     const JSON_GROUP = '_json';
 
-    /** @var \Illuminate\Foundation\Application  */
+    /** @var \Illuminate\Contracts\Foundation\Application  */
     protected $app;
     /** @var \Illuminate\Filesystem\Filesystem  */
     protected $files;
-    /** @var \Illuminate\Events\Dispatcher  */
+    /** @var \Illuminate\Contracts\Events\Dispatcher  */
     protected $events;
 
     protected $config;
