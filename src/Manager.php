@@ -244,7 +244,7 @@ class Manager{
         $groups = Translation::whereNotNull('value')->selectDistinctGroup()->get('group');
 
         foreach($groups as $group){
-            if ($group == self::JSON_GROUP) {
+            if ($group->group == self::JSON_GROUP) {
                 $this->exportTranslations(null, true);
             } else {
                 $this->exportTranslations($group->group);
