@@ -5,6 +5,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Finder\Finder;
 
 class Manager{
@@ -40,11 +41,15 @@ class Manager{
     public function missingKey($namespace, $group, $key)
     {
         if(!in_array($group, $this->config['exclude_groups'])) {
-            Translation::firstOrCreate(array(
+            $translation = Translation::firstOrCreate(array(
                 'locale' => $this->app['config']['app.locale'],
                 'group' => $group,
                 'key' => $key,
             ));
+            if($translation->wasRecentlyCreated){
+                $message = "Missing translation located. Locale: ". $this->app['config']['app.locale'] ." Group: ". $group ." Key: ". $key;
+                Log::warning($message);
+            }
         }
     }
 
@@ -54,12 +59,23 @@ class Manager{
 
         foreach ($this->files->directories($this->app['path.lang']) as $langPath) {
             $locale = basename($langPath);
+
+            if(in_array($locale, $this->config['exclude_langs'])) {
+                continue;
+            }
+
             foreach ($this->files->allfiles($langPath) as $file) {
                 $info = pathinfo($file);
                 $group = $info['filename'];
+
                 if (in_array($group, $this->config['exclude_groups'])) {
                     continue;
                 }
+                if(in_array($info['dirname'], $this->config['exclude_langs'])) {
+                    continue;
+                }
+
+
                 $subLangPath = str_replace($langPath . DIRECTORY_SEPARATOR, "", $info['dirname']);
                 $subLangPath = str_replace(DIRECTORY_SEPARATOR, "/", $subLangPath);
                 $langPath = str_replace(DIRECTORY_SEPARATOR, "/", $langPath);
