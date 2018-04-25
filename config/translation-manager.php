@@ -35,6 +35,18 @@ return array(
 	 *	)
 	 */
 	'exclude_groups' => array(),
+    
+    /**
+     * Exclude specific languages from Laravel Translation Manager.
+     *
+     * @type array
+     *
+     * 	array(
+     *		'fr',
+     *		'de',
+     *	)
+     */
+    'exclude_langs' => array(),
 
 	/**
 	 * Export translations with keys output alphabetically.
