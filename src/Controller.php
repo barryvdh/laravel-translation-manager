@@ -133,10 +133,6 @@ class Controller extends BaseController
             $json = true;
         }
 
-        if($group == null){
-            return ['status' => 'Not ok'];
-        }
-
         $this->manager->exportTranslations($group, $json);
 
         return ['status' => 'ok'];
