@@ -2,21 +2,23 @@
 
 namespace Barryvdh\TranslationManager;
 
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Events\Dispatcher;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\Finder\Finder;
 
 class Manager
 {
     const JSON_GROUP = '_json';
 
-    /** @var \Illuminate\Foundation\Application  */
+    /** @var \Illuminate\Contracts\Foundation\Application  */
     protected $app;
     /** @var \Illuminate\Filesystem\Filesystem  */
     protected $files;
-    /** @var \Illuminate\Events\Dispatcher  */
+    /** @var \Illuminate\Contracts\Events\Dispatcher  */
     protected $events;
 
     protected $config;
@@ -248,22 +250,29 @@ class Manager
                 foreach ($tree as $locale => $groups) {
                     if (isset($groups[$group])) {
                         $translations = $groups[$group];
-                        $path = $basePath . '/' . $locale;
-                        $filename = $group;
+                        $path = $this->app['path.lang'];
 
+                        $locale_path = $locale . DIRECTORY_SEPARATOR . $group;
                         if($vendor) {
                             $path = $basePath . '/' . $group . '/' . $locale;
-                            $filename = str_after($group, "/");
+                            $locale_path = str_after($group, "/");
                         }
-                        
+                        $subfolders = explode(DIRECTORY_SEPARATOR, $locale_path);
+                        array_pop($subfolders);
 
-                        if (!is_dir($path)) {
-                            mkdir($path, 0777, true);
+                        $subfolder_level = '';
+                        foreach($subfolders as $subfolder){
+                            $subfolder_level = $subfolder_level . $subfolder . DIRECTORY_SEPARATOR;
+
+                            $temp_path = rtrim($path . DIRECTORY_SEPARATOR . $subfolder_level, DIRECTORY_SEPARATOR);
+                            if(!is_dir($temp_path)){
+                                mkdir($temp_path, 0777, true);
+                            }
                         }
-                        $path = $path . '/' . $filename . '.php';
-                        
 
-                        $output = "<?php\n\nreturn " . var_export($translations, true) . ';' . \PHP_EOL;
+                        $path = $path . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . $group . '.php';
+
+                        $output = "<?php\n\nreturn " . var_export($translations, true) . ";".\PHP_EOL;
                         $this->files->put($path, $output);
                     }
                 }
@@ -293,6 +302,8 @@ class Manager
 
         foreach ($groups as $group) {
             if ($group == self::JSON_GROUP) {
+        foreach($groups as $group){
+            if ($group->group == self::JSON_GROUP) {
                 $this->exportTranslations(null, true);
             } else {
                 $this->exportTranslations($group->group);
@@ -365,6 +376,15 @@ class Manager
                 array_set($array[$translation->locale][$translation->group], $translation->key, $translation->value);
             }
         }
+        return $array;
+    }
+    
+    public function jsonSet(&$array, $key, $value)
+    {
+        if (is_null($key)) {
+            return $array = $value;
+        }
+        $array[$key] = $value;
         return $array;
     }
 
