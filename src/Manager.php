@@ -6,8 +6,6 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
 use Barryvdh\TranslationManager\Models\Translation;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\DB;
 use Symfony\Component\Finder\Finder;
 
 class Manager
@@ -300,8 +298,6 @@ class Manager
     {
         $groups = Translation::whereNotNull('value')->selectDistinctGroup()->get('group');
 
-        foreach ($groups as $group) {
-            if ($group == self::JSON_GROUP) {
         foreach($groups as $group){
             if ($group->group == self::JSON_GROUP) {
                 $this->exportTranslations(null, true);
