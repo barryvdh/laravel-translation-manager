@@ -53,4 +53,11 @@ return array(
 	 */
 	'sort_keys ' => false,
 
+	/**
+	 * Add a default group for translations
+	 *
+	 * @type string
+	 */
+	'default_group' => 'default',
+
 );
