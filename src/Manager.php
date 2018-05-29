@@ -2,6 +2,7 @@
 
 namespace Barryvdh\TranslationManager;
 
+use Barryvdh\TranslationManager\Events\TranslationsExportedEvent;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
@@ -310,6 +311,8 @@ class Manager
 
             Translation::ofTranslatedGroup( self::JSON_GROUP )->update( [ 'status' => Translation::STATUS_SAVED ] );
         }
+
+        $this->events->dispatch( new TranslationsExportedEvent() );
     }
 
     public function exportAllTranslations()
@@ -323,6 +326,8 @@ class Manager
                 $this->exportTranslations( $group->group );
             }
         }
+
+        $this->events->dispatch( new TranslationsExportedEvent() );
     }
 
     protected function makeTree( $translations, $json = false )
