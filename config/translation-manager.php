@@ -41,4 +41,10 @@ return array(
 	 */
 	'sort_keys ' => false,
 
+    /*
+     * This model will be used. The only requirement is that
+     * it should be or extend the Barryvdh\TranslationManager\Models\Translation model.
+     */
+    'translation_model' => Barryvdh\TranslationManager\Models\Translation::class,
+
 );
