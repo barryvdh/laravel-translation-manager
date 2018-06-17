@@ -3,6 +3,7 @@ namespace Barryvdh\TranslationManager;
 
 use Illuminate\Translation\TranslationServiceProvider as BaseTranslationServiceProvider;
 use Barryvdh\TranslationManager\Exceptions\InvalidConfiguration;
+use Barryvdh\TranslationManager\Models\Translation;
 
 class TranslationServiceProvider extends BaseTranslationServiceProvider {
 
@@ -50,7 +51,7 @@ class TranslationServiceProvider extends BaseTranslationServiceProvider {
         return $translationModel;
     }
 
-    public static function getTranslationModelInstance(): Model
+    public static function getTranslationModelInstance(): Translation
     {
         $translationModelClassName = self::determineTranslationModel();
 
