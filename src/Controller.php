@@ -26,7 +26,7 @@ class Controller extends BaseController
             $groups->whereNotIn('group', $excludedGroups);
         }
 
-        $groups = $groups->select('group')->get()->pluck('group', 'group');
+        $groups = $groups->select('group')->orderBy('group')->get()->pluck('group', 'group');
         if ($groups instanceof Collection) {
             $groups = $groups->all();
         }
@@ -154,7 +154,7 @@ class Controller extends BaseController
         else
         {
             return redirect()->back();
-        }       
+        }
     }
 
     public function postAddLocale(Request $request)
