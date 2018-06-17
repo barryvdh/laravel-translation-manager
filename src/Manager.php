@@ -28,18 +28,15 @@ class Manager
 
     protected $ignoreFilePath;
 
-    protected $translationModel;
-
     public function __construct( Application $app, Filesystem $files, Dispatcher $events )
     {
-        $this->app              = $app;
-        $this->translationModel = TranslationServiceProvider::getTranslationModelInstance();
-        $this->files            = $files;
-        $this->events           = $events;
-        $this->config           = $app[ 'config' ][ 'translation-manager' ];
-        $this->ignoreFilePath   = storage_path( '.ignore_locales' );
-        $this->locales          = [];
-        $this->ignoreLocales    = $this->getIgnoredLocales();
+        $this->app            = $app;
+        $this->files          = $files;
+        $this->events         = $events;
+        $this->config         = $app[ 'config' ][ 'translation-manager' ];
+        $this->ignoreFilePath = storage_path( '.ignore_locales' );
+        $this->locales        = [];
+        $this->ignoreLocales  = $this->getIgnoredLocales();
     }
 
     protected function getIgnoredLocales()
@@ -131,14 +128,14 @@ class Manager
             return false;
         }
         $value       = (string) $value;
-        $translation = $this->translationModel::firstOrNew( [
+        $translation = Translation::firstOrNew( [
             'locale' => $locale,
             'group'  => $group,
             'key'    => $key,
         ] );
 
         // Check if the database is different then the files
-        $newStatus = $translation->value === $value ? $this->translationModel::STATUS_SAVED : $this->translationModel::STATUS_CHANGED;
+        $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
         if ( $newStatus !== (int) $translation->status ) {
             $translation->status = $newStatus;
         }
@@ -237,7 +234,7 @@ class Manager
     public function missingKey( $namespace, $group, $key )
     {
         if ( !in_array( $group, $this->config[ 'exclude_groups' ] ) ) {
-            $this->translationModel::firstOrCreate( [
+            Translation::firstOrCreate( [
                 'locale' => $this->app[ 'config' ][ 'app.locale' ],
                 'group'  => $group,
                 'key'    => $key,
@@ -261,7 +258,7 @@ class Manager
                     }
                 }
 
-                $tree = $this->makeTree( $this->translationModel::ofTranslatedGroup( $group )
+                $tree = $this->makeTree( Translation::ofTranslatedGroup( $group )
                     ->orderByGroupKeys( array_get( $this->config, 'sort_keys', false ) )
                     ->get() );
 
@@ -294,12 +291,12 @@ class Manager
                         $this->files->put( $path, $output );
                     }
                 }
-                $this->translationModel::ofTranslatedGroup( $group )->update( [ 'status' => $this->translationModel::STATUS_SAVED ] );
+                Translation::ofTranslatedGroup( $group )->update( [ 'status' => Translation::STATUS_SAVED ] );
             }
         }
 
         if ( $json ) {
-            $tree = $this->makeTree( $this->translationModel::ofTranslatedGroup( self::JSON_GROUP )
+            $tree = $this->makeTree( Translation::ofTranslatedGroup( self::JSON_GROUP )
                 ->orderByGroupKeys( array_get( $this->config, 'sort_keys', false ) )
                 ->get(), true );
 
@@ -312,7 +309,7 @@ class Manager
                 }
             }
 
-            $this->translationModel::ofTranslatedGroup( self::JSON_GROUP )->update( [ 'status' => $this->translationModel::STATUS_SAVED ] );
+            Translation::ofTranslatedGroup( self::JSON_GROUP )->update( [ 'status' => Translation::STATUS_SAVED ] );
         }
 
         $this->events->dispatch( new TranslationsExportedEvent() );
@@ -320,7 +317,7 @@ class Manager
 
     public function exportAllTranslations()
     {
-        $groups = $this->translationModel::whereNotNull( 'value' )->selectDistinctGroup()->get( 'group' );
+        $groups = Translation::whereNotNull( 'value' )->selectDistinctGroup()->get( 'group' );
 
         foreach ( $groups as $group ) {
             if ( $group->group == self::JSON_GROUP ) {
@@ -361,19 +358,19 @@ class Manager
 
     public function cleanTranslations()
     {
-        $this->translationModel::whereNull( 'value' )->delete();
+        Translation::whereNull( 'value' )->delete();
     }
 
     public function truncateTranslations()
     {
-        $this->translationModel::truncate();
+        Translation::truncate();
     }
 
     public function getLocales()
     {
         if ( empty( $this->locales ) ) {
             $locales = array_merge( [ config( 'app.locale' ) ],
-                $this->translationModel::groupBy( 'locale' )->pluck( 'locale' )->toArray() );
+                Translation::groupBy( 'locale' )->pluck( 'locale' )->toArray() );
             foreach ( $this->files->directories( $this->app->langPath() ) as $localeDir ) {
                 if ( ( $name = $this->files->name( $localeDir ) ) != 'vendor' ) {
                     $locales[] = $name;
@@ -417,7 +414,7 @@ class Manager
         $this->saveIgnoredLocales();
         $this->ignoreLocales = $this->getIgnoredLocales();
 
-        $this->translationModel::where( 'locale', $locale )->delete();
+        Translation::where( 'locale', $locale )->delete();
     }
 
     public function getConfig( $key = null )
