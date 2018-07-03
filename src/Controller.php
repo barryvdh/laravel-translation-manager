@@ -195,4 +195,22 @@ class Controller extends BaseController
     {
         return response()->download($this->manager->zipLangFiles(),'lang.zip')->deleteFileAfterSend(true);
     }
+
+    public function getLocales()
+    {
+        return response()->json($this->manager->getLocales());
+    }
+
+    public function getLocaleTranslations($locale)
+    {
+        if(!in_array($locale, $this->manager->getLocales())) {
+            return response()->json(['error' => 'Locale not found'])->setStatusCode(404);
+        }
+
+        if($this->manager->getConfig('api_use_database', false)) {
+            return response()->json($this->manager->getTranslationsFromDatabase($locale));
+        }
+
+        return response()->json($this->manager->getTranslationsFromFiles($locale));
+    }
 }
