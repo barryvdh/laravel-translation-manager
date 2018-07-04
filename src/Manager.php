@@ -1,6 +1,7 @@
 <?php namespace Barryvdh\TranslationManager;
 
 use Illuminate\Filesystem\Filesystem;
+use GuzzleHttp\Client;
 use Illuminate\Events\Dispatcher;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Foundation\Application;
@@ -374,5 +375,91 @@ class Manager{
         }
 
         return $filePath;
+    }
+
+    public function getTranslationsFromDatabase($locale)
+    {
+        return Translation::where('locale', $locale)->get()->mapWithKeys(function ($item) {
+            return [$item->group . '.' . $item->key => $item->value];
+        })->toArray();
+    }
+
+    public function getTranslationsFromFiles($locale)
+    {
+        $result = [];
+
+        foreach ($this->files->directories($this->app['path.lang']) as $langPath) {
+            if ($locale == basename($langPath)) {
+                foreach ($this->files->allfiles($langPath) as $file) {
+                    $info = pathinfo($file);
+                    $group = $info['filename'];
+
+                    $subLangPath = str_replace($langPath . DIRECTORY_SEPARATOR, "", $info['dirname']);
+                    if ($subLangPath != $langPath) {
+                        $group = $subLangPath . "/" . $group;
+                    }
+
+                    $translations = \Lang::getLoader()->load($locale, $group);
+                    if ($translations && is_array($translations)) {
+                        foreach (array_dot($translations) as $key => $value) {
+                            // process only string values
+                            if (is_array($value)) {
+                                continue;
+                            }
+                            $result[$group][$key] = (string) $value;
+                        }
+                    }
+                }
+            }
+        }
+
+        return array_dot($result);
+    }
+
+    public function getLocalesFromUrl($url)
+    {
+        if(substr($url, -1) != '/') {
+            $url = $url . '/';
+        }
+
+        $client = new Client([
+            'base_uri' => $url,
+        ]);
+        
+        $response = $client->get('locales');
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    public function getTranslationsFromUrl($url, $locale)
+    {
+        if(substr($url, -1) != '/') {
+            $url = $url . '/';
+        }
+
+        $client = new Client([
+            'base_uri' => $url,
+        ]);
+
+        $response = $client->get('locales/' . $locale);
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    public function saveTranslations($locale, $translations)
+    {
+        $successCount = 0;
+
+        foreach ($translations as $key => $value) {
+            $explodedKeyArray = array_reverse(explode('.', $key));
+            $translationGroup = array_pop($explodedKeyArray);
+            $translationKey = implode('.', array_reverse($explodedKeyArray));
+
+            if($this->importTranslation($translationKey, $value, $locale, $translationGroup, true)) {
+                $successCount++;
+            }
+        }
+
+        return $successCount;
     }
 }
