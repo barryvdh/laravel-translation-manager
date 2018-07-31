@@ -10,8 +10,14 @@ return [
     | The default group settings for the elFinder routes.
     |
     */
-    'route'          => [
-        'prefix'     => 'translations',
+    'route' => version_compare(app()::VERSION, '5.2', '>=') ? [
+        'prefix' => 'translations',
+        'middleware' => [
+            'web',
+            'auth',
+        ],
+    ] : [
+        'prefix' => 'translations',
         'middleware' => 'auth',
     ],
 
