@@ -18,7 +18,7 @@ class CreateTranslationsTable extends Migration {
             $table->integer('status')->default(0);
             $table->string('locale');
             $table->string('group');
-            $table->string('key');
+            $table->text('key');
             $table->text('value')->nullable();
             $table->timestamps();
         });
