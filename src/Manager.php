@@ -2,18 +2,14 @@
 
 namespace Barryvdh\TranslationManager;
 
-use Barryvdh\TranslationManager\Events\TranslationsExportedEvent;
-use Barryvdh\TranslationManager\Models\Translation;
+use ZipArchive;
+use GuzzleHttp\Client;
+use Symfony\Component\Finder\Finder;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Filesystem\Filesystem;
-use GuzzleHttp\Client;
-use Illuminate\Events\Dispatcher;
 use Barryvdh\TranslationManager\Models\Translation;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\DB;
-use Symfony\Component\Finder\Finder;
-use ZipArchive;
+use Barryvdh\TranslationManager\Events\TranslationsExportedEvent;
 
 class Manager
 {
@@ -406,11 +402,6 @@ class Manager
         return true;
     }
 
-    protected function saveIgnoredLocales()
-    {
-        return $this->files->put( $this->ignoreFilePath, json_encode( $this->ignoreLocales ) );
-    }
-
     public function removeLocale( $locale )
     {
         if ( !$locale ) {
@@ -430,16 +421,6 @@ class Manager
         } else {
             return $this->config[ $key ];
         }
-    }
-
-    protected function getIgnoredLocales()
-    {
-        if (!$this->files->exists($this->ignoreFilePath))
-        {
-            return [];
-        }
-        $result = json_decode($this->files->get($this->ignoreFilePath));
-        return ($result && is_array($result)) ? $result : [];
     }
 
     protected function saveIgnoredLocales()
