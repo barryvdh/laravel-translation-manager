@@ -9,7 +9,9 @@ return [
     */
     'route' => [
         'prefix' => 'translations',
-        'middleware' => 'auth',
+        'middleware' => [
+            'auth'
+        ],
     ],
     
     /**
@@ -29,7 +31,9 @@ return [
      */
     'api_route' => [
         'prefix' => 'locale',
-        'middleware' => '',
+        'middleware' => [
+
+        ],
     ],
 
     /**
