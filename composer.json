@@ -20,7 +20,7 @@
     "stichoza/google-translate-php": "~3.2",
     "symfony/finder": "~2.3|~3.0|~4.0",
     "ext-zip": "*",
-    "ext-json": "*",
+    "ext-json": "*"
   },
   "autoload": {
     "psr-4": {
