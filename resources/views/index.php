@@ -22,7 +22,6 @@
 
             $.ajaxSetup({
                 beforeSend: function(xhr, settings) {
-                    console.log('beforesend');
                     settings.data += "&_token=<?php echo csrf_token() ?>";
                 }
             });
@@ -263,13 +262,71 @@
         </fieldset>
         <fieldset>
             <legend>Export all translations</legend>
-            <form class="form-inline form-publish-all" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', '*') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish all translations group? This will overwrite existing language files.">
-                <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-                <button type="submit" class="btn btn-primary" data-disable-with="Publishing.." >Publish all</button>
-            </form>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-1">
+                        <form class="form-inline form-publish-all" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', '*') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish all translations group? This will overwrite existing language files.">
+                            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                            <button type="submit" class="btn btn-primary" data-disable-with="Publishing.." >Publish all</button>
+                        </form>
+                    </div>
+                    <div class="col-sm-1">
+                        <a target="_blank" class="btn btn-link" href="<?php echo action('\Barryvdh\TranslationManager\Controller@downloadLangFiles') ?>">Download published translations</a>
+                    </div>
+                </div>
+            </div>
         </fieldset>
-
     <?php endif; ?>
+
+    <div class="form-group">
+        <div class="row" style="margin-left: inherit">
+            <label>Auto translate</label>
+        </div>
+        <div class="row" style="margin-left: inherit">
+            Translate this group with Google Translate. The english translation must be available.
+        </div>
+        <div class="row" style="margin-left: inherit; padding-top: 5px">
+            <button type="button" id="auto-translate" class="btn btn-primary" data-loading-text="Translating...">Auto Translate</button>
+            <small><a target="_blank" href="https://github.com/Stichoza/google-translate-php#disclaimer">Do not overuse this function!</a></small>
+        </div>
+    </div>
+
+    <script>
+        jQuery(document).ready(function($){
+            $.expr[':']['hasText'] = function(node, index, props){
+                return node.innerText == props[3];
+            }
+            $("#auto-translate").click(function(){
+                var btn = $(this);
+                var empties = $("a.editable.editable-empty:hasText('Empty')").not(".locale-en");
+                var done = 0;
+                if(empties.length) {
+                    btn.button('loading');
+                    empties.each(function(){
+                        var $this = $(this),
+                            nameNow = $this.data("name"),
+                            nameEn = nameNow.replace(/.+?\|/, "en|"),
+                            enTxt = $("[data-name='"+nameEn+"']").text().replace(/(\:([^\s|\.]+))/g, "[__$2__]");
+
+                        $.post($this.data("url"), {
+                            name: nameNow,
+                            value: enTxt,
+                            translate: "auto",
+                            pk: $this.data("pk")
+                        }, "json").done(function(data){
+                            $this.html(data.value);
+                            $this.editable('option', {value: data.value});
+                            $this.removeClass('status-0').addClass('status-1 text-danger');
+                            done++;
+                            if(done == empties.length) {
+                                btn.button('reset');
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    </script>
 </div>
 
 </body>

@@ -52,6 +52,11 @@ class ManagerServiceProvider extends ServiceProvider {
             return new Console\CleanCommand($app['translation-manager']);
         });
         $this->commands('command.translation-manager.clean');
+
+        $this->app->singleton('command.translation-manager.sync', function ($app) {
+            return new Console\SyncCommand($app['translation-manager']);
+        });
+        $this->commands('command.translation-manager.sync');
 	}
 
     /**
@@ -78,6 +83,7 @@ class ManagerServiceProvider extends ServiceProvider {
 
         $router->group($config, function($router)
         {
+            $router->get('/locales/download', 'Controller@downloadLangFiles');
             $router->get('view/{groupKey?}', 'Controller@getView')->where('groupKey', '.*');
             $router->get('/{groupKey?}', 'Controller@getIndex')->where('groupKey', '.*');
             $router->post('/add/{groupKey}', 'Controller@postAdd')->where('groupKey', '.*');
@@ -90,6 +96,18 @@ class ManagerServiceProvider extends ServiceProvider {
             $router->post('/locales/remove', 'Controller@postRemoveLocale');
             $router->post('/publish/{groupKey}', 'Controller@postPublish')->where('groupKey', '.*');
         });
+
+        // Translation API routes
+        if($this->app['config']->get('translation-manager.api_endpoints_enabled', false)) {
+            $apiConfig = array_merge($config, $this->app['config']->get('translation-manager.api_route', []));
+
+            $router->group($apiConfig, function($router)
+            {
+                $router->get('/locales', 'Controller@getLocales');
+                $router->get('/locales/{slug}', 'Controller@getLocaleTranslations');
+            });
+        }
+
 	}
 
 	/**
@@ -104,7 +122,8 @@ class ManagerServiceProvider extends ServiceProvider {
             'command.translation-manager.import',
             'command.translation-manager.find',
             'command.translation-manager.export',
-            'command.translation-manager.clean'
+            'command.translation-manager.clean',
+            'command.translation-manager.sync',
         );
 	}
 
