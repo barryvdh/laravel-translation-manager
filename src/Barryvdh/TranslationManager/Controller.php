@@ -18,6 +18,10 @@ class Controller extends BaseController
         $this->manager = $manager;
     }
 
+    protected function getEditMode() {
+        return property_exists($this, 'editMode') ? $this->editMode : $this->manager->getConfig('editMode', 'FULL');
+    }
+
     public function getIndex($group = null)
     {
         $locales = $this->loadLocales();
@@ -47,6 +51,7 @@ class Controller extends BaseController
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
             ->with('controller', get_class($this))
+            ->with('editMode', $this->getEditMode())
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
             ;
     }

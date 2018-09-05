@@ -80,7 +80,7 @@
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#searchModel" style="float:right; display:inline">
             Search
         </button>
-        <?php if(!isset($group)) : ?>
+        <?php if($editMode == "FULL" && !isset($group)) : ?>
     <form class="form-inline form-import" method="POST" action="<?= action($controller.'@postImport') ?>" data-remote="true" role="form">
         <select name="replace" class="form-control">
             <option value="0">Append new translations</option>
@@ -92,7 +92,7 @@
         <button type="submit" class="btn btn-info" data-disable-with="Searching.." >Find translations in files</button>
     </form>
 <?php endif; ?>
-    <?php if(isset($group)) : ?>
+    <?php if($editMode == "FULL" && isset($group)) : ?>
         <form class="form-inline form-publish" method="POST" action="<?= action($controller.'@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?= $group ?>? This will overwrite existing language files.">
             <button type="submit" class="btn btn-info" data-disable-with="Publishing.." >Publish translations</button>
         </form>
@@ -104,10 +104,12 @@
         </div>
     </form>
     <?php if($group): ?>
+        <?php if($editMode == "FULL") : ?>
         <form action="<?= action($controller.'@postAdd', array($group)) ?>" method="POST"  role="form">
             <textarea class="form-control" rows="3" name="keys" placeholder="Add 1 key per line, without the group prefix"></textarea>
             <input type="submit" value="Add keys" class="btn btn-primary">
         </form>
+        <?php endif; ?>
 
         <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
         <table class="table">
@@ -134,7 +136,7 @@
                             <a href="#edit" class="editable status-<?= $t ? e($t->status) : 0 ?> locale-<?= e($locale) ?>" data-locale="<?= e($locale) ?>" data-name="<?= $locale . "|" . e($key) ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= action($controller.'@postEdit', array($group)) ?>" data-title="Enter translation"><?= $t ? e($t->value) : '' ?></a>
                         </td>
                     <?php endforeach; ?>
-                    <?php if($deleteEnabled): ?>
+                    <?php if($editMode == "FULL" && $deleteEnabled): ?>
                         <td>
                             <a href="<?= action($controller.'@postDelete', [$group, $key]) ?>" class="delete-key" data-method="POST" data-remote="true" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
                         </td>

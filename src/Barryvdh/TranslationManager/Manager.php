@@ -180,9 +180,11 @@ class Manager{
             return $this->config;
         }
         else {
-            $value = $this->config[$key];
 
-            return $value || !$defaultValue ? $value : $defaultValue;
+            if (array_key_exists($key, $this->config))
+                return $this->config[$key];
+
+            return $defaultValue;
         }
     }
 
