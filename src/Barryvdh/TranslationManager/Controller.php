@@ -87,12 +87,14 @@ class Controller extends BaseController
 
     public function postAdd($group)
     {
-        $keys = explode("\n", Input::get('keys'));
+        if ($this->getEditMode() == "FULL") {
+            $keys = explode("\n", Input::get('keys'));
 
-        foreach($keys as $key){
-            $key = trim($key);
-            if($group && $key){
-                $this->manager->missingKey('*', $group, $key);
+            foreach($keys as $key){
+                $key = trim($key);
+                if($group && $key){
+                    $this->manager->missingKey('*', $group, $key);
+                }
             }
         }
         return Redirect::back();
@@ -105,21 +107,24 @@ class Controller extends BaseController
             $value = Input::get('value');
 
             list($locale, $key) = explode('|', $name, 2);
-            $translation = Translation::firstOrNew(array(
-                'locale' => $locale,
-                'group' => $group,
-                'key' => $key,
-            ));
-            $translation->value = (string) $value ?: null;
-            $translation->status = Translation::STATUS_CHANGED;
-            $translation->save();
-            return array('status' => 'ok');
+
+            if (!in_array($locale, $this->getReadonlyLocales())) {
+                $translation = Translation::firstOrNew(array(
+                    'locale' => $locale,
+                    'group' => $group,
+                    'key' => $key,
+                ));
+                $translation->value = (string) $value ?: null;
+                $translation->status = Translation::STATUS_CHANGED;
+                $translation->save();
+                return array('status' => 'ok');
+            }
         }
     }
 
     public function postDelete($group, $key)
     {
-        if(!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
+        if ($this->getEditMode() == "FULL" && !in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
             Translation::where('group', $group)->where('key', $key)->delete();
             return array('status' => 'ok');
         }
@@ -127,10 +132,12 @@ class Controller extends BaseController
 
     public function postImport()
     {
-        $replace = Input::get('replace', false);
-        $counter = $this->manager->importTranslations($replace);
+        if ($this->getEditMode() == "FULL") {      
+            $replace = Input::get('replace', false);
+            $counter = $this->manager->importTranslations($replace);
 
-        return Response::json(array('status' => 'ok', 'counter' => $counter));
+            return Response::json(array('status' => 'ok', 'counter' => $counter));
+        }
     }
     
     public function postFind()
@@ -142,8 +149,10 @@ class Controller extends BaseController
 
     public function postPublish($group)
     {
-        $this->manager->exportTranslations($group);
+        if ($this->getEditMode() == "FULL") {
+            $this->manager->exportTranslations($group);
 
-        return Response::json(array('status' => 'ok'));
+            return Response::json(array('status' => 'ok'));
+        }
     }
 }
