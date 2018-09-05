@@ -22,8 +22,11 @@ class Controller extends BaseController
         return property_exists($this, 'editMode') ? $this->editMode : $this->manager->getConfig('editMode', 'FULL');
     }
 
-    protected function getReadonlyLocales() {
-        return property_exists($this, 'readonlyLocales') ? $this->readonlyLocales : $this->manager->getConfig('readonlyLocales', []);
+    protected function allowedLocales() {
+        return [];
+    }
+    protected function readonlyLocales() {
+        return [];
     }
 
     public function getIndex($group = null)
@@ -50,7 +53,7 @@ class Controller extends BaseController
         return \View::make('laravel-translation-manager::index')
             ->with('translations', $translations)
             ->with('locales', $locales)
-            ->with('readonlyLocales', $this->getReadonlyLocales())
+            ->with('readonlyLocales', $this->readonlyLocales())
             ->with('groups', $groups)
             ->with('group', $group)
             ->with('numTranslations', $numTranslations)
@@ -80,6 +83,11 @@ class Controller extends BaseController
 
     protected function loadLocales()
     {
+        $allowed = $this->allowedLocales();
+
+        if (count($allowed))
+            return $allowed;
+        
         //Set the default locale as the first one.
         $locales = array_merge(array(Config::get('app.locale')), Translation::groupBy('locale')->lists('locale'));
         return array_unique($locales);
@@ -108,7 +116,7 @@ class Controller extends BaseController
 
             list($locale, $key) = explode('|', $name, 2);
 
-            if (!in_array($locale, $this->getReadonlyLocales())) {
+            if (!in_array($locale, $this->readonlyLocales())) {
                 $translation = Translation::firstOrNew(array(
                     'locale' => $locale,
                     'group' => $group,
