@@ -10,7 +10,7 @@
     </thead>
     <tbody>
     <?php foreach($translations as $t): ?>
-        <?php $groupUrl = action('Barryvdh\TranslationManager\Controller@getIndex', $t->group); ?>
+        <?php $groupUrl = action($controller.'@getIndex', $t->group); ?>
         <tr>
             <td><a href="<?= $groupUrl ?>#<?= $t->key ?>"><?= $t->group ?></a></td>
             <td><?= $t->key ?></td>
