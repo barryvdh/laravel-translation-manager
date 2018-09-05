@@ -59,7 +59,12 @@ class Controller extends BaseController
     public function getSearch()
     {
         $q = \Input::get('q');
-        $translations = Translation::where('key', 'like', "%$q%")->orWhere('value', 'like', "%$q%")->orderBy('group', 'asc')->orderBy('key', 'asc')->get();
+        $translations = Translation::whereIn('locale', $this->loadLocales())
+                            ->where(function ($q) {
+                                $q->where('key', 'like', "%$q%")->orWhere('value', 'like', "%$q%")
+                            })
+                            ->orderBy('group', 'asc')->orderBy('key', 'asc')->get();
+                            
         $numTranslations = count($translations);
 
         return \View::make('laravel-translation-manager::search')
