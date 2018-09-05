@@ -22,6 +22,10 @@ class Controller extends BaseController
         return property_exists($this, 'editMode') ? $this->editMode : $this->manager->getConfig('editMode', 'FULL');
     }
 
+    protected function getReadonlyLocales() {
+        return property_exists($this, 'readonlyLocales') ? $this->readonlyLocales : $this->manager->getConfig('readonlyLocales', []);
+    }
+
     public function getIndex($group = null)
     {
         $locales = $this->loadLocales();
@@ -46,6 +50,7 @@ class Controller extends BaseController
         return \View::make('laravel-translation-manager::index')
             ->with('translations', $translations)
             ->with('locales', $locales)
+            ->with('readonlyLocales', $this->getReadonlyLocales())
             ->with('groups', $groups)
             ->with('group', $group)
             ->with('numTranslations', $numTranslations)

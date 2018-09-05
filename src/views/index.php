@@ -133,7 +133,11 @@
                         <?php $t = isset($translation[$locale]) ? $translation[$locale] : null?>
 
                         <td>
-                            <a href="#edit" class="editable status-<?= $t ? e($t->status) : 0 ?> locale-<?= e($locale) ?>" data-locale="<?= e($locale) ?>" data-name="<?= $locale . "|" . e($key) ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= action($controller.'@postEdit', array($group)) ?>" data-title="Enter translation"><?= $t ? e($t->value) : '' ?></a>
+                            <?php if (!in_array($locale, $readonlyLocales)): ?>
+                                <a href="#edit" class="editable status-<?= $t ? e($t->status) : 0 ?> locale-<?= e($locale) ?>" data-locale="<?= e($locale) ?>" data-name="<?= $locale . "|" . e($key) ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= action($controller.'@postEdit', array($group)) ?>" data-title="Enter translation"><?= $t ? e($t->value) : '' ?></a>
+                            <?php else: ?>
+                                <?= $t ? e($t->value) : '<span class="editable-empty">Empty</span>' ?>
+                            <?php endif; ?>
                         </td>
                     <?php endforeach; ?>
                     <?php if($editMode == "FULL" && $deleteEnabled): ?>
