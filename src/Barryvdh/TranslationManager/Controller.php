@@ -81,13 +81,13 @@ class Controller extends BaseController
             ->with('numTranslations', $numTranslations);
     }
 
-    protected function loadLocales()
+    private function loadLocales()
     {
         $allowed = $this->allowedLocales();
 
         if (count($allowed))
             return $allowed;
-        
+
         //Set the default locale as the first one.
         $locales = array_merge(array(Config::get('app.locale')), Translation::groupBy('locale')->lists('locale'));
         return array_unique($locales);
