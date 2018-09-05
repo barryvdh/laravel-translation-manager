@@ -60,8 +60,8 @@ class Controller extends BaseController
     {
         $q = \Input::get('q');
         $translations = Translation::whereIn('locale', $this->loadLocales())
-                            ->where(function ($q) {
-                                $q->where('key', 'like', "%$q%")->orWhere('value', 'like', "%$q%");
+                            ->where(function ($filterQuery) use ($q) {
+                                $filterQuery->where('key', 'like', "%$q%")->orWhere('value', 'like', "%$q%");
                             })
                             ->orderBy('group', 'asc')->orderBy('key', 'asc')->get();
 
