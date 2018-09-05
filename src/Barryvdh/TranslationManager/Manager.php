@@ -174,13 +174,15 @@ class Manager{
         return $array;
     }
 
-    public function getConfig($key = null)
+    public function getConfig($key = null, $defaultValue = null)
     {
         if($key == null) {
             return $this->config;
         }
         else {
-            return $this->config[$key];
+            $value = $this->config[$key];
+
+            return $value || !$defaultValue ? $value : $defaultValue;
         }
     }
 
