@@ -16,6 +16,10 @@
         a.status-1{
             font-weight: bold;
         }
+
+        .translationsTable thead tr th:first-child, .translationsTable tbody tr td:first-child {
+            background-color: #f7f7f7;
+        }
     </style>
     <script>
         jQuery(document).ready(function($){
@@ -112,7 +116,7 @@
         <?php endif; ?>
 
         <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
-        <table class="table">
+        <table class="table translationsTable">
             <thead>
             <tr>
                 <th width="15%">Key</th>
