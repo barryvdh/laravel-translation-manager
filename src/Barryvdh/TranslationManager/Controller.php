@@ -22,7 +22,7 @@ class Controller extends BaseController
         return property_exists($this, 'editMode') ? $this->editMode : $this->manager->getConfig('editMode', 'FULL');
     }
 
-    protected function allowedLocales() {
+    protected function specificLocales() {
         return [];
     }
     protected function readonlyLocales() {
@@ -83,10 +83,10 @@ class Controller extends BaseController
 
     private function loadLocales()
     {
-        $allowed = $this->allowedLocales();
+        $specific = $this->specificLocales();
 
-        if (count($allowed))
-            return $allowed;
+        if (count($specific))
+            return $specific;
 
         //Set the default locale as the first one.
         $locales = array_merge(array(Config::get('app.locale')), Translation::groupBy('locale')->lists('locale'));
