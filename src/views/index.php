@@ -119,7 +119,7 @@
                 <?php foreach($locales as $locale): ?>
                     <th><?= e($locale) ?></th>
                 <?php endforeach; ?>
-                <?php if($deleteEnabled): ?>
+                <?php if($editMode == "FULL" && $deleteEnabled): ?>
                     <th>&nbsp;</th>
                 <?php endif; ?>
             </tr>
