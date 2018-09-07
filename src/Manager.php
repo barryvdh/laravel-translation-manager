@@ -89,7 +89,7 @@ class Manager
                     $translations = \Lang::getLoader()->load( $locale, $group );
                 } else {
                     $translations = include( $file );
-                    $group        = "vendor/" . $vendorName;
+                    $group        = sprintf('vendor/%s/%s', $vendorName, $group);
                 }
 
                 if ( $translations && is_array( $translations ) ) {
@@ -266,11 +266,19 @@ class Manager
                     if ( isset( $groups[ $group ] ) ) {
                         $translations = $groups[ $group ];
                         $path         = $this->app[ 'path.lang' ];
+                        $filename = $group;
 
-                        $locale_path = $locale . DIRECTORY_SEPARATOR . $group;
+                        $locale_path = $locale . DIRECTORY_SEPARATOR . $filename;
                         if ( $vendor ) {
-                            $path        = $basePath . '/' . $group . '/' . $locale;
-                            $locale_path = str_after( $group, "/" );
+                            $groupParts = explode('/', $group);
+                            $filename = $groupParts[2];
+                            $path = sprintf('%s/%s/%s', $basePath, $groupParts[0], $groupParts[1]);
+
+                            // 'vendor/{package}/{locale}/{file}}'
+                            $locale_path = $groupParts[0].DIRECTORY_SEPARATOR
+                                .$groupParts[1].DIRECTORY_SEPARATOR
+                                .$locale.DIRECTORY_SEPARATOR
+                                .$filename;
                         }
                         $subfolders = explode( DIRECTORY_SEPARATOR, $locale_path );
                         array_pop( $subfolders );
@@ -279,19 +287,22 @@ class Manager
                         foreach ( $subfolders as $subfolder ) {
                             $subfolder_level = $subfolder_level . $subfolder . DIRECTORY_SEPARATOR;
 
-                            $temp_path = rtrim( $path . DIRECTORY_SEPARATOR . $subfolder_level, DIRECTORY_SEPARATOR );
+                            $temp_path = ($vendor)
+                                ? rtrim( $basePath . DIRECTORY_SEPARATOR . $subfolder_level, DIRECTORY_SEPARATOR )
+                                : rtrim( $path . DIRECTORY_SEPARATOR . $subfolder_level, DIRECTORY_SEPARATOR );
+
                             if ( !is_dir( $temp_path ) ) {
                                 mkdir( $temp_path, 0777, true );
                             }
                         }
 
-                        $path = $path . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . $group . '.php';
+                        $path = $path . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . $filename . '.php';
 
                         $output = "<?php\n\nreturn " . var_export( $translations, true ) . ";" . \PHP_EOL;
                         $this->files->put( $path, $output );
                     }
                 }
-                Translation::ofTranslatedGroup( $group )->update( [ 'status' => Translation::STATUS_SAVED ] );
+                Translation::ofTranslatedGroup( $filename )->update( [ 'status' => Translation::STATUS_SAVED ] );
             }
         }
 
