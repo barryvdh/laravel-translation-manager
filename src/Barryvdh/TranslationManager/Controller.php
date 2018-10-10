@@ -18,6 +18,17 @@ class Controller extends BaseController
         $this->manager = $manager;
     }
 
+    protected function getEditMode() {
+        return property_exists($this, 'editMode') ? $this->editMode : $this->manager->getConfig('editMode', 'FULL');
+    }
+
+    protected function specificLocales() {
+        return [];
+    }
+    protected function readonlyLocales() {
+        return [];
+    }
+
     public function getIndex($group = null)
     {
         $locales = $this->loadLocales();
@@ -42,12 +53,13 @@ class Controller extends BaseController
         return \View::make('laravel-translation-manager::index')
             ->with('translations', $translations)
             ->with('locales', $locales)
+            ->with('readonlyLocales', $this->readonlyLocales())
             ->with('groups', $groups)
             ->with('group', $group)
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
-            ->with('editUrl', URL::action(get_class($this).'@postEdit', array($group)))
-            ->with('searchUrl', URL::action(get_class($this).'@getSearch'))
+            ->with('controller', get_class($this))
+            ->with('editMode', $this->getEditMode())
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
             ;
     }
@@ -55,16 +67,27 @@ class Controller extends BaseController
     public function getSearch()
     {
         $q = \Input::get('q');
-        $translations = Translation::where('key', 'like', "%$q%")->orWhere('value', 'like', "%$q%")->orderBy('group', 'asc')->orderBy('key', 'asc')->get();
+        $translations = Translation::whereIn('locale', $this->loadLocales())
+                            ->where(function ($filterQuery) use ($q) {
+                                $filterQuery->where('key', 'like', "%$q%")->orWhere('value', 'like', "%$q%");
+                            })
+                            ->orderBy('group', 'asc')->orderBy('key', 'asc')->get();
+
         $numTranslations = count($translations);
 
         return \View::make('laravel-translation-manager::search')
-          ->with('translations', $translations)
-          ->with('numTranslations', $numTranslations);
+            ->with('translations', $translations)
+            ->with('controller', get_class($this))
+            ->with('numTranslations', $numTranslations);
     }
 
-    protected function loadLocales()
+    private function loadLocales()
     {
+        $specific = $this->specificLocales();
+
+        if (count($specific))
+            return $specific;
+
         //Set the default locale as the first one.
         $locales = array_merge(array(Config::get('app.locale')), Translation::groupBy('locale')->lists('locale'));
         return array_unique($locales);
@@ -72,12 +95,14 @@ class Controller extends BaseController
 
     public function postAdd($group)
     {
-        $keys = explode("\n", Input::get('keys'));
+        if ($this->getEditMode() == "FULL") {
+            $keys = explode("\n", Input::get('keys'));
 
-        foreach($keys as $key){
-            $key = trim($key);
-            if($group && $key){
-                $this->manager->missingKey('*', $group, $key);
+            foreach($keys as $key){
+                $key = trim($key);
+                if($group && $key){
+                    $this->manager->missingKey('*', $group, $key);
+                }
             }
         }
         return Redirect::back();
@@ -90,21 +115,24 @@ class Controller extends BaseController
             $value = Input::get('value');
 
             list($locale, $key) = explode('|', $name, 2);
-            $translation = Translation::firstOrNew(array(
-                'locale' => $locale,
-                'group' => $group,
-                'key' => $key,
-            ));
-            $translation->value = (string) $value ?: null;
-            $translation->status = Translation::STATUS_CHANGED;
-            $translation->save();
-            return array('status' => 'ok');
+
+            if (!in_array($locale, $this->readonlyLocales())) {
+                $translation = Translation::firstOrNew(array(
+                    'locale' => $locale,
+                    'group' => $group,
+                    'key' => $key,
+                ));
+                $translation->value = (string) $value ?: null;
+                $translation->status = Translation::STATUS_CHANGED;
+                $translation->save();
+                return array('status' => 'ok');
+            }
         }
     }
 
     public function postDelete($group, $key)
     {
-        if(!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
+        if ($this->getEditMode() == "FULL" && !in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
             Translation::where('group', $group)->where('key', $key)->delete();
             return array('status' => 'ok');
         }
@@ -112,10 +140,12 @@ class Controller extends BaseController
 
     public function postImport()
     {
-        $replace = Input::get('replace', false);
-        $counter = $this->manager->importTranslations($replace);
+        if ($this->getEditMode() == "FULL") {      
+            $replace = Input::get('replace', false);
+            $counter = $this->manager->importTranslations($replace);
 
-        return Response::json(array('status' => 'ok', 'counter' => $counter));
+            return Response::json(array('status' => 'ok', 'counter' => $counter));
+        }
     }
     
     public function postFind()
@@ -127,8 +157,10 @@ class Controller extends BaseController
 
     public function postPublish($group)
     {
-        $this->manager->exportTranslations($group);
+        if ($this->getEditMode() == "FULL") {
+            $this->manager->exportTranslations($group);
 
-        return Response::json(array('status' => 'ok'));
+            return Response::json(array('status' => 'ok'));
+        }
     }
 }

@@ -16,6 +16,10 @@
         a.status-1{
             font-weight: bold;
         }
+
+        .translationsTable thead tr th:first-child, .translationsTable tbody tr td:first-child {
+            background-color: #f7f7f7;
+        }
     </style>
     <script>
         jQuery(document).ready(function($){
@@ -33,7 +37,7 @@
             });
 
             $('.group-select').on('change', function(){
-                window.location.href = '<?= action('Barryvdh\TranslationManager\Controller@getIndex') ?>/'+$(this).val();
+                window.location.href = '<?= action($controller.'@getIndex') ?>/'+$(this).val();
             });
 
 
@@ -80,20 +84,20 @@
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#searchModel" style="float:right; display:inline">
             Search
         </button>
-        <?php if(!isset($group)) : ?>
-    <form class="form-inline form-import" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postImport') ?>" data-remote="true" role="form">
+        <?php if($editMode == "FULL" && !isset($group)) : ?>
+    <form class="form-inline form-import" method="POST" action="<?= action($controller.'@postImport') ?>" data-remote="true" role="form">
         <select name="replace" class="form-control">
             <option value="0">Append new translations</option>
             <option value="1">Replace existing translations</option>
         </select>
         <button type="submit" class="btn btn-success"  data-disable-with="Loading..">Import groups</button>
     </form>
-    <form class="form-inline form-find" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postFind') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to scan you app folder? All found translation keys will be added to the database.">
+    <form class="form-inline form-find" method="POST" action="<?= action($controller.'@postFind') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to scan you app folder? All found translation keys will be added to the database.">
         <button type="submit" class="btn btn-info" data-disable-with="Searching.." >Find translations in files</button>
     </form>
 <?php endif; ?>
-    <?php if(isset($group)) : ?>
-        <form class="form-inline form-publish" method="POST" action="<?= action('Barryvdh\TranslationManager\Controller@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?= $group ?>? This will overwrite existing language files.">
+    <?php if($editMode == "FULL" && isset($group)) : ?>
+        <form class="form-inline form-publish" method="POST" action="<?= action($controller.'@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?= $group ?>? This will overwrite existing language files.">
             <button type="submit" class="btn btn-info" data-disable-with="Publishing.." >Publish translations</button>
         </form>
     <?php endif; ?>
@@ -104,20 +108,22 @@
         </div>
     </form>
     <?php if($group): ?>
-        <form action="<?= action('Barryvdh\TranslationManager\Controller@postAdd', array($group)) ?>" method="POST"  role="form">
+        <?php if($editMode == "FULL") : ?>
+        <form action="<?= action($controller.'@postAdd', array($group)) ?>" method="POST"  role="form">
             <textarea class="form-control" rows="3" name="keys" placeholder="Add 1 key per line, without the group prefix"></textarea>
             <input type="submit" value="Add keys" class="btn btn-primary">
         </form>
+        <?php endif; ?>
 
         <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
-        <table class="table">
+        <table class="table translationsTable">
             <thead>
             <tr>
                 <th width="15%">Key</th>
                 <?php foreach($locales as $locale): ?>
                     <th><?= e($locale) ?></th>
                 <?php endforeach; ?>
-                <?php if($deleteEnabled): ?>
+                <?php if($editMode == "FULL" && $deleteEnabled): ?>
                     <th>&nbsp;</th>
                 <?php endif; ?>
             </tr>
@@ -131,12 +137,16 @@
                         <?php $t = isset($translation[$locale]) ? $translation[$locale] : null?>
 
                         <td>
-                            <a href="#edit" class="editable status-<?= $t ? e($t->status) : 0 ?> locale-<?= e($locale) ?>" data-locale="<?= e($locale) ?>" data-name="<?= $locale . "|" . e($key) ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= $editUrl ?>" data-title="Enter translation"><?= $t ? e($t->value) : '' ?></a>
+                            <?php if (!in_array($locale, $readonlyLocales)): ?>
+                                <a href="#edit" class="editable status-<?= $t ? e($t->status) : 0 ?> locale-<?= e($locale) ?>" data-locale="<?= e($locale) ?>" data-name="<?= $locale . "|" . e($key) ?>" id="username" data-type="textarea" data-pk="<?= $t ? $t->id : 0 ?>" data-url="<?= action($controller.'@postEdit', array($group)) ?>" data-title="Enter translation"><?= $t ? e($t->value) : '' ?></a>
+                            <?php else: ?>
+                                <?= $t ? e($t->value) : '<span class="editable-empty">Empty</span>' ?>
+                            <?php endif; ?>
                         </td>
                     <?php endforeach; ?>
-                    <?php if($deleteEnabled): ?>
+                    <?php if($editMode == "FULL" && $deleteEnabled): ?>
                         <td>
-                            <a href="<?= action('Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>" class="delete-key" data-method="POST" data-remote="true" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
+                            <a href="<?= action($controller.'@postDelete', [$group, $key]) ?>" class="delete-key" data-method="POST" data-remote="true" data-confirm="Are you sure you want to delete the translations for '<?= $key ?>?"><span class="glyphicon glyphicon-trash"></span></a>
                         </td>
                     <?php endif; ?>
                 </tr>
@@ -164,7 +174,7 @@
                         $('#searchModel .results').html(data);
                     });
                 </script>
-                <form id="search-form" class="form-inline" method="GET" action="<?= $searchUrl ?>" data-remote="true">
+                <form id="search-form" class="form-inline" method="GET" action="<?= action($controller.'@getSearch') ?>" data-remote="true">
                     <div class="form-group">
                         <div class="input-group">
                             <input type="search" name="q" class="form-control">
