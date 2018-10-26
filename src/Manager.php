@@ -170,7 +170,7 @@ class Manager
             "[\),]";                            // Close parentheses or new parameter
 
         $stringPattern =
-            "[^\w|>]" .                                     // Must not have an alphanum or _ or > before real method
+            "[^\w]" .                                     // Must not have an alphanum before real method
             '(' . implode( '|', $functions ) . ')' .             // Must start with one of the functions
             "\(" .                                          // Match opening parenthesis
             "(?P<quote>['\"])" .                            // Match " or ' and store in {quote}
