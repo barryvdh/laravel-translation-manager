@@ -157,7 +157,7 @@ class Manager
         $stringKeys = [];
         $functions  = $this->config[ 'trans_functions' ];
 
-        $groupPattern =                              // See http://regexr.com/392hu
+        $groupPattern =                          // See https://regex101.com/r/WEJqdL/6
             "[^\w|>]" .                          // Must not have an alphanum or _ or > before real method
             '(' . implode( '|', $functions ) . ')' .  // Must start with one of the functions
             "\(" .                               // Match opening parenthesis
