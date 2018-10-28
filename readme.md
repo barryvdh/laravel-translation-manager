@@ -22,7 +22,7 @@ Require this package in your composer.json and run composer update (or run `comp
 
     composer require barryvdh/laravel-translation-manager
 
-After updating composer, add the ServiceProvider to the providers array in config/app.php
+After updating composer, add the ServiceProvider to the providers array in `config/app.php`
 
     'Barryvdh\TranslationManager\ManagerServiceProvider',
 
