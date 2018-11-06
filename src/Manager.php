@@ -28,15 +28,18 @@ class Manager
 
     protected $ignoreFilePath;
 
+    protected $translationModel; // Use instead of $this->translationModel:: to be more flexible, see config file
+
     public function __construct( Application $app, Filesystem $files, Dispatcher $events )
     {
-        $this->app            = $app;
-        $this->files          = $files;
-        $this->events         = $events;
-        $this->config         = $app[ 'config' ][ 'translation-manager' ];
-        $this->ignoreFilePath = storage_path( '.ignore_locales' );
-        $this->locales        = [];
-        $this->ignoreLocales  = $this->getIgnoredLocales();
+        $this->app              = $app;
+        $this->translationModel = TranslationServiceProvider::getTranslationModelInstance();
+        $this->files            = $files;
+        $this->events           = $events;
+        $this->config           = $app[ 'config' ][ 'translation-manager' ];
+        $this->ignoreFilePath   = storage_path( '.ignore_locales' );
+        $this->locales          = [];
+        $this->ignoreLocales    = $this->getIgnoredLocales();
     }
 
     protected function getIgnoredLocales()
@@ -128,14 +131,14 @@ class Manager
             return false;
         }
         $value       = (string) $value;
-        $translation = Translation::firstOrNew( [
+        $translation = $this->translationModel::firstOrNew( [
             'locale' => $locale,
             'group'  => $group,
             'key'    => $key,
         ] );
 
         // Check if the database is different then the files
-        $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
+        $newStatus = $translation->value === $value ? $this->translationModel::STATUS_SAVED : $this->translationModel::STATUS_CHANGED;
         if ( $newStatus !== (int) $translation->status ) {
             $translation->status = $newStatus;
         }
@@ -204,7 +207,7 @@ class Manager
                     //skip keys which contain namespacing characters, unless they also contain a
                     //space, which makes it JSON.
                     if ( !( str_contains( $key, '::' ) && str_contains( $key, '.' ) )
-                         || str_contains( $key, ' ' ) ) {
+                        || str_contains( $key, ' ' ) ) {
                         $stringKeys[] = $key;
                     }
                 }
@@ -234,7 +237,7 @@ class Manager
     public function missingKey( $namespace, $group, $key )
     {
         if ( !in_array( $group, $this->config[ 'exclude_groups' ] ) ) {
-            Translation::firstOrCreate( [
+            $this->translationModel::firstOrCreate( [
                 'locale' => $this->app[ 'config' ][ 'app.locale' ],
                 'group'  => $group,
                 'key'    => $key,
@@ -258,9 +261,9 @@ class Manager
                     }
                 }
 
-                $tree = $this->makeTree( Translation::ofTranslatedGroup( $group )
-                                                    ->orderByGroupKeys( array_get( $this->config, 'sort_keys', false ) )
-                                                    ->get() );
+                $tree = $this->makeTree( $this->translationModel::ofTranslatedGroup( $group )
+                    ->orderByGroupKeys( array_get( $this->config, 'sort_keys', false ) )
+                    ->get() );
 
                 foreach ( $tree as $locale => $groups ) {
                     if ( isset( $groups[ $group ] ) ) {
@@ -291,14 +294,14 @@ class Manager
                         $this->files->put( $path, $output );
                     }
                 }
-                Translation::ofTranslatedGroup( $group )->update( [ 'status' => Translation::STATUS_SAVED ] );
+                $this->translationModel::ofTranslatedGroup( $group )->update( [ 'status' => $this->translationModel::STATUS_SAVED ] );
             }
         }
 
         if ( $json ) {
-            $tree = $this->makeTree( Translation::ofTranslatedGroup( self::JSON_GROUP )
-                                                ->orderByGroupKeys( array_get( $this->config, 'sort_keys', false ) )
-                                                ->get(), true );
+            $tree = $this->makeTree( $this->translationModel::ofTranslatedGroup( self::JSON_GROUP )
+                ->orderByGroupKeys( array_get( $this->config, 'sort_keys', false ) )
+                ->get(), true );
 
             foreach ( $tree as $locale => $groups ) {
                 if ( isset( $groups[ self::JSON_GROUP ] ) ) {
@@ -309,7 +312,7 @@ class Manager
                 }
             }
 
-            Translation::ofTranslatedGroup( self::JSON_GROUP )->update( [ 'status' => Translation::STATUS_SAVED ] );
+            $this->translationModel::ofTranslatedGroup( self::JSON_GROUP )->update( [ 'status' => $this->translationModel::STATUS_SAVED ] );
         }
 
         $this->events->dispatch( new TranslationsExportedEvent() );
@@ -317,7 +320,7 @@ class Manager
 
     public function exportAllTranslations()
     {
-        $groups = Translation::whereNotNull( 'value' )->selectDistinctGroup()->get( 'group' );
+        $groups = $this->translationModel::whereNotNull( 'value' )->selectDistinctGroup()->get( 'group' );
 
         foreach ( $groups as $group ) {
             if ( $group->group == self::JSON_GROUP ) {
@@ -358,19 +361,19 @@ class Manager
 
     public function cleanTranslations()
     {
-        Translation::whereNull( 'value' )->delete();
+        $this->translationModel::whereNull( 'value' )->delete();
     }
 
     public function truncateTranslations()
     {
-        Translation::truncate();
+        $this->translationModel::truncate();
     }
 
     public function getLocales()
     {
         if ( empty( $this->locales ) ) {
             $locales = array_merge( [ config( 'app.locale' ) ],
-                Translation::groupBy( 'locale' )->pluck( 'locale' )->toArray() );
+                $this->translationModel::groupBy( 'locale' )->pluck( 'locale' )->toArray() );
             foreach ( $this->files->directories( $this->app->langPath() ) as $localeDir ) {
                 if ( ( $name = $this->files->name( $localeDir ) ) != 'vendor' ) {
                     $locales[] = $name;
@@ -414,7 +417,7 @@ class Manager
         $this->saveIgnoredLocales();
         $this->ignoreLocales = $this->getIgnoredLocales();
 
-        Translation::where( 'locale', $locale )->delete();
+        $this->translationModel::where( 'locale', $locale )->delete();
     }
 
     public function getConfig( $key = null )
