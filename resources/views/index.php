@@ -212,7 +212,7 @@
                     <?php endforeach; ?>
                     <?php if ($deleteEnabled): ?>
                         <td>
-                            <a href="<?php echo action('\Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>"
+                            <a href="<?php echo action('\Barryvdh\TranslationManager\Controller@postDelete', [$group, base64_encode($key)]) ?>"
                                class="delete-key"
                                data-confirm="Are you sure you want to delete the translations for '<?php echo htmlentities($key, ENT_QUOTES, 'UTF-8', false) ?>?"><span
                                         class="glyphicon glyphicon-trash"></span></a>
