@@ -185,10 +185,12 @@ class Manager
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ( $finder as $file ) {
             // Search the current file for the pattern
-            if ( preg_match_all( "/$groupPattern/siU", $file->getContents(), $matches ) ) {
-                // Get all matches
-                foreach ( $matches[ 2 ] as $key ) {
-                    $groupKeys[] = $key;
+            if(!isset($this->config['disable_group_detection_for_find']) || $this->config['disable_group_detection_for_find']===false) {
+                if ( preg_match_all( "/$groupPattern/siU", $file->getContents(), $matches ) ) {
+                    // Get all matches
+                    foreach ( $matches[ 2 ] as $key ) {
+                        $groupKeys[] = $key;
+                    }
                 }
             }
 
