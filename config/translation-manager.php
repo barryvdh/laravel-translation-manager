@@ -35,6 +35,15 @@ return [
      *    )
      */
     'exclude_groups' => [],
+    
+    /**
+     * Disable Group Detection for the php artisan translations:find command
+     * Can be useful if you have group signs in the translation string keys (like points)
+     * 
+     * @type boolean
+     * 
+     */
+    'disable_group_detection_for_find'  => true,
 
     /**
      * Exclude specific languages from Laravel Translation Manager.
