@@ -1,9 +1,10 @@
-@extends(config('translation-manager::layout'))
+@extends(config('translation-manager.layout'))
+
 @php($controller='\Barryvdh\TranslationManager\Controller')
 
-@push('documentTitle')
+@section('documentTitle')
     Translation Manager
-@endpush
+@stop
 @include('translation-manager::bootstrap4._notifications')
 @section('content')
 
@@ -25,5 +26,5 @@
 @push('scripts')
     {{--<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>--}}
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-    @include('translation-manager::bootstrap4.jsScript')
+    @include('translation-manager::jsScript')
 @endpush

@@ -45,7 +45,7 @@
                             <a href="<?php echo action($controller . '@postDelete', [$group, $key]) ?>"
                                class="delete-key"
                                data-confirm="Are you sure you want to delete the translations for '{{{$key}}}?"><span
-                                    class="glyphicon glyphicon-trash"></span></a>
+                                    class=" fa fa-trash"></span></a>
                         </td>
                    @endif
                 </tr>
