@@ -15,8 +15,8 @@
   ],
   "require": {
     "php": ">=7",
-    "illuminate/support": "5.5.x|5.6.x|5.7.x",
-    "illuminate/translation": "5.5.x|5.6.x|5.7.x",
+    "illuminate/support": "5.5.x|5.6.x|5.7.x|5.8.x",
+    "illuminate/translation": "5.5.x|5.6.x|5.7.x|5.8.x",
     "symfony/finder": "~3.0|~4.0"
   },
   "autoload": {
