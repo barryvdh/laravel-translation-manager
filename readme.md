@@ -143,7 +143,7 @@ You shouldn't use this in production, just in development to translate your view
 
 ## TODO
 
-This package is still very alpha. Few thinks that are on the todo-list:
+This package is still very alpha. Few things that are on the todo-list:
 
     - Add locales/groups via webinterface
     - Improve webinterface (more selection/filtering, behavior of popup after save etc)
