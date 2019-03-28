@@ -67,6 +67,7 @@ class Manager
                 foreach ( $this->files->directories( $langPath ) as $vendor ) {
                     $counter += $this->importTranslations( $replace, $vendor );
                 }
+                $vendor = false;
                 continue;
             }
             $vendorName = $this->files->name( $this->files->dirname( $langPath ) );
@@ -287,7 +288,7 @@ class Manager
 
                         $path = $path . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . $group . '.php';
 
-                        $output = "<?php\n\nreturn " . var_export( $translations, true ) . ";" . \PHP_EOL;
+                        $output = "<?php\n\nreturn " . $this->varExport($translations) . ";" . \PHP_EOL;
                         $this->files->put( $path, $output );
                     }
                 }
@@ -424,5 +425,23 @@ class Manager
         } else {
             return $this->config[ $key ];
         }
+    }
+
+    /**
+     * Var_export() with square brackets and indented 4 spaces.
+     *
+     * @param mixed $expression
+     *
+     * @return mixed
+     */
+    protected function varExport($expression)
+    {
+        $export = var_export($expression, true);
+        $export = preg_replace("/^([ ]*)(.*)/m", '$1$1$2', $export);
+        $array = preg_split("/\r\n|\n|\r/", $export);
+        $array = preg_replace(["/\s*array\s\($/", "/\)(,)?$/", "/\s=>\s$/"], [NULL, ']$1', ' => ['], $array);
+        $export = join(PHP_EOL, array_filter(["["] + $array));
+
+        return $export;
     }
 }
