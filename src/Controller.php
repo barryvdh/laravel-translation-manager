@@ -178,13 +178,14 @@ class Controller extends BaseController
             $json = false;
             $group = $request->get('file');
             if($group === '_json'){
-                $json = true;
-                $file_name = $newLocale.'_json';
+                //$json = true;
+                //$file_name = $newLocale.'_json';
+                return redirect()->back();
             }else{
                 $file_name = $group.'.php';
             }
             $this->manager->addLocale($newLocale);
-            $this->manager->exportTranslations($group,$json);
+            $this->manager->exportTranslations($group, $json);
             Artisan::call("translate:files",[
                 '--baselocale' => $request->input('base-locale'),
                 '--targetlocales' => $newLocale,

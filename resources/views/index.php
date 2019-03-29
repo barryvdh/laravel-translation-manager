@@ -192,6 +192,7 @@
                 <input type="submit" value="Add keys" class="btn btn-primary">
             </div>
         </form>
+        <?php if($group!=='_json'): ?>
         <div class="row">
             <div class="col-sm-2">
                 <span class="btn btn-default enable-auto-translate-group">Use Auto Translate</span>
@@ -224,6 +225,7 @@
                 </div>
             </div>
         </form>
+        <?php endif; ?>
         <hr>
     <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
         <table class="table">
