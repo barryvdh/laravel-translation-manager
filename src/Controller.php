@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Artisan;
 
 class Controller extends BaseController
 {
@@ -166,6 +167,31 @@ class Controller extends BaseController
     {
         foreach ($request->input('remove-locale', []) as $locale => $val) {
             $this->manager->removeLocale($locale);
+        }
+        return redirect()->back();
+    }
+
+    public function postTranslateMissing(Request $request){
+        $locales = $this->manager->getLocales();
+        $newLocale = str_replace([], '-', trim($request->input('new-locale')));
+        if($request->has('with-translations') && $request->has('base-locale') && in_array($request->input('base-locale'),$locales) && $request->has('file')){
+            $json = false;
+            $group = $request->get('file');
+            if($group === '_json'){
+                $json = true;
+                $file_name = $newLocale.'_json';
+            }else{
+                $file_name = $group.'.php';
+            }
+            $this->manager->addLocale($newLocale);
+            $this->manager->exportTranslations($group,$json);
+            Artisan::call("translate:files",[
+                '--baselocale' => $request->input('base-locale'),
+                '--targetlocales' => $newLocale,
+                '--targetfiles' => $file_name
+            ]);
+            $this->manager->importTranslations(false,null,$group);
+            return redirect()->back();
         }
         return redirect()->back();
     }
