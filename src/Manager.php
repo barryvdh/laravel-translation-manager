@@ -246,7 +246,7 @@ class Manager
         }
     }
 
-    public function exportTranslations( $group = null, $json = false )
+     public function exportTranslations( $group = null, $json = false )
     {
         $basePath = $this->app[ 'path.lang' ];
 
@@ -269,7 +269,7 @@ class Manager
                 foreach ( $tree as $locale => $groups ) {
                     if ( isset( $groups[ $group ] ) ) {
                         $translations = $groups[ $group ];
-                        $path         = $this->app[ 'path.lang' ];
+                        $path         = $this->app[ 'path.lang' ];// C:\xampp\htdocs\sb_web\resources\lang
 
                         $locale_path = $locale . DIRECTORY_SEPARATOR . $group;
                         if ( $vendor ) {
@@ -284,15 +284,25 @@ class Manager
                             $subfolder_level = $subfolder_level . $subfolder . DIRECTORY_SEPARATOR;
 
                             $temp_path = rtrim( $path . DIRECTORY_SEPARATOR . $subfolder_level, DIRECTORY_SEPARATOR );
+                            $temp_path1 = rtrim( $path . DIRECTORY_SEPARATOR . $subfolder_level, DIRECTORY_SEPARATOR );
                             if ( !is_dir( $temp_path ) ) {
                                 mkdir( $temp_path, 0777, true );
                             }
+                            if ( !is_dir( $temp_path1 ) ) {
+                                mkdir( $temp_path1, 0777, true );
+                            }
                         }
+                        $config = \Config::get('configFile.config_var');
+                        $server1_path = $config['server1_path_lang'];
+                        $server2_path =$config['server2_path_lang'];
 
-                        $path = $path . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . $group . '.php';
+                        $path_nw = $server1_path . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . $group . '.php';
+                        $path1_nw = $server2_path . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . $group . '.php';
 
                         $output = "<?php\n\nreturn " . var_export( $translations, true ) . ";" . \PHP_EOL;
-                        $this->files->put( $path, $output );
+                        $this->files->put( $path_nw, $output );
+			            $this->files->put( $path1_nw, $output );
+
                     }
                 }
                 Translation::ofTranslatedGroup( $group )->update( [ 'status' => Translation::STATUS_SAVED ] );
@@ -318,7 +328,6 @@ class Manager
 
         $this->events->dispatch( new TranslationsExportedEvent() );
     }
-
     public function exportAllTranslations()
     {
         $groups = Translation::whereNotNull( 'value' )->selectDistinctGroup()->get( 'group' );
