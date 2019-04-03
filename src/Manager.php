@@ -269,7 +269,7 @@ class Manager
                 foreach ( $tree as $locale => $groups ) {
                     if ( isset( $groups[ $group ] ) ) {
                         $translations = $groups[ $group ];
-                        $path         = $this->app[ 'path.lang' ];// C:\xampp\htdocs\sb_web\resources\lang
+                        $path         = $this->app[ 'path.lang' ];
 
                         $locale_path = $locale . DIRECTORY_SEPARATOR . $group;
                         if ( $vendor ) {
