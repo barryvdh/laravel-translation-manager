@@ -192,7 +192,6 @@
                 <input type="submit" value="Add keys" class="btn btn-primary">
             </div>
         </form>
-        <?php if($group!=='_json'): ?>
         <div class="row">
             <div class="col-sm-2">
                 <span class="btn btn-default enable-auto-translate-group">Use Auto Translate</span>
@@ -215,7 +214,9 @@
                         <input type="text" name="new-locale" class="form-control" id="new-locale" placeholder="Enter target locale key" />
                     </div>
                     <?php if(!config('laravel_google_translate.google_translate_api_key')): ?>
-                        <code>Please enter your Google Translate API key for auto-translating custom translation files</code>
+                        <p>
+                            <code>Translating using stichoza/google-translate-php. If you would like to use Google Translate API enter your Google Translate API key to config file laravel_google_translate</code>
+                        </p>
                     <?php endif; ?>
                     <div class="form-group">
                         <input type="hidden" name="with-translations" value="1">
@@ -225,7 +226,6 @@
                 </div>
             </div>
         </form>
-        <?php endif; ?>
         <hr>
     <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
         <table class="table">
