@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;
+use \Illuminate\Pagination\LengthAwarePaginator;
 use Tanmuhittin\LaravelGoogleTranslate\Commands\TranslateFilesCommand;
 
 class Controller extends BaseController
@@ -33,14 +34,37 @@ class Controller extends BaseController
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
 
-        $allTranslations = Translation::where('group', $group)->orderBy('key', 'asc')->get();
-        $numTranslations = count($allTranslations);
+        $allTranslations = Translation::where('group', $group)->orderBy('key', 'asc');
+        $numTranslations = $allTranslations->count();
         $translations = [];
+
+        if ($this->manager->getConfig('pagination_enabled')) {
+            $page = request()->get('page') ?: 1;
+            $per_page = $this->manager->getConfig('per_page');
+
+            if ($page) {
+                $skip = $per_page * ($page - 1);
+                $allTranslations = $allTranslations->take($per_page)->skip($skip);
+            } else {
+                $allTranslations = $allTranslations->take($per_page)->skip(0);
+            }
+
+            $prefix = $this->manager->getConfig('route')['prefix'];
+            $path = url("$prefix/view/$group");
+        }
+
+        $allTranslations = $allTranslations->get();
+        
         foreach($allTranslations as $translation){
             $translations[$translation->key][$translation->locale] = $translation;
         }
 
-         return view('translation-manager::index')
+        if ($this->manager->getConfig('pagination_enabled')) {
+            $paginator = new LengthAwarePaginator($translations, $numTranslations, $per_page, $page);
+            $translations = $paginator->withPath($path);
+        }
+
+        return view('translation-manager::index')
             ->with('translations', $translations)
             ->with('locales', $locales)
             ->with('groups', $groups)
@@ -48,7 +72,8 @@ class Controller extends BaseController
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
             ->with('editUrl', action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]))
-            ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
+            ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'))
+            ->with('paginationEnabled', $this->manager->getConfig('pagination_enabled'));
     }
 
     public function getView($group = null)

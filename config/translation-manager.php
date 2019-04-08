@@ -23,6 +23,21 @@ return [
     'delete_enabled' => true,
 
     /**
+     * Enable pagination of translations
+     *
+     * @type boolean
+     */
+    'pagination_enabled' => false,
+
+
+    /**
+     * Define number of translations per page
+     *
+     * @type integer
+     */
+    'per_page ' => 50,
+
+    /**
      * Exclude specific groups from Laravel Translation Manager.
      * This is useful if, for example, you want to avoid editing the official Laravel language files.
      *
