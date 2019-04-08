@@ -35,7 +35,7 @@ return [
      *
      * @type integer
      */
-    'per_page ' => 50,
+    'per_page' => 50,
 
     /**
      * Exclude specific groups from Laravel Translation Manager.
