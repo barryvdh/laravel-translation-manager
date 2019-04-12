@@ -16,6 +16,21 @@ return [
     ],
 
     /**
+     * Enable pagination of translations
+     *
+     * @type boolean
+     */
+    'pagination_enabled' => false,
+
+
+    /**
+     * Define number of translations per page
+     *
+     * @type integer
+     */
+    'per_page' => 40,
+
+    /**
      * Enable deletion of translations
      *
      * @type boolean
