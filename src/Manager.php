@@ -7,6 +7,7 @@ use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Artisan;
 use Symfony\Component\Finder\Finder;
 
 class Manager
@@ -398,8 +399,15 @@ class Manager
         $this->ignoreLocales = $this->getIgnoredLocales();
 
         if ( !$this->files->exists( $localeDir ) || !$this->files->isDirectory( $localeDir ) ) {
-            return $this->files->makeDirectory( $localeDir );
+            if(!$this->files->makeDirectory( $localeDir )){
+                return false;
+            }
         }
+        Artisan::call('lang:install',
+            [
+                'lang' => [$locale]
+            ]);
+        $this->importTranslations(false);
 
         return true;
     }
