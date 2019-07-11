@@ -64,8 +64,8 @@ class Manager
 
             //import langfiles for each vendor
             if ( $locale == 'vendor' ) {
-                foreach ( $this->files->directories( $langPath ) as $vendor ) {
-                    $counter += $this->importTranslations( $replace, $vendor );
+                foreach ( $this->files->directories( $langPath ) as $vendorDir ) {
+                    $counter += $this->importTranslations( $replace, $vendorDir );
                 }
                 continue;
             }
