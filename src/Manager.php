@@ -246,77 +246,84 @@ class Manager
         }
     }
 
-    public function exportTranslations( $group = null, $json = false )
-    {
-        $basePath = $this->app[ 'path.lang' ];
-
-
+    public function exportTranslations( $group = null, $json = false ) {
         if ( !is_null( $group ) && !$json ) {
-            if ( !in_array( $group, $this->config[ 'exclude_groups' ] ) ) {
-                $vendor = false;
-                if ( $group == '*' ) {
-                    return $this->exportAllTranslations();
-                } else {
-                    if ( starts_with( $group, "vendor" ) ) {
-                        $vendor = true;
-                    }
-                }
-
-                $tree = $this->makeTree( Translation::ofTranslatedGroup( $group )
-                                                    ->orderByGroupKeys( array_get( $this->config, 'sort_keys', false ) )
-                                                    ->get() );
-
-                foreach ( $tree as $locale => $groups ) {
-                    if ( isset( $groups[ $group ] ) ) {
-                        $translations = $groups[ $group ];
-                        $path         = $this->app[ 'path.lang' ];
-
-                        $locale_path = $locale . DIRECTORY_SEPARATOR . $group;
-                        if ( $vendor ) {
-                            $path        = $basePath . '/' . $group . '/' . $locale;
-                            $locale_path = str_after( $group, "/" );
-                        }
-                        $subfolders = explode( DIRECTORY_SEPARATOR, $locale_path );
-                        array_pop( $subfolders );
-
-                        $subfolder_level = '';
-                        foreach ( $subfolders as $subfolder ) {
-                            $subfolder_level = $subfolder_level . $subfolder . DIRECTORY_SEPARATOR;
-
-                            $temp_path = rtrim( $path . DIRECTORY_SEPARATOR . $subfolder_level, DIRECTORY_SEPARATOR );
-                            if ( !is_dir( $temp_path ) ) {
-                                mkdir( $temp_path, 0777, true );
-                            }
-                        }
-
-                        $path = $path . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . $group . '.php';
-
-                        $output = "<?php\n\nreturn " . var_export( $translations, true ) . ";" . \PHP_EOL;
-                        $this->files->put( $path, $output );
-                    }
-                }
-                Translation::ofTranslatedGroup( $group )->update( [ 'status' => Translation::STATUS_SAVED ] );
-            }
+            $this->exportTranslationsGroup($group);
         }
 
-        if ( $json ) {
-            $tree = $this->makeTree( Translation::ofTranslatedGroup( self::JSON_GROUP )
-                                                ->orderByGroupKeys( array_get( $this->config, 'sort_keys', false ) )
-                                                ->get(), true );
-
-            foreach ( $tree as $locale => $groups ) {
-                if ( isset( $groups[ self::JSON_GROUP ] ) ) {
-                    $translations = $groups[ self::JSON_GROUP ];
-                    $path         = $this->app[ 'path.lang' ] . '/' . $locale . '.json';
-                    $output       = json_encode( $translations, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE );
-                    $this->files->put( $path, $output );
-                }
-            }
-
-            Translation::ofTranslatedGroup( self::JSON_GROUP )->update( [ 'status' => Translation::STATUS_SAVED ] );
+        if ($json) {
+            $this->exportTranslationsJson();
         }
 
         $this->events->dispatch( new TranslationsExportedEvent() );
+    }
+
+    public function exportTranslationsGroup($group)
+    {
+        $basePath = $this->app[ 'path.lang' ];
+
+        if ( !in_array( $group, $this->config[ 'exclude_groups' ] ) ) {
+            $vendor = false;
+            if ( $group == '*' ) {
+                return $this->exportAllTranslations();
+            } else {
+                if ( starts_with( $group, "vendor" ) ) {
+                    $vendor = true;
+                }
+            }
+
+            $tree = $this->makeTree( Translation::ofTranslatedGroup( $group )
+                ->orderByGroupKeys( array_get( $this->config, 'sort_keys', false ) )
+                ->get() );
+
+            foreach ( $tree as $locale => $groups ) {
+                if ( isset( $groups[ $group ] ) ) {
+                    $translations = $groups[ $group ];
+                    $path         = $this->app[ 'path.lang' ];
+
+                    $locale_path = $locale . DIRECTORY_SEPARATOR . $group;
+                    if ( $vendor ) {
+                        $path        = $basePath . '/' . $group . '/' . $locale;
+                        $locale_path = str_after( $group, "/" );
+                    }
+                    $subfolders = explode( DIRECTORY_SEPARATOR, $locale_path );
+                    array_pop( $subfolders );
+
+                    $subfolder_level = '';
+                    foreach ( $subfolders as $subfolder ) {
+                        $subfolder_level = $subfolder_level . $subfolder . DIRECTORY_SEPARATOR;
+
+                        $temp_path = rtrim( $path . DIRECTORY_SEPARATOR . $subfolder_level, DIRECTORY_SEPARATOR );
+                        if ( !is_dir( $temp_path ) ) {
+                            mkdir( $temp_path, 0777, true );
+                        }
+                    }
+
+                    $path = $path . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . $group . '.php';
+
+                    $output = "<?php\n\nreturn " . var_export( $translations, true ) . ";" . \PHP_EOL;
+                    $this->files->put( $path, $output );
+                }
+            }
+            Translation::ofTranslatedGroup( $group )->update( [ 'status' => Translation::STATUS_SAVED ] );
+        }
+    }
+
+    public function exportTranslationsJson() {
+        $tree = $this->makeTree( Translation::ofTranslatedGroup( self::JSON_GROUP )
+            ->orderByGroupKeys( array_get( $this->config, 'sort_keys', false ) )
+            ->get(), true );
+
+        foreach ( $tree as $locale => $groups ) {
+            if ( isset( $groups[ self::JSON_GROUP ] ) ) {
+                $translations = $groups[ self::JSON_GROUP ];
+                $path         = $this->app[ 'path.lang' ] . '/' . $locale . '.json';
+                $output       = json_encode( $translations, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE );
+                $this->files->put( $path, $output );
+            }
+        }
+
+        Translation::ofTranslatedGroup( self::JSON_GROUP )->update( [ 'status' => Translation::STATUS_SAVED ] );
     }
 
     public function exportAllTranslations()
@@ -325,9 +332,9 @@ class Manager
 
         foreach ( $groups as $group ) {
             if ( $group->group == self::JSON_GROUP ) {
-                $this->exportTranslations( null, true );
+                $this->exportTranslationsJson();
             } else {
-                $this->exportTranslations( $group->group );
+                $this->exportTranslationsGroup( $group->group );
             }
         }
 
