@@ -49,7 +49,7 @@ class Manager
         return ( $result && is_array( $result ) ) ? $result : [];
     }
 
-    public function importTranslations( $replace = false, $base = null )
+    public function importTranslations( $replace = false, $base = null, $import_group = false)
     {
         $counter = 0;
         //allows for vendor lang files to be properly recorded through recursion.
@@ -73,6 +73,10 @@ class Manager
             foreach ( $this->files->allfiles( $langPath ) as $file ) {
                 $info  = pathinfo( $file );
                 $group = $info[ 'filename' ];
+                if($import_group){
+                    if($import_group !== $group)
+                        continue;
+                }
 
                 if ( in_array( $group, $this->config[ 'exclude_groups' ] ) ) {
                     continue;
