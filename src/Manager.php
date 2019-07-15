@@ -184,10 +184,24 @@ class Manager
 
         // Find all PHP + Twig files in the app folder, except for storage
         $finder = new Finder();
-        $finder->in( $path )->exclude( 'storage' )->exclude( 'vendor' )->name( '*.php' )->name( '*.twig' )->name( '*.vue' )->files();
+        $finder->in( $path )
+            ->name( '*.php' )
+            ->name( '*.twig' )
+            ->name( '*.vue' );
+
+        //exclude some folders from the find command
+        $excludedFolders = ['storage', 'vendor']; //if config already published, add defaults
+        if(isset($this->config['find_exclude_folders']) && $this->config[ 'find_exclude_folders']) {
+            $excludedFolders = $this->config['find_exclude_folders'];
+        }
+        foreach($excludedFolders as $folder) {
+            $finder->exclude($folder);
+        }
+
+        $files = $finder->files();
 
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach ( $finder as $file ) {
+        foreach ( $files as $file ) {
             // Search the current file for the pattern
             if ( preg_match_all( "/$groupPattern/siU", $file->getContents(), $matches ) ) {
                 // Get all matches
