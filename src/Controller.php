@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;
+use Tanmuhittin\LaravelGoogleTranslate\Commands\TranslateFilesCommand;
 
 class Controller extends BaseController
 {
@@ -167,6 +168,36 @@ class Controller extends BaseController
     {
         foreach ($request->input('remove-locale', []) as $locale => $val) {
             $this->manager->removeLocale($locale);
+        }
+        return redirect()->back();
+    }
+
+    public function postTranslateMissing(Request $request){
+        $locales = $this->manager->getLocales();
+        $newLocale = str_replace([], '-', trim($request->input('new-locale')));
+        if($request->has('with-translations') && $request->has('base-locale') && in_array($request->input('base-locale'),$locales) && $request->has('file') && in_array($newLocale, $locales)){
+            $base_locale = $request->get('base-locale');
+            $group = $request->get('file');
+            $base_strings = Translation::where('group', $group)->where('locale', $base_locale)->get();
+            foreach ($base_strings as $base_string) {
+                $base_query = Translation::where('group', $group)->where('locale', $newLocale)->where('key', $base_string->key);
+                if ($base_query->exists() && $base_query->whereNotNull('value')->exists()) {
+                    // Translation already exists. Skip
+                    continue;
+                }
+                $translated_text = TranslateFilesCommand::translate($base_locale, $newLocale, $base_string->value);
+                request()->replace([
+                    'value' => $translated_text,
+                    'name' => $newLocale . '|' . $base_string->key,
+                ]);
+                app()->call(
+                    'Barryvdh\TranslationManager\Controller@postEdit',
+                    [
+                        'group' => $group
+                    ]
+                );
+            }
+            return redirect()->back();
         }
         return redirect()->back();
     }

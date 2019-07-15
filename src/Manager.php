@@ -49,7 +49,7 @@ class Manager
         return ( $result && is_array( $result ) ) ? $result : [];
     }
 
-    public function importTranslations( $replace = false, $base = null )
+    public function importTranslations( $replace = false, $base = null, $import_group = false)
     {
         $counter = 0;
         //allows for vendor lang files to be properly recorded through recursion.
@@ -73,6 +73,10 @@ class Manager
             foreach ( $this->files->allfiles( $langPath ) as $file ) {
                 $info  = pathinfo( $file );
                 $group = $info[ 'filename' ];
+                if($import_group){
+                    if($import_group !== $group)
+                        continue;
+                }
 
                 if ( in_array( $group, $this->config[ 'exclude_groups' ] ) ) {
                     continue;
@@ -180,10 +184,24 @@ class Manager
 
         // Find all PHP + Twig files in the app folder, except for storage
         $finder = new Finder();
-        $finder->in( $path )->exclude( 'storage' )->exclude( 'vendor' )->name( '*.php' )->name( '*.twig' )->name( '*.vue' )->files();
+        $finder->in( $path )
+            ->name( '*.php' )
+            ->name( '*.twig' )
+            ->name( '*.vue' );
+
+        //exclude some folders from the find command
+        $excludedFolders = ['storage', 'vendor']; //if config already published, add defaults
+        if(isset($this->config['find_exclude_folders']) && $this->config[ 'find_exclude_folders']) {
+            $excludedFolders = $this->config['find_exclude_folders'];
+        }
+        foreach($excludedFolders as $folder) {
+            $finder->exclude($folder);
+        }
+
+        $files = $finder->files();
 
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach ( $finder as $file ) {
+        foreach ( $files as $file ) {
             // Search the current file for the pattern
             if(!isset($this->config['disable_group_detection_for_find']) || $this->config['disable_group_detection_for_find']===false) {
                 if ( preg_match_all( "/$groupPattern/siU", $file->getContents(), $matches ) ) {

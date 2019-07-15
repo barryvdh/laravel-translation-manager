@@ -14,7 +14,7 @@ class ExportCommand extends Command
      *
      * @var string
      */
-    protected $name = 'translations:export';
+    protected $name = 'translations:export {group}';
 
     /**
      * The console command description.

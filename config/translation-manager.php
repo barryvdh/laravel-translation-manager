@@ -62,6 +62,21 @@ return [
      */
     'sort_keys '     => false,
 
+    /**
+     * Exclude specific folders from the translations:find command
+     *
+     * @type array
+     *
+     *    array(
+     *        'storage',
+     *        'vendor',
+     *    )
+     */
+    'find_exclude_folders'  => [
+        'storage',
+        'vendor'
+    ],
+
     'trans_functions' => [
         'trans',
         'trans_choice',

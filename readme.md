@@ -44,6 +44,19 @@ You can change the prefix or filter/middleware for the routes. If you want full 
 
 This example will make the translation manager available at `http://yourdomain.com/translations`
 
+If you would like to use auto translation using Google Translate API
+``` 
+php artisan vendor:publish --provider=Tanmuhittin\LaravelGoogleTranslate\LaravelGoogleTranslateServiceProvider
+ ```
+
+Edit config/laravel_google_translate.php and add your Google Translate API key.
+
+ ```
+php artisan config:cache
+```
+
+ Now you can use Auto Translation Trait
+
 ### Laravel >= 5.2
 
 The configuration file by default only includes the `auth` middleware, but the latests changes in Laravel 5.2 makes it that session variables are only accessible when your route includes the `web` middleware. In order to make this package work on Laravel 5.2, you will have to change the route/middleware setting from the default 
@@ -143,7 +156,7 @@ You shouldn't use this in production, just in development to translate your view
 
 ## TODO
 
-This package is still very alpha. Few thinks that are on the todo-list:
+This package is still very alpha. Few things that are on the todo-list:
 
     - Add locales/groups via webinterface
     - Improve webinterface (more selection/filtering, behavior of popup after save etc)
