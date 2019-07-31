@@ -251,7 +251,7 @@ class Manager
             $this->exportTranslationsGroup($group);
         }
 
-        if ($json) {
+        if ( $json ) {
             $this->exportTranslationsJson();
         }
 
