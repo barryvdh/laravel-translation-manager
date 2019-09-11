@@ -3,6 +3,7 @@
 namespace Barryvdh\TranslationManager;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Symfony\Component\Finder\Finder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -259,13 +260,13 @@ class Manager
                 if ($group == '*') {
                     return $this->exportAllTranslations();
                 } else {
-                    if (starts_with($group, 'vendor')) {
+                    if (Str::startsWith($group, 'vendor')) {
                         $vendor = true;
                     }
                 }
 
                 $tree = $this->makeTree(Translation::ofTranslatedGroup($group)
-                                                    ->orderByGroupKeys(array_get($this->config, 'sort_keys', false))
+                                                    ->orderByGroupKeys(Arr::get($this->config, 'sort_keys', false))
                                                     ->get());
 
                 foreach ($tree as $locale => $groups) {
@@ -276,7 +277,7 @@ class Manager
                         $locale_path = $locale.DIRECTORY_SEPARATOR.$group;
                         if ($vendor) {
                             $path = $basePath.'/'.$group.'/'.$locale;
-                            $locale_path = str_after($group, '/');
+                            $locale_path = Str::after($group, '/');
                         }
                         $subfolders = explode(DIRECTORY_SEPARATOR, $locale_path);
                         array_pop($subfolders);
@@ -303,7 +304,7 @@ class Manager
 
         if ($json) {
             $tree = $this->makeTree(Translation::ofTranslatedGroup(self::JSON_GROUP)
-                                                ->orderByGroupKeys(array_get($this->config, 'sort_keys', false))
+                                                ->orderByGroupKeys(Arr::get($this->config, 'sort_keys', false))
                                                 ->get(), true);
 
             foreach ($tree as $locale => $groups) {
@@ -344,7 +345,7 @@ class Manager
                 $this->jsonSet($array[$translation->locale][$translation->group], $translation->key,
                     $translation->value);
             } else {
-                array_set($array[$translation->locale][$translation->group], $translation->key,
+                Arr::set($array[$translation->locale][$translation->group], $translation->key,
                     $translation->value);
             }
         }
