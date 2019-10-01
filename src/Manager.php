@@ -180,11 +180,11 @@ class Manager
         $stringPattern =
             "[^\w]".                                     // Must not have an alphanum before real method
             '('.implode('|', $functions).')'.             // Must start with one of the functions
-            "\(".                                          // Match opening parenthesis
+            "\(\s*".                                       // Match opening parenthesis
             "(?P<quote>['\"])".                            // Match " or ' and store in {quote}
             "(?P<string>(?:\\\k{quote}|(?!\k{quote}).)*)". // Match any string that can be {quote} escaped
             "\k{quote}".                                   // Match " or ' previously matched
-            "[\),]";                                       // Close parentheses or new parameter
+            "\s*[\),]";                                    // Close parentheses or new parameter
 
         // Find all PHP + Twig files in the app folder, except for storage
         $finder = new Finder();
