@@ -125,7 +125,7 @@ Supply the group name to define which groups you want to publish.
 
 For example, `php artisan translations:export reminders` when you have 2 locales (en/nl), will write to `app/lang/en/reminders.php` and `app/lang/nl/reminders.php`
 
-To export translation strings as keys to JSON files , use the `--json` (or `-J`) option: `php artisan translations:import --json`. This will import every entries from the __json_ group.
+To export translation strings as keys to JSON files , use the `--json` (or `-J`) option: `php artisan translations:export --json`. This will import every entries from the __json_ group.
 
 ### Clean command
 
