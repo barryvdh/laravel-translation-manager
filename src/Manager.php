@@ -51,40 +51,60 @@ class Manager
         return ($result && is_array($result)) ? $result : [];
     }
 
-    public function importTranslations($replace = false, $base = null, $import_group = false)
+    public function importTranslations($replace = false)
     {
         $counter = 0;
-        //allows for vendor lang files to be properly recorded through recursion.
-        $vendor = true;
-        if ($base == null) {
+
+        // Main app and vendor translations
+        $counter += $this->importArrayTranslations($replace);
+
+        // other registered namespaces
+        $namespaces = \Lang::getLoader()->namespaces();
+        foreach ($namespaces as $namespace => $dir) {
+            $counter += $this->importArrayTranslations($replace, $dir, $namespace);
+        }
+
+        // Json translations
+        $counter += $this->importJsonTranslations($replace);
+
+        return $counter;
+    }
+
+    /**
+     * Import array translations
+     *
+     * @return int
+     */
+    public function importArrayTranslations($replace = false, $base = null, $namespace = null)
+    {
+        $counter = 0;
+
+        if (!$base) {
             $base = $this->app['path.lang'];
             $vendor = false;
+        } else {
+            $vendor = $namespace === null;
         }
 
         foreach ($this->files->directories($base) as $langPath) {
             $locale = basename($langPath);
 
-            //import langfiles for each vendor
+            // import langfiles for each vendor
             if ($locale == 'vendor') {
                 foreach ($this->files->directories($langPath) as $vendor) {
-                    $counter += $this->importTranslations($replace, $vendor);
+                    $counter += $this->importArrayTranslations($replace, $vendor);
                 }
-
                 continue;
             }
-            $vendorName = $this->files->name($this->files->dirname($langPath));
+
             foreach ($this->files->allfiles($langPath) as $file) {
                 $info = pathinfo($file);
                 $group = $info['filename'];
-                if ($import_group) {
-                    if ($import_group !== $group) {
-                        continue;
-                    }
-                }
 
                 if (in_array($group, $this->config['exclude_groups'])) {
                     continue;
                 }
+
                 $subLangPath = str_replace($langPath.DIRECTORY_SEPARATOR, '', $info['dirname']);
                 $subLangPath = str_replace(DIRECTORY_SEPARATOR, '/', $subLangPath);
                 $langPath = str_replace(DIRECTORY_SEPARATOR, '/', $langPath);
@@ -93,11 +113,15 @@ class Manager
                     $group = $subLangPath.'/'.$group;
                 }
 
-                if (! $vendor) {
-                    $translations = \Lang::getLoader()->load($locale, $group);
+                if (!$vendor) {
+                    $translations = \Lang::getLoader()->load($locale, $group, $namespace);
+                    if ($namespace) {
+                        $group = $namespace .'::'. $group;
+                    }
                 } else {
                     $translations = include $file;
-                    $group = 'vendor/'.$vendorName;
+                    $vendorName = $this->files->name($this->files->dirname($langPath));
+                    $group = 'vendor/'. $vendorName .'/'. $group;
                 }
 
                 if ($translations && is_array($translations)) {
@@ -108,6 +132,18 @@ class Manager
                 }
             }
         }
+
+        return $counter;
+    }
+
+    /**
+     * Import Json translations
+     *
+     * @return int
+     */
+    public function importJsonTranslations($replace = false)
+    {
+        $counter = 0;
 
         foreach ($this->files->files($this->app['path.lang']) as $jsonTranslationFile) {
             if (strpos($jsonTranslationFile, '.json') === false) {
