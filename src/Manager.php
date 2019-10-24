@@ -9,6 +9,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Barryvdh\TranslationManager\Models\Translation;
+use Barryvdh\TranslationManager\Models\TranslationNamespace;
 use Barryvdh\TranslationManager\Events\TranslationsExportedEvent;
 
 class Manager
@@ -128,6 +129,13 @@ class Manager
                     foreach (Arr::dot($translations) as $key => $value) {
                         $importedTranslation = $this->importTranslation($key, $value, $locale, $group, $replace);
                         $counter += $importedTranslation ? 1 : 0;
+                    }
+
+                    if ($namespace) {
+                        TranslationNamespace::updateOrCreate(
+                            ['namespace' => $namespace],
+                            ['path' => $base]
+                        );
                     }
                 }
             }
