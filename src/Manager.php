@@ -313,16 +313,23 @@ class Manager
                                                     ->orderByGroupKeys(Arr::get($this->config, 'sort_keys', false))
                                                     ->get());
 
+                $namespaces = TranslationNamespace::all()->pluck('path', 'namespace');
+
                 foreach ($tree as $locale => $groups) {
                     if (isset($groups[$group])) {
                         $translations = $groups[$group];
                         $path = $this->app['path.lang'];
 
-                        $locale_path = $locale.DIRECTORY_SEPARATOR.$group;
-                        if ($vendor) {
-                            $path = $basePath.'/'.$group.'/'.$locale;
-                            $locale_path = Str::after($group, '/');
+                        if (Str::contains($group, '::')) {
+                            list($namespace, $group) = explode('::', $group, 2);
+                            $path = $namespaces[$namespace] ?? $this->app['path.lang'];
                         }
+
+                        if ($vendor) {
+                            list($package, $group) = explode('/', Str::after($group, 'vendor/'), 2);
+                            $path = $basePath . DIRECTORY_SEPARATOR .'vendor'. DIRECTORY_SEPARATOR . $package;
+                        }
+                        $locale_path = $locale.DIRECTORY_SEPARATOR.$group;
                         $subfolders = explode(DIRECTORY_SEPARATOR, $locale_path);
                         array_pop($subfolders);
 
