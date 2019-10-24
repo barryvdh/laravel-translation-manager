@@ -415,6 +415,7 @@ class Manager
     public function truncateTranslations()
     {
         Translation::truncate();
+        TranslationNamespace::truncate();
     }
 
     public function getLocales()
