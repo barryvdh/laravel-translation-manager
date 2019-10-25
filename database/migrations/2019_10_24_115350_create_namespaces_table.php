@@ -28,6 +28,6 @@ class CreateNamespacesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('namespaces');
+        Schema::dropIfExists('ltm_namespaces');
     }
 }
