@@ -312,12 +312,12 @@ class Manager
                 $tree = $this->makeTree(Translation::ofTranslatedGroup($group)
                                                     ->orderByGroupKeys(Arr::get($this->config, 'sort_keys', false))
                                                     ->get());
-
                 $namespaces = TranslationNamespace::all()->pluck('path', 'namespace');
 
+                $group_name = $group;
                 foreach ($tree as $locale => $groups) {
-                    if (isset($groups[$group])) {
-                        $translations = $groups[$group];
+                    if (isset($groups[$group_name])) {
+                        $translations = $groups[$group_name];
                         $path = $this->app['path.lang'];
 
                         if (Str::contains($group, '::')) {
