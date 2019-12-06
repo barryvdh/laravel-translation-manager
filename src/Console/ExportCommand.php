@@ -52,7 +52,12 @@ class ExportCommand extends Command
             return;
         }
 
-        $this->manager->exportTranslations($group, $json);
+        if ( $group == '*' ) {
+            $this->manager->exportAllTranslations();
+        }
+        else {
+            $this->manager->exportTranslations($group, $json);
+        }
 
         if (!is_null($group)) {
             $this->info('Done writing language files for '.(($group == '*') ? 'ALL groups' : $group.' group'));
