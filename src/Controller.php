@@ -217,7 +217,8 @@ class Controller extends BaseController
         $array['database']['translations_table'] = $_POST['tb_translation'];
         $data = var_export($array, 1);
         if(\File::put(config_path() . '/translation-manager.php', "<?php\n return $data ;")) {
-            return redirect("/translations");
+            $prefix = $this->manager->getConfig('route')['prefix'];
+            return redirect("/$prefix");
         } 
         return redirect()->back();     
     }
