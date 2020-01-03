@@ -106,12 +106,27 @@
                 <span class="icon-bar"></span>
             </button>
             <a href="<?php echo action('\Barryvdh\TranslationManager\Controller@getIndex') ?>" class="navbar-brand">
-                Translation Manager
+                Translation Manager For Table <?php echo config('translation-manager.database.translations_table') ?>
             </a>
         </div>
     </div>
 </header>
 <div class="container-fluid">
+    
+    <form role="form" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postChangeTable') ?>">
+        <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+        <div class="form-group">
+            <select name="tb_translation" class="form-control">
+                <?php foreach(config('translation-manager.translations_table_list') as $val): ?>
+                    <option value="<?php echo $val ?>"><?php echo $val ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-info" data-disable-with="Changing..." >Change Table</button>
+        </div>
+    </form>
+    
     <p>Warning, translations are not visible until they are exported back to the app/lang file, using <code>php artisan translation:export</code> command or publish button.</p>
     <div class="alert alert-success success-import" style="display:none;">
         <p>Done importing, processed <strong class="counter">N</strong> items! Reload this page to refresh the groups!</p>
@@ -269,6 +284,7 @@
             <?php endforeach; ?>
             </tbody>
         </table>
+    <?php if ($paginationEnabled) echo $translations->links()->toHtml();
     <?php else: ?>
         <fieldset>
             <legend>Supported locales</legend>
