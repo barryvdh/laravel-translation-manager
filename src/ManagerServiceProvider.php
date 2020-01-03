@@ -90,6 +90,7 @@ class ManagerServiceProvider extends ServiceProvider {
             $router->post('/locales/remove', 'Controller@postRemoveLocale');
             $router->post('/publish/{groupKey}', 'Controller@postPublish')->where('groupKey', '.*');
             $router->post('/translate-missing', 'Controller@postTranslateMissing');
+	    $router->post('/changetable', 'Controller@postChangeTable');
         });
 	}
 
