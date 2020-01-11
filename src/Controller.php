@@ -1,14 +1,14 @@
-<?php namespace Barryvdh\TranslationManager;
+<?php namespace Syntafin\TranslationManager;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-use Barryvdh\TranslationManager\Models\Translation;
+use Syntafin\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;
 use Tanmuhittin\LaravelGoogleTranslate\Commands\TranslateFilesCommand;
 
 class Controller extends BaseController
 {
-    /** @var \Barryvdh\TranslationManager\Manager  */
+    /** @var \Syntafin\TranslationManager\Manager  */
     protected $manager;
 
     public function __construct(Manager $manager)
@@ -47,7 +47,7 @@ class Controller extends BaseController
             ->with('group', $group)
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
-            ->with('editUrl', $group ? action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]) : null)
+            ->with('editUrl', $group ? action('\Syntafin\TranslationManager\Controller@postEdit', [$group]) : null)
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
 
@@ -144,7 +144,7 @@ class Controller extends BaseController
         $group = str_replace(".", '', $request->input('new-group'));
         if ($group)
         {
-            return redirect()->action('\Barryvdh\TranslationManager\Controller@getView',$group);
+            return redirect()->action('\Syntafin\TranslationManager\Controller@getView',$group);
         }
         else
         {
@@ -190,7 +190,7 @@ class Controller extends BaseController
                     'name' => $newLocale . '|' . $base_string->key,
                 ]);
                 app()->call(
-                    'Barryvdh\TranslationManager\Controller@postEdit',
+                    'Syntafin\TranslationManager\Controller@postEdit',
                     [
                         'group' => $group
                     ]

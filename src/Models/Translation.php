@@ -1,4 +1,4 @@
-<?php namespace Barryvdh\TranslationManager\Models;
+<?php namespace Syntafin\TranslationManager\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use DB;

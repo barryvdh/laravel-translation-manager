@@ -1,6 +1,6 @@
 <?php
 
-namespace Barryvdh\TranslationManager;
+namespace Syntafin\TranslationManager;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -8,8 +8,8 @@ use Symfony\Component\Finder\Finder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
-use Barryvdh\TranslationManager\Models\Translation;
-use Barryvdh\TranslationManager\Events\TranslationsExportedEvent;
+use Syntafin\TranslationManager\Models\Translation;
+use Syntafin\TranslationManager\Events\TranslationsExportedEvent;
 
 class Manager
 {

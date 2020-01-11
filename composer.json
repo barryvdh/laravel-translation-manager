@@ -1,5 +1,5 @@
 {
-  "name": "barryvdh/laravel-translation-manager",
+  "name": "syntafin/laravel-translation-manager",
   "description": "Manage Laravel Translations",
   "keywords": [
     "laravel",
@@ -9,8 +9,8 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Barry vd. Heuvel",
-      "email": "barryvdh@gmail.com"
+      "name": "Syntafin",
+      "email": "mail@syntaf.in"
     }
   ],
   "require": {
@@ -22,7 +22,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Barryvdh\\TranslationManager\\": "src/"
+      "Syntafin\\TranslationManager\\": "src/"
     }
   },
   "extra": {
@@ -31,7 +31,7 @@
     },
     "laravel": {
       "providers": [
-        "Barryvdh\\TranslationManager\\ManagerServiceProvider"
+        "Syntafin\\TranslationManager\\ManagerServiceProvider"
       ]
     }
   },
