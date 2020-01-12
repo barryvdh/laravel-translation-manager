@@ -57,10 +57,9 @@ class ManagerServiceProvider extends ServiceProvider {
     /**
 	 * Bootstrap the application events.
 	 *
-     * @param  \Illuminate\Routing\Router  $router
 	 * @return void
 	 */
-	public function boot(Router $router)
+	public function boot()
 	{
         $viewPath = __DIR__.'/../resources/views';
         $this->loadViewsFrom($viewPath, 'translation-manager');
@@ -73,24 +72,7 @@ class ManagerServiceProvider extends ServiceProvider {
             $migrationPath => base_path('database/migrations'),
         ], 'migrations');
 
-        $config = $this->app['config']->get('translation-manager.route', []);
-        $config['namespace'] = 'Barryvdh\TranslationManager';
-
-        $router->group($config, function($router)
-        {
-            $router->get('view/{groupKey?}', 'Controller@getView')->where('groupKey', '.*');
-            $router->get('/{groupKey?}', 'Controller@getIndex')->where('groupKey', '.*');
-            $router->post('/add/{groupKey}', 'Controller@postAdd')->where('groupKey', '.*');
-            $router->post('/edit/{groupKey}', 'Controller@postEdit')->where('groupKey', '.*');
-            $router->post('/groups/add', 'Controller@postAddGroup');
-            $router->post('/delete/{groupKey}/{translationKey}', 'Controller@postDelete')->where('groupKey', '.*');
-            $router->post('/import', 'Controller@postImport');
-            $router->post('/find', 'Controller@postFind');
-            $router->post('/locales/add', 'Controller@postAddLocale');
-            $router->post('/locales/remove', 'Controller@postRemoveLocale');
-            $router->post('/publish/{groupKey}', 'Controller@postPublish')->where('groupKey', '.*');
-            $router->post('/translate-missing', 'Controller@postTranslateMissing');
-        });
+        $this->loadRoutesFrom(__DIR__.'/routes.php');
 	}
 
 	/**
