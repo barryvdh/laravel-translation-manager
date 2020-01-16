@@ -10,7 +10,7 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Barryvdh\TranslationManager\Models\Translation;
 use Barryvdh\TranslationManager\Events\TranslationsExportedEvent;
-use Symfony\Component\VarExporter\VarExporter;
+use Brick\VarExporter\VarExporter;
 
 class Manager
 {
