@@ -284,7 +284,7 @@
             <?php endforeach; ?>
             </tbody>
         </table>
-    <?php if ($paginationEnabled) echo $translations->links()->toHtml();
+    <?php if ($paginationEnabled) echo $translations->links()->toHtml(); ?>
     <?php else: ?>
         <fieldset>
             <legend>Supported locales</legend>
