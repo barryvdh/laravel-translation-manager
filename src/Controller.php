@@ -60,7 +60,7 @@ class Controller extends BaseController
             ->with('group', $group)
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
-            ->with('editUrl', action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]))
+            ->with('editUrl', $group ? action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]) : null)
             ->with('paginationEnabled', $this->manager->getConfig('pagination_enabled'))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
