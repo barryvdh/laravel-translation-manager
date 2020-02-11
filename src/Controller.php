@@ -4,8 +4,12 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;
+
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Pagination\LengthAwarePaginator;
+
+use Tanmuhittin\LaravelGoogleTranslate\Commands\TranslateFilesCommand;
+
 
 class Controller extends BaseController
 {
@@ -61,7 +65,9 @@ class Controller extends BaseController
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
             ->with('editUrl', $group ? action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]) : null)
+
             ->with('paginationEnabled', $this->manager->getConfig('pagination_enabled'))
+
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
 
@@ -188,24 +194,28 @@ class Controller extends BaseController
     public function postTranslateMissing(Request $request){
         $locales = $this->manager->getLocales();
         $newLocale = str_replace([], '-', trim($request->input('new-locale')));
-        if($request->has('with-translations') && $request->has('base-locale') && in_array($request->input('base-locale'),$locales) && $request->has('file')){
-            $json = false;
+        if($request->has('with-translations') && $request->has('base-locale') && in_array($request->input('base-locale'),$locales) && $request->has('file') && in_array($newLocale, $locales)){
+            $base_locale = $request->get('base-locale');
             $group = $request->get('file');
-            if($group === '_json'){
-                //$json = true;
-                //$file_name = $newLocale.'_json';
-                return redirect()->back();
-            }else{
-                $file_name = $group.'.php';
+            $base_strings = Translation::where('group', $group)->where('locale', $base_locale)->get();
+            foreach ($base_strings as $base_string) {
+                $base_query = Translation::where('group', $group)->where('locale', $newLocale)->where('key', $base_string->key);
+                if ($base_query->exists() && $base_query->whereNotNull('value')->exists()) {
+                    // Translation already exists. Skip
+                    continue;
+                }
+                $translated_text = TranslateFilesCommand::translate($base_locale, $newLocale, $base_string->value);
+                request()->replace([
+                    'value' => $translated_text,
+                    'name' => $newLocale . '|' . $base_string->key,
+                ]);
+                app()->call(
+                    'Barryvdh\TranslationManager\Controller@postEdit',
+                    [
+                        'group' => $group
+                    ]
+                );
             }
-            $this->manager->addLocale($newLocale);
-            $this->manager->exportTranslations($group, $json);
-            Artisan::call("translate:files",[
-                '--baselocale' => $request->input('base-locale'),
-                '--targetlocales' => $newLocale,
-                '--targetfiles' => $file_name
-            ]);
-            $this->manager->importTranslations(false,null,$group);
             return redirect()->back();
         }
         return redirect()->back();

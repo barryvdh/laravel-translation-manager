@@ -57,10 +57,9 @@ class ManagerServiceProvider extends ServiceProvider {
     /**
 	 * Bootstrap the application events.
 	 *
-     * @param  \Illuminate\Routing\Router  $router
 	 * @return void
 	 */
-	public function boot(Router $router)
+	public function boot()
 	{
         $viewPath = __DIR__.'/../resources/views';
         $this->loadViewsFrom($viewPath, 'translation-manager');
@@ -72,6 +71,7 @@ class ManagerServiceProvider extends ServiceProvider {
         $this->publishes([
             $migrationPath => base_path('database/migrations'),
         ], 'migrations');
+
 
         $config = $this->app['config']->get('translation-manager.route', []);
         $config['namespace'] = 'Barryvdh\TranslationManager';
@@ -92,6 +92,9 @@ class ManagerServiceProvider extends ServiceProvider {
             $router->post('/translate-missing', 'Controller@postTranslateMissing');
 	    $router->post('/changetable', 'Controller@postChangeTable');
         });
+
+        $this->loadRoutesFrom(__DIR__.'/routes.php');
+
 	}
 
 	/**
