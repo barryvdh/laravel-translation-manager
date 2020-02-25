@@ -15,9 +15,9 @@
   ],
   "require": {
     "php": ">=7",
-    "illuminate/support": "^5.5|^6",
-    "illuminate/translation": "^5.5|^6",
-    "symfony/finder": "^3|^4",
+    "illuminate/support": "^5.5|^6|^7",
+    "illuminate/translation": "^5.5|^6|^7",
+    "symfony/finder": "^3|^4|^5",
     "tanmuhittin/laravel-google-translate": "^1.0.2"
   },
   "autoload": {
