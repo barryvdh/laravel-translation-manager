@@ -15,7 +15,7 @@ class CreateTranslationsTable extends Migration {
         Schema::create('ltm_translations', function(Blueprint $table)
         {
 	    $table->collation = 'utf8mb4_bin';
-            $table->increments('id');
+            $table->bigIncrements('id');
             $table->integer('status')->default(0);
             $table->string('locale');
             $table->string('group');
