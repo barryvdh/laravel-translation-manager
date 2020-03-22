@@ -92,9 +92,9 @@ class Controller extends BaseController
 
             list($locale, $key) = explode('|', $name, 2);
             $translation = Translation::firstOrNew([
-                'locale' => $locale,
+                'locale' => trim($locale),
                 'group' => $group,
-                'key' => $key,
+                'key' => trim($key),
             ]);
             $translation->value = (string) $value ?: null;
             $translation->status = Translation::STATUS_CHANGED;
