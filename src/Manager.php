@@ -51,7 +51,7 @@ class Manager
         return ($result && is_array($result)) ? $result : [];
     }
 
-    public function importTranslations($replace = false, $base = null, $import_group = false)
+    public function importTranslations($replace = false, $base = null)
     {
         $counter = 0;
         //allows for vendor lang files to be properly recorded through recursion.
@@ -76,11 +76,6 @@ class Manager
             foreach ($this->files->allfiles($langPath) as $file) {
                 $info = pathinfo($file);
                 $group = $info['filename'];
-                if ($import_group) {
-                    if ($import_group !== $group) {
-                        continue;
-                    }
-                }
 
                 if (in_array($group, $this->config['exclude_groups'])) {
                     continue;
@@ -97,7 +92,7 @@ class Manager
                     $translations = \Lang::getLoader()->load($locale, $group);
                 } else {
                     $translations = include $file;
-                    $group = 'vendor/'.$vendorName;
+                    $group = 'vendor/'.$vendorName.'/'.$group;
                 }
 
                 if ($translations && is_array($translations)) {
@@ -269,16 +264,18 @@ class Manager
                                                     ->orderByGroupKeys(Arr::get($this->config, 'sort_keys', false))
                                                     ->get());
 
+                $group_name = $group;
                 foreach ($tree as $locale => $groups) {
                     if (isset($groups[$group])) {
                         $translations = $groups[$group];
                         $path = $this->app['path.lang'];
 
-                        $locale_path = $locale.DIRECTORY_SEPARATOR.$group;
                         if ($vendor) {
-                            $path = $basePath.'/'.$group.'/'.$locale;
-                            $locale_path = Str::after($group, '/');
+                            list($package, $group_name) = explode('/', Str::after($group, 'vendor/'), 2);
+                            $path = $basePath . DIRECTORY_SEPARATOR .'vendor'. DIRECTORY_SEPARATOR . $package;
                         }
+                        $locale_path = $locale.DIRECTORY_SEPARATOR.$group_name;
+
                         $subfolders = explode(DIRECTORY_SEPARATOR, $locale_path);
                         array_pop($subfolders);
 
@@ -292,7 +289,7 @@ class Manager
                             }
                         }
 
-                        $path = $path.DIRECTORY_SEPARATOR.$locale.DIRECTORY_SEPARATOR.$group.'.php';
+                        $path = $path.DIRECTORY_SEPARATOR.$locale.DIRECTORY_SEPARATOR.$group_name.'.php';
 
                         $output = "<?php\n\nreturn ".var_export($translations, true).';'.\PHP_EOL;
                         $this->files->put($path, $output);
