@@ -4,7 +4,7 @@
         <form action="{{ action($controller.'@postAdd', array($group))}}" method="POST" role="form">
             @csrf()
             <div class="form-group">
-                <label>Add new keys to this group</label>
+                <label>{{ trans('manager::translations.addKeysToGroup') }}</label>
                 <textarea class="form-control" rows="3" name="keys" placeholder="Add 1 key per line, without the group prefix"></textarea>
             </div>
             <div class="form-group">
@@ -13,7 +13,7 @@
         </form>
         <hr>
         @endif
-        <h4>Total: {{$numTranslations}}, changed: {{$numChanged}}</h4>
+        <h4>Total: {{$numTranslations}}@if ($numChanged !== $numTranslations), changed: {{$numChanged}}@endif</h4>
         <table class="table">
             <thead>
             <tr>
@@ -31,7 +31,7 @@
                 <tr id="{{{$key}}}">
                     <td>{{{$key}}}</td>
                     @foreach ($locales as $locale)
-                    @php( $t = isset($translation[$locale]) ? $translation[$locale] : null)
+                    @php( $t = $translation[$locale] ?? null)
                     <td>
                         <a href="#edit"
                            class="editable status-{{$t ? $t->status : 0 }} locale-{{$locale}}"
@@ -45,7 +45,7 @@
                     @endforeach
                     @if ($deleteEnabled)
                     <td>
-                        <a href="<?php echo action($controller . '@postDelete', [$group, $key]) ?>"
+                        <a href="{{ action($controller.'@postDelete', [$group, $key])}}"
                            class="delete-key"
                            data-confirm="Are you sure you want to delete the translations for '{{{$key}}}?">
                             <span class=" fa fa-trash"></span>

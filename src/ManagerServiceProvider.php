@@ -73,6 +73,8 @@ class ManagerServiceProvider extends ServiceProvider {
         ], 'migrations');
 
         $this->loadRoutesFrom(__DIR__.'/routes.php');
+
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'manager');
 	}
 
 	/**

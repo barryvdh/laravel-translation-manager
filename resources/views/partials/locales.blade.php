@@ -2,7 +2,7 @@
 <div class="card mt-2">
     <div class="card-body">
         <fieldset>
-            <legend>Supported locales</legend>
+            <legend>{{ trans('manager::translations.supportedLocales') }}</legend>
             <p>Current supported locales:</p>
             <form class="form-remove-locale" method="POST" role="form" action="{{action($controller.'@postRemoveLocale')}}"
                   data-confirm="Are you sure to remove this locale and all of data?">
@@ -21,13 +21,13 @@
             <form class="form-add-locale" method="POST" role="form" action="{{action($controller.'@postAddLocale')}}">
                 @csrf()
                 <div class="form-group">
-                    <p>Enter new locale key:</p>
+                    <p>{{ trans('manager::translations.enterNewLocale') }}</p>
                     <div class="row">
                         <div class="col-auto">
                             <input type="text" name="new-locale" class="form-control"/>
                         </div>
                         <div class="col-auto">
-                            <button type="submit" class="btn  btn-block btn-outline-success" data-disable-with="Adding..">Add new locale</button>
+                            <button type="submit" class="btn  btn-block btn-outline-success" data-disable-with="Adding..">{{ trans('manager::translations.addNewLocale') }}</button>
                         </div>
                     </div>
                 </div>

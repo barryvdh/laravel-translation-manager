@@ -1,16 +1,16 @@
 
 @push('notifications')
     <div class="alert alert-success success-import" style="display:none;">
-        <p>Done importing, processed <strong class="counter">N</strong> items! Reload this page to refresh the groups!</p>
+        <p>{!! trans('manager::translations.doneImporting') !!}</p>
     </div>
     <div class="alert alert-success success-find" style="display:none;">
-        <p>Done searching for translations, found <strong class="counter">N</strong> items!</p>
+        <p>{!! trans('manager::translations.doneSearching') !!}</p>
     </div>
     <div class="alert alert-success success-publish" style="display:none;">
-        <p>Done publishing the translations for group '{{$group}}'!</p>
+        <p>{{ trans('manager::translations.donePublishingGroup', ['group' => $group]) }}</p>
     </div>
     <div class="alert alert-success success-publish-all" style="display:none;">
-        <p>Done publishing the translations for all group!</p>
+        <p>{{ trans('manager::translations.donePublishing') }}</p>
     </div>
 
     @if(Session::has('successPublish'))

@@ -1,11 +1,11 @@
 <div class="card mt-2">
     <div class="card-body">
         <fieldset>
-            <legend>Export all translations</legend>
+            <legend>{{ trans('manager::translations.exportAllTranslations') }}</legend>
             <form class="form-inline form-publish-all" method="POST" action="{{action($controller.'@postPublish', '*') }}" data-remote="true" role="form"
                   data-confirm="Are you sure you want to publish all translations group? This will overwrite existing language files.">
                     @csrf()
-                <button type="submit" class="btn btn-primary" data-disable-with="Publishing..">Publish all</button>
+                <button type="submit" class="btn btn-primary" data-disable-with="Publishing..">{{ trans('manager::translations.publishAllTranslations') }}</button>
             </form>
         </fieldset>
     </div>
