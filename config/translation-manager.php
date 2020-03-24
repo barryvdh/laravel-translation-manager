@@ -65,11 +65,14 @@ return [
         '__',
         '$trans.get',
     ],
+
     'blade' => [
         'layout' => 'translation-manager::layout',
         'manage_locales_enabled' => true,
         'add_group_enabled' => true,
         'add_keys_enabled' => true,
         'search_translations_enabled' => true,
-    ]
+    ],
+
+    'table_name' => 'ltm_translations'
 ];
