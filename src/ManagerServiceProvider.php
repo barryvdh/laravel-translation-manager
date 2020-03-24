@@ -1,6 +1,7 @@
 <?php namespace Barryvdh\TranslationManager;
 
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class ManagerServiceProvider extends ServiceProvider {
@@ -75,6 +76,17 @@ class ManagerServiceProvider extends ServiceProvider {
         $this->loadRoutesFrom(__DIR__.'/routes.php');
 
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'manager');
+
+        Blade::directive('translationGroupName', function($expression) {
+            return "
+            <?php
+                if (Str::startsWith($expression, 'vendor/')) {
+                    echo e(explode('/', Str::after($expression, 'vendor/'))[0] . '::' . explode('/', Str::after($expression, 'vendor/'))[1]);
+                } else {
+                    echo e($expression);
+                }
+            ?>";
+        });
 	}
 
 	/**

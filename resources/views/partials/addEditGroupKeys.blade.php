@@ -6,7 +6,7 @@
                 <p>{{ trans('manager::translations.chooseGroupHint') }}</p>
                 <select name="group" id="group" class="form-control group-select">
                     @foreach($groups as $key => $value)
-                    <option value="{{$key}}"{{ $key === $group ? ' selected' : ''}}>{{$value}}</option>
+                    <option value="{{$key}}"{{ $key === $group ? ' selected' : ''}}>@translationGroupName($value)</option>
                     @endforeach
                 </select>
             </div>
