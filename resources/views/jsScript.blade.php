@@ -1,6 +1,6 @@
 <script>
-    $.fn.editableform.buttons = '<button type="submit" class="btn btn-sm btn-info editable-submit"><i class="fa fa-fw fa-check"></i></button>' +
-        '<button type="button" class="btn btn-danger btn-sm editable-cancel"><i class="fa fa-fw fa-remove"></i></button>';
+    $.fn.editableform.buttons = '<button type="submit" class="btn btn-sm btn-info editable-submit"><span class="la la-check"></span></button>' +
+        '<button type="button" class="btn btn-danger btn-sm editable-cancel"><span class="la la-remove"></span></button>';
     $.fn.editable.defaults.mode = 'inline';
 
     jQuery(document).ready(function ($) {
