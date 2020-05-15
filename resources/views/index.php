@@ -243,7 +243,7 @@
         <hr>
         <div class="row">
             <h4 class="col-md-9">Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
-            <div class="col-md-3"><input type="search" placeholder="Filter by key..." id="search-field" class="form-control" /></div>
+            <p class="col-md-3"><input type="search" placeholder="Filter by key..." id="search-field" class="form-control" /></p>
         </div>
         <table class="table">
             <thead>
