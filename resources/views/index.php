@@ -69,7 +69,7 @@
               var url = $(this).attr('href');
               var id = row.attr('id');
               $.post( url, {id: id}, function(){
-                  delete rowsById[id];
+                  delete rowsById[id.toLowerCase()];
                   row.remove();
               } );
             });
