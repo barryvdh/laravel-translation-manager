@@ -52,11 +52,12 @@
 
             var rowsById = {};
             $('.table tbody tr').each(function() {
-                rowsById[$(this).attr('id')] = $(this);
+                var id = $(this).attr('id').toLowerCase();
+                rowsById[id] = $(this);
             });
             
             $('#search-field').keyup(function() {
-                var searchKey = $(this).val().toUpperCase();
+                var searchKey = $(this).val().toLowerCase();
                 Object.keys(rowsById).forEach(function(key) {
                     rowsById[key].toggle(!searchKey || key.includes(searchKey));
                 });
