@@ -97,7 +97,7 @@ class Manager
                     $translations = \Lang::getLoader()->load($locale, $group);
                 } else {
                     $translations = include $file;
-                    $group = 'vendor/'.$vendorName;
+                    $group = 'vendor/'.$vendorName.'/'.$file->getFilenameWithoutExtension();
                 }
 
                 if ($translations && is_array($translations)) {
@@ -272,12 +272,20 @@ class Manager
                 foreach ($tree as $locale => $groups) {
                     if (isset($groups[$group])) {
                         $translations = $groups[$group];
-                        $path = $this->app['path.lang'];
+                        $path_lang = $this->app['path.lang'];
 
                         $locale_path = $locale.DIRECTORY_SEPARATOR.$group;
+                        $path = $path_lang.DIRECTORY_SEPARATOR.$locale.DIRECTORY_SEPARATOR.$group.'.php';
                         if ($vendor) {
-                            $path = $basePath.'/'.$group.'/'.$locale;
-                            $locale_path = Str::after($group, '/');
+                            $path_vendor = substr($group, 0, strrpos($group, '/'));
+                            $path_vendor_locale = sprintf(
+                                '%s/%s',
+                                substr($group, 0, strrpos($group, '/')),
+                                $locale
+                            );
+                            $path_vendor_file = substr($group, strrpos($group, '/') + 1);
+                            $locale_path = $path_vendor_locale.DIRECTORY_SEPARATOR.$path_vendor_file;
+                            $path = $path_lang.DIRECTORY_SEPARATOR.$path_vendor_locale.DIRECTORY_SEPARATOR.$path_vendor_file.'.php';
                         }
                         $subfolders = explode(DIRECTORY_SEPARATOR, $locale_path);
                         array_pop($subfolders);
@@ -286,13 +294,11 @@ class Manager
                         foreach ($subfolders as $subfolder) {
                             $subfolder_level = $subfolder_level.$subfolder.DIRECTORY_SEPARATOR;
 
-                            $temp_path = rtrim($path.DIRECTORY_SEPARATOR.$subfolder_level, DIRECTORY_SEPARATOR);
+                            $temp_path = rtrim($path_lang.DIRECTORY_SEPARATOR.$subfolder_level, DIRECTORY_SEPARATOR);
                             if (! is_dir($temp_path)) {
                                 mkdir($temp_path, 0777, true);
                             }
                         }
-
-                        $path = $path.DIRECTORY_SEPARATOR.$locale.DIRECTORY_SEPARATOR.$group.'.php';
 
                         $output = "<?php\n\nreturn ".var_export($translations, true).';'.\PHP_EOL;
                         $this->files->put($path, $output);
