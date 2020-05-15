@@ -50,12 +50,25 @@
                 }
             });
 
+            var rowsById = {};
+            $('.table tbody tr').each(function() {
+                rowsById[$(this).attr('id')] = $(this);
+            });
+            
+            $('#search-field').keyup(function() {
+                var searchKey = $(this).val().toUpperCase();
+                Object.keys(rowsById).forEach(function(key) {
+                    rowsById[key].toggle(!searchKey || key.includes(searchKey));
+                });
+            });
+            
             $("a.delete-key").click(function(event){
               event.preventDefault();
               var row = $(this).closest('tr');
               var url = $(this).attr('href');
               var id = row.attr('id');
               $.post( url, {id: id}, function(){
+                  delete rowsById[id];
                   row.remove();
               } );
             });
@@ -227,7 +240,10 @@
             </div>
         </form>
         <hr>
-    <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
+        <div class="row">
+            <h4 class="col-md-9">Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
+            <div class="col-md-3"><input type="search" placeholder="Filter by key..." id="search-field" class="form-control" /></div>
+        </div>
         <table class="table">
             <thead>
             <tr>
