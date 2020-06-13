@@ -2,9 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;
-use Tanmuhittin\LaravelGoogleTranslate\Commands\TranslateFilesCommand;
 
 class Controller extends BaseController
 {
@@ -40,7 +40,20 @@ class Controller extends BaseController
             $translations[$translation->key][$translation->locale] = $translation;
         }
 
-         return view('translation-manager::index')
+        if ($this->manager->getConfig('pagination_enabled')) {
+            $total = count($translations);
+            $page = request()->get('page', 1);
+            $per_page = $this->manager->getConfig('per_page');
+            $offSet = ($page * $per_page) - $per_page;
+            $itemsForCurrentPage = array_slice($translations, $offSet, $per_page, true);
+            $prefix = $this->manager->getConfig('route')['prefix'];
+            $path = url("$prefix/view/$group");
+
+            $paginator = new LengthAwarePaginator($itemsForCurrentPage, $total, $per_page, $page);
+            $translations = $paginator->withPath($path);
+        }
+
+        return view('translation-manager::'.$this->manager->getConfig('template').'.index')
             ->with('translations', $translations)
             ->with('locales', $locales)
             ->with('groups', $groups)
@@ -48,6 +61,7 @@ class Controller extends BaseController
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
             ->with('editUrl', $group ? action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]) : null)
+            ->with('paginationEnabled', $this->manager->getConfig('pagination_enabled'))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
 
@@ -128,7 +142,7 @@ class Controller extends BaseController
 
     public function postPublish($group = null)
     {
-         $json = false;
+        $json = false;
 
         if($group === '_json'){
             $json = true;
@@ -167,36 +181,6 @@ class Controller extends BaseController
     {
         foreach ($request->input('remove-locale', []) as $locale => $val) {
             $this->manager->removeLocale($locale);
-        }
-        return redirect()->back();
-    }
-
-    public function postTranslateMissing(Request $request){
-        $locales = $this->manager->getLocales();
-        $newLocale = str_replace([], '-', trim($request->input('new-locale')));
-        if($request->has('with-translations') && $request->has('base-locale') && in_array($request->input('base-locale'),$locales) && $request->has('file') && in_array($newLocale, $locales)){
-            $base_locale = $request->get('base-locale');
-            $group = $request->get('file');
-            $base_strings = Translation::where('group', $group)->where('locale', $base_locale)->get();
-            foreach ($base_strings as $base_string) {
-                $base_query = Translation::where('group', $group)->where('locale', $newLocale)->where('key', $base_string->key);
-                if ($base_query->exists() && $base_query->whereNotNull('value')->exists()) {
-                    // Translation already exists. Skip
-                    continue;
-                }
-                $translated_text = TranslateFilesCommand::translate($base_locale, $newLocale, $base_string->value);
-                request()->replace([
-                    'value' => $translated_text,
-                    'name' => $newLocale . '|' . $base_string->key,
-                ]);
-                app()->call(
-                    'Barryvdh\TranslationManager\Controller@postEdit',
-                    [
-                        'group' => $group
-                    ]
-                );
-            }
-            return redirect()->back();
         }
         return redirect()->back();
     }
