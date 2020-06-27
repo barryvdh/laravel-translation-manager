@@ -184,7 +184,7 @@ class Controller extends BaseController
                     // Translation already exists. Skip
                     continue;
                 }
-                $translated_text = Str::translate($base_string->value, $newLocale, $base_locale);
+                $translated_text = Str::apiTranslate($base_string->value, $newLocale, $base_locale);
                 request()->replace([
                     'value' => $translated_text,
                     'name' => $newLocale . '|' . $base_string->key,
