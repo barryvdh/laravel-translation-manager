@@ -18,7 +18,7 @@
     "illuminate/support": "^5.5|^6|^7",
     "illuminate/translation": "^5.5|^6|^7",
     "symfony/finder": "^3|^4|^5",
-    "tanmuhittin/laravel-google-translate": "^1.0.2"
+    "tanmuhittin/laravel-google-translate": "^2.0.1"
   },
   "autoload": {
     "psr-4": {

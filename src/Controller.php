@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;
-use Tanmuhittin\LaravelGoogleTranslate\Commands\TranslateFilesCommand;
+use Illuminate\Support\Str;
 
 class Controller extends BaseController
 {
@@ -184,7 +184,7 @@ class Controller extends BaseController
                     // Translation already exists. Skip
                     continue;
                 }
-                $translated_text = TranslateFilesCommand::translate($base_locale, $newLocale, $base_string->value);
+                $translated_text = Str::apiTranslateWithAttributes($base_string->value, $newLocale, $base_locale);
                 request()->replace([
                     'value' => $translated_text,
                     'name' => $newLocale . '|' . $base_string->key,
