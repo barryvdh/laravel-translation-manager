@@ -4,6 +4,7 @@ namespace Barryvdh\TranslationManager;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Brick\VarExporter\VarExporter;
 use Symfony\Component\Finder\Finder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -294,7 +295,7 @@ class Manager
 
                         $path = $path.DIRECTORY_SEPARATOR.$locale.DIRECTORY_SEPARATOR.$group.'.php';
 
-                        $output = "<?php\n\nreturn ".var_export($translations, true).';'.\PHP_EOL;
+                        $output = "<?php\n\nreturn ".VarExporter::export($translations, true).';'.\PHP_EOL;
                         $this->files->put($path, $output);
                     }
                 }
