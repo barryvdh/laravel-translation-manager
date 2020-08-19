@@ -36,7 +36,6 @@ return [
      */
     'exclude_groups' => [],
     
-    
      /**
      * Add additional file-extensions for the file-search than the standard twig, php and vue
      *
