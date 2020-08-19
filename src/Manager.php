@@ -189,6 +189,14 @@ class Manager
             ->name( '*.twig' )
             ->name( '*.vue' );
 
+        //add other extensions
+        if(isset($this->config['find_file_extensions'])) {
+            $findFileExtensions = $this->config['find_file_extensions'];
+            foreach($findFileExtensions as $extension) {
+                $finder->name('*.'.$extension);
+            }
+        }
+        
         //exclude some folders from the find command
         $excludedFolders = ['storage', 'vendor']; //if config already published, add defaults
         if(isset($this->config['find_exclude_folders']) && $this->config[ 'find_exclude_folders']) {
