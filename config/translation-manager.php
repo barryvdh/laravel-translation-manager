@@ -36,6 +36,18 @@ return [
      */
     'exclude_groups' => [],
     
+    
+     /**
+     * Add additional file-extensions for the file-search than the standard twig, php and vue
+     *
+     * @type array
+     *
+     *    array(
+     *        'js'
+     *    )
+     */
+    'find_file_extensions' => [],
+    
     /**
      * Disable Group Detection for the php artisan translations:find command
      * Can be useful if you have group signs in the translation string keys (like points)
