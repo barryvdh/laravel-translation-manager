@@ -50,14 +50,17 @@
                 }
             });
 
-            $("a.delete-key").click(function(event){
-              event.preventDefault();
-              var row = $(this).closest('tr');
-              var url = $(this).attr('href');
-              var id = row.attr('id');
-              $.post( url, {id: id}, function(){
-                  row.remove();
-              } );
+            $("a.delete-key").on('confirm:complete',function(event,result){
+                if(result)
+                {
+                    var row = $(this).closest('tr');
+                    var url = $(this).attr('href');
+                    var id = row.attr('id');
+                    $.post( url, {id: id}, function(){
+                        row.remove();
+                    } );
+                }
+                return false;
             });
 
             $('.form-import').on('ajax:success', function (e, data) {
