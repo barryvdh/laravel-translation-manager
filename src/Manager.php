@@ -4,22 +4,27 @@ namespace Barryvdh\TranslationManager;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Lang;
 use Symfony\Component\Finder\Finder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Barryvdh\TranslationManager\Models\Translation;
 use Barryvdh\TranslationManager\Events\TranslationsExportedEvent;
+use Symfony\Component\Finder\SplFileInfo;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_UNICODE;
+use const PHP_EOL;
 
 class Manager
 {
     const JSON_GROUP = '_json';
 
-    /** @var \Illuminate\Contracts\Foundation\Application */
+    /** @var Application */
     protected $app;
-    /** @var \Illuminate\Filesystem\Filesystem */
+    /** @var Filesystem */
     protected $files;
-    /** @var \Illuminate\Contracts\Events\Dispatcher */
+    /** @var Dispatcher */
     protected $events;
 
     protected $config;
@@ -94,7 +99,7 @@ class Manager
                 }
 
                 if (! $vendor) {
-                    $translations = \Lang::getLoader()->load($locale, $group);
+                    $translations = Lang::getLoader()->load($locale, $group);
                 } else {
                     $translations = include $file;
                     $group = 'vendor/'.$vendorName;
@@ -116,7 +121,7 @@ class Manager
             $locale = basename($jsonTranslationFile, '.json');
             $group = self::JSON_GROUP;
             $translations =
-                \Lang::getLoader()->load($locale, '*', '*'); // Retrieves JSON entries of the given locale only
+                Lang::getLoader()->load($locale, '*', '*'); // Retrieves JSON entries of the given locale only
             if ($translations && is_array($translations)) {
                 foreach ($translations as $key => $value) {
                     $importedTranslation = $this->importTranslation($key, $value, $locale, $group, $replace);
@@ -190,7 +195,7 @@ class Manager
         $finder = new Finder();
         $finder->in($path)->exclude('storage')->exclude('vendor')->name('*.php')->name('*.twig')->name('*.vue')->files();
 
-        /** @var \Symfony\Component\Finder\SplFileInfo $file */
+        /** @var SplFileInfo $file */
         foreach ($finder as $file) {
             // Search the current file for the pattern
             if (preg_match_all("/$groupPattern/siU", $file->getContents(), $matches)) {
@@ -294,7 +299,7 @@ class Manager
 
                         $path = $path.DIRECTORY_SEPARATOR.$locale.DIRECTORY_SEPARATOR.$group.'.php';
 
-                        $output = "<?php\n\nreturn ".var_export($translations, true).';'.\PHP_EOL;
+                        $output = "<?php\n\nreturn ".var_export($translations, true).';'. PHP_EOL;
                         $this->files->put($path, $output);
                     }
                 }
@@ -311,7 +316,7 @@ class Manager
                 if (isset($groups[self::JSON_GROUP])) {
                     $translations = $groups[self::JSON_GROUP];
                     $path = $this->app['path.lang'].'/'.$locale.'.json';
-                    $output = json_encode($translations, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE);
+                    $output = json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
                     $this->files->put($path, $output);
                 }
             }
