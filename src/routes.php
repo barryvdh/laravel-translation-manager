@@ -3,8 +3,7 @@
 declare(strict_types=1);
 
 $config = array_merge(config('translation-manager.route'), ['namespace' => 'Barryvdh\TranslationManager']);
-Route::group($config, function($router)
-{
+Route::group($config, function ($router) {
     $router->get('view/{groupKey?}', 'Controller@getView')->where('groupKey', '.*');
     $router->get('/{groupKey?}', 'Controller@getIndex')->where('groupKey', '.*');
     $router->post('/add/{groupKey}', 'Controller@postAdd')->where('groupKey', '.*');

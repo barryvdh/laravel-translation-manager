@@ -1,14 +1,14 @@
 <?php namespace Barryvdh\TranslationManager;
 
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Barryvdh\TranslationManager\Models\Translation;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Collection;
 
 class Controller extends BaseController
 {
-    /** @var \Barryvdh\TranslationManager\Manager  */
+    /** @var \Barryvdh\TranslationManager\Manager */
     protected $manager;
 
     public function __construct(Manager $manager)
@@ -16,12 +16,17 @@ class Controller extends BaseController
         $this->manager = $manager;
     }
 
+    public function getView($group = null)
+    {
+        return $this->getIndex($group);
+    }
+
     public function getIndex($group = null)
     {
         $locales = $this->manager->getLocales();
         $groups = Translation::groupBy('group');
         $excludedGroups = $this->manager->getConfig('exclude_groups');
-        if($excludedGroups){
+        if ($excludedGroups) {
             $groups->whereNotIn('group', $excludedGroups);
         }
 
@@ -29,14 +34,14 @@ class Controller extends BaseController
         if ($groups instanceof Collection) {
             $groups = $groups->all();
         }
-        $groups = [''=>'Choose a group'] + $groups;
+        $groups = ['' => 'Choose a group'] + $groups;
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
 
         $allTranslations = Translation::where('group', $group)->orderBy('key', 'asc')->get();
         $numTranslations = count($allTranslations);
         $translations = [];
-        foreach($allTranslations as $translation){
+        foreach ($allTranslations as $translation) {
             $translations[$translation->key][$translation->locale] = $translation;
         }
 
@@ -53,7 +58,7 @@ class Controller extends BaseController
             $translations = $paginator->withPath($path);
         }
 
-        return view('translation-manager::'.$this->manager->getConfig('template').'.index')
+        return view('translation-manager::' . $this->manager->getConfig('template') . '.index')
             ->with('translations', $translations)
             ->with('locales', $locales)
             ->with('groups', $groups)
@@ -65,33 +70,13 @@ class Controller extends BaseController
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
 
-    public function getView($group = null)
-    {
-        return $this->getIndex($group);
-    }
-
-    protected function loadLocales()
-    {
-        //Set the default locale as the first one.
-        $locales = Translation::groupBy('locale')
-            ->select('locale')
-            ->get()
-            ->pluck('locale');
-
-        if ($locales instanceof Collection) {
-            $locales = $locales->all();
-        }
-        $locales = array_merge([config('app.locale')], $locales);
-        return array_unique($locales);
-    }
-
     public function postAdd($group = null)
     {
         $keys = explode("\n", request()->get('keys'));
 
-        foreach($keys as $key){
+        foreach ($keys as $key) {
             $key = trim($key);
-            if($group && $key){
+            if ($group && $key) {
                 $this->manager->missingKey('*', $group, $key);
             }
         }
@@ -100,7 +85,7 @@ class Controller extends BaseController
 
     public function postEdit($group = null)
     {
-        if(!in_array($group, $this->manager->getConfig('exclude_groups'))) {
+        if (!in_array($group, $this->manager->getConfig('exclude_groups'))) {
             $name = request()->get('name');
             $value = request()->get('value');
 
@@ -110,16 +95,17 @@ class Controller extends BaseController
                 'group' => $group,
                 'key' => $key,
             ]);
-            $translation->value = (string) $value ?: null;
+            $translation->value = (string)$value ?: null;
             $translation->status = Translation::STATUS_CHANGED;
             $translation->save();
-            return array('status' => 'ok');
+            return ['status' => 'ok'];
         }
     }
 
     public function postDelete($group = null, $key)
     {
-        if(!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
+        if (!in_array($group,
+                $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
             Translation::where('group', $group)->where('key', $key)->delete();
             return ['status' => 'ok'];
         }
@@ -137,14 +123,14 @@ class Controller extends BaseController
     {
         $numFound = $this->manager->findTranslations();
 
-        return ['status' => 'ok', 'counter' => (int) $numFound];
+        return ['status' => 'ok', 'counter' => (int)$numFound];
     }
 
     public function postPublish($group = null)
     {
         $json = false;
 
-        if($group === '_json'){
+        if ($group === '_json') {
             $json = true;
         }
 
@@ -156,12 +142,9 @@ class Controller extends BaseController
     public function postAddGroup(Request $request)
     {
         $group = str_replace(".", '', $request->input('new-group'));
-        if ($group)
-        {
-            return redirect()->action('\Barryvdh\TranslationManager\Controller@getView',$group);
-        }
-        else
-        {
+        if ($group) {
+            return redirect()->action('\Barryvdh\TranslationManager\Controller@getView', $group);
+        } else {
             return redirect()->back();
         }
     }
@@ -183,5 +166,20 @@ class Controller extends BaseController
             $this->manager->removeLocale($locale);
         }
         return redirect()->back();
+    }
+
+    protected function loadLocales()
+    {
+        //Set the default locale as the first one.
+        $locales = Translation::groupBy('locale')
+            ->select('locale')
+            ->get()
+            ->pluck('locale');
+
+        if ($locales instanceof Collection) {
+            $locales = $locales->all();
+        }
+        $locales = array_merge([config('app.locale')], $locales);
+        return array_unique($locales);
     }
 }

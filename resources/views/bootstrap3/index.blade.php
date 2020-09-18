@@ -17,7 +17,7 @@
 
 @push('scripts')
     <script
-        src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+            src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     @include('translation-manager::jsScript')
 
 @endpush
@@ -109,7 +109,7 @@
                 <select name="group" id="group" class="form-control group-select">
                     <?php foreach($groups as $key => $value): ?>
                     <option
-                        value="<?php echo $key ?>"<?php echo $key == $group ? ' selected' : '' ?>><?php echo $value ?></option>
+                            value="<?php echo $key ?>"<?php echo $key == $group ? ' selected' : '' ?>><?php echo $value ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -162,15 +162,17 @@
                        data-name="<?php echo $locale . "|" . htmlentities($key, ENT_QUOTES, 'UTF-8', false) ?>"
                        id="username" data-type="textarea" data-pk="<?php echo $t ? $t->id : 0 ?>"
                        data-url="<?php echo $editUrl ?>"
-                       data-title="Enter translation"><?php echo $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' ?></a>
+                       data-title="Enter translation"><?php echo $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8',
+                            false) : '' ?></a>
                 </td>
                 <?php endforeach; ?>
                 <?php if ($deleteEnabled): ?>
                 <td>
                     <a href="<?php echo action($controller . '@postDelete', [$group, $key]) ?>"
                        class="delete-key"
-                       data-confirm="Are you sure you want to delete the translations for '<?php echo htmlentities($key, ENT_QUOTES, 'UTF-8', false) ?>?"><span
-                            class="glyphicon glyphicon-trash"></span></a>
+                       data-confirm="Are you sure you want to delete the translations for '<?php echo htmlentities($key,
+                           ENT_QUOTES, 'UTF-8', false) ?>?"><span
+                                class="glyphicon glyphicon-trash"></span></a>
                 </td>
                 <?php endif; ?>
             </tr>

@@ -2,8 +2,8 @@
 
 namespace Barryvdh\TranslationManager\Console;
 
-use Illuminate\Console\Command;
 use Barryvdh\TranslationManager\Manager;
+use Illuminate\Console\Command;
 
 class ResetCommand extends Command
 {

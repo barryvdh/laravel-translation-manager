@@ -5,14 +5,16 @@
             <p>
                 Current supported locales:
             </p>
-            <form class="form-remove-locale" method="POST" role="form" action="{{action($controller.'@postRemoveLocale')}}"
+            <form class="form-remove-locale" method="POST" role="form"
+                  action="{{action($controller.'@postRemoveLocale')}}"
                   data-confirm="Are you sure to remove this locale and all of data?">
                 @csrf()
                 <ul class="list-locales list-unstyle">
                     @foreach($locales as $locale)
                         <li class="form-group ">
                             <span>{{$locale}}</span>
-                            <button type="submit" name="remove-locale[{{$locale}}]" class="btn btn-danger btn-sm ml-2" data-disable-with="...">
+                            <button type="submit" name="remove-locale[{{$locale}}]" class="btn btn-danger btn-sm ml-2"
+                                    data-disable-with="...">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </li>
@@ -30,7 +32,9 @@
                             <input type="text" name="new-locale" class="form-control"/>
                         </div>
                         <div class="col-auto">
-                            <button type="submit" class="btn  btn-block btn-outline-success" data-disable-with="Adding..">Add new locale</button>
+                            <button type="submit" class="btn  btn-block btn-outline-success"
+                                    data-disable-with="Adding..">Add new locale
+                            </button>
                         </div>
                     </div>
                 </div>

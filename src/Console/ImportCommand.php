@@ -38,7 +38,7 @@ class ImportCommand extends Command
     {
         $replace = $this->option('replace');
         $counter = $this->manager->importTranslations($replace);
-        $this->info('Done importing, processed '.$counter.' items!');
+        $this->info('Done importing, processed ' . $counter . ' items!');
     }
 
     /**

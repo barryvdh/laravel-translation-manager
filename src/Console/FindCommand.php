@@ -36,6 +36,6 @@ class FindCommand extends Command
     public function handle()
     {
         $counter = $this->manager->findTranslations(null);
-        $this->info('Done importing, processed '.$counter.' items!');
+        $this->info('Done importing, processed ' . $counter . ' items!');
     }
 }

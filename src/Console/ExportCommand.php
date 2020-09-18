@@ -52,15 +52,14 @@ class ExportCommand extends Command
             return;
         }
 
-        if ( $group == '*' ) {
+        if ($group == '*') {
             $this->manager->exportAllTranslations();
-        }
-        else {
+        } else {
             $this->manager->exportTranslations($group, $json);
         }
 
         if (!is_null($group)) {
-            $this->info('Done writing language files for '.(($group == '*') ? 'ALL groups' : $group.' group'));
+            $this->info('Done writing language files for ' . (($group == '*') ? 'ALL groups' : $group . ' group'));
         } elseif ($json) {
             $this->info('Done writing JSON language files for translation strings');
         }
