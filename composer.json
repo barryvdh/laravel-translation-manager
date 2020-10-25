@@ -14,13 +14,11 @@
     }
   ],
   "require": {
-    "php": ">=5.4.0",
-    "illuminate/support": "5.0.x|5.1.x|5.2.x|5.3.x|5.4.x|5.5.x|5.6.x",
-    "illuminate/translation": "5.0.x|5.1.x|5.2.x|5.3.x|5.4.x|5.5.x|5.6.x",
-    "stichoza/google-translate-php": "~3.2",
-    "symfony/finder": "~2.3|~3.0|~4.0",
-    "ext-zip": "*",
-    "ext-json": "*"
+    "php": ">=7",
+    "illuminate/support": "^5.5|^6|^7|^8",
+    "illuminate/translation": "^5.5|^6|^7|^8",
+    "symfony/finder": "^3|^4|^5",
+    "tanmuhittin/laravel-google-translate": "^2.0.1"
   },
   "autoload": {
     "psr-4": {
@@ -29,7 +27,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "0.4-dev"
+      "dev-master": "0.5-dev"
     },
     "laravel": {
       "providers": [

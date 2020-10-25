@@ -14,7 +14,7 @@ class ExportCommand extends Command
      *
      * @var string
      */
-    protected $name = 'translations:export';
+    protected $name = 'translations:export {group}';
 
     /**
      * The console command description.
@@ -37,7 +37,7 @@ class ExportCommand extends Command
      */
     public function handle()
     {
-        $group = $this->argument('group');
+        $group = $this->option('all') ? '*' : $this->argument('group');
         $json = $this->option('json');
 
         if (is_null($group) && !$json) {
@@ -52,7 +52,12 @@ class ExportCommand extends Command
             return;
         }
 
-        $this->manager->exportTranslations($group, $json);
+        if ( $group == '*' ) {
+            $this->manager->exportAllTranslations();
+        }
+        else {
+            $this->manager->exportTranslations($group, $json);
+        }
 
         if (!is_null($group)) {
             $this->info('Done writing language files for '.(($group == '*') ? 'ALL groups' : $group.' group'));
@@ -69,7 +74,7 @@ class ExportCommand extends Command
     protected function getArguments()
     {
         return [
-            ['group', InputArgument::OPTIONAL, 'The group to export (`*` for all).'],
+            ['group', InputArgument::OPTIONAL, 'The group to export (--all for all).'],
         ];
     }
 
@@ -82,6 +87,7 @@ class ExportCommand extends Command
     {
         return [
             ['json', 'J', InputOption::VALUE_NONE, 'Export anonymous strings to JSON'],
+            ['all', 'A', InputOption::VALUE_NONE, 'Export all groups'],
         ];
     }
 }

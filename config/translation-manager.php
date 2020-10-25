@@ -78,7 +78,7 @@ return [
     /**
      * Export translations with keys output alphabetically.
      */
-    'sort_keys '     => false,
+    'sort_keys'     => false,
 
     'trans_functions' => [
         'trans',
