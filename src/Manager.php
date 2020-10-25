@@ -433,11 +433,6 @@ class Manager
         }
     }
 
-    protected function saveIgnoredLocales()
-    {
-        return $this->files->put($this->ignoreFilePath, json_encode($this->ignoreLocales));
-    }
-
     public function zipLangFiles()
     {
         $zip = new ZipArchive();
