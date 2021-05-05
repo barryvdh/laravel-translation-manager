@@ -15,6 +15,7 @@ The workflow would be:
 This way, translations can be saved in git history and no overhead is introduced in production.
 
 ![Screenshot](http://i.imgur.com/4th2krf.png)
+![Screenshot](screenshot2.png)
 
 ## Installation
 

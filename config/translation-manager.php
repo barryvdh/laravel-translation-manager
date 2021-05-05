@@ -66,4 +66,9 @@ return [
         '$trans.get',
     ],
 
+
+    'ignore_new_trans' => false,
+    'ignore_json' => true,
+    'warn_in_code' => true,
+
 ];
