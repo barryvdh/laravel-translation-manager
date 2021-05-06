@@ -53,7 +53,7 @@
         <fieldset>
             <legend>Variables</legend>
             <ul>
-                @foreach( $_translation->getPossibleVariables() as $entry )
+                @foreach( \Barryvdh\TranslationManager\Models\Translation::possibleVariables( $group, $key)->get() as $entry )
                     <li>{{ $entry->attribute }}</li>
                 @endforeach
             </ul>
@@ -61,7 +61,7 @@
         <fieldset>
             <legend>URLs</legend>
             <ul>
-                @foreach( $_translation->getUrls() as $entry )
+                @foreach( \Barryvdh\TranslationManager\Models\Translation::urls( $group, $key)->get() as $entry )
                     <li>{{ $entry->url }}</li>
                 @endforeach
             </ul>
@@ -69,7 +69,7 @@
         <fieldset>
             <legend>Source Locations</legend>
             <ul>
-                @foreach( $_translation->getSourceLocations() as $entry )
+                @foreach( \Barryvdh\TranslationManager\Models\Translation::sourceLocations( $group, $key)->get() as $entry )
                     <li>{{ $entry->file_path }}:{{ $entry->file_line }}</li>
                 @endforeach
             </ul>

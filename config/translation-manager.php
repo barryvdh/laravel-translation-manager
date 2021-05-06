@@ -66,9 +66,19 @@ return [
         '$trans.get',
     ],
 
-
+    /**
+     * if true finding new translations will be disabled while users browse application
+     */
     'ignore_new_trans' => false,
+
+    /**
+     * When project does not user JSON alternative it can be ignored
+     */
     'ignore_json' => true,
-    'warn_in_code' => true,
+
+    /**
+     * translations without source position will be marked as red
+     */
+    'warn_in_code' => false,
 
 ];

@@ -1,6 +1,7 @@
 <?php namespace Barryvdh\TranslationManager\Models;
 
 use DB;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -54,19 +55,37 @@ class Translation extends Model
         return $query->select(DB::raw($select));
     }
 
-    public function getSourceLocations()
+    /**
+     * @param $group
+     * @param $key
+     *
+     * @return Builder
+     */
+    public static function sourceLocations( $group, $key )
     {
-        return \Illuminate\Support\Facades\DB::table('ltm_translation_sources')->where('group', $this->group)->where('key', $this->key)->get();
+        return \Illuminate\Support\Facades\DB::table('ltm_translation_sources')->where('group', $group)->where('key', $key);
     }
 
-    public function getUrls()
+    /**
+     * @param $group
+     * @param $key
+     *
+     * @return Builder
+     */
+    public static function urls( $group, $key )
     {
-        return \Illuminate\Support\Facades\DB::table('ltm_translation_urls')->where('group', $this->group)->where('key', $this->key)->get();
+        return \Illuminate\Support\Facades\DB::table('ltm_translation_urls')->where('group', $group)->where('key', $key);
     }
 
-    public function getPossibleVariables()
+    /**
+     * @param $group
+     * @param $key
+     *
+     * @return Builder
+     */
+    public static function possibleVariables( $group, $key )
     {
-        return \Illuminate\Support\Facades\DB::table('ltm_translation_variables')->where('group', $this->group)->where('key', $this->key)->get();
+        return \Illuminate\Support\Facades\DB::table('ltm_translation_variables')->where('group', $group)->where('key', $key);
     }
 
 }

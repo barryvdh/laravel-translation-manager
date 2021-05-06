@@ -174,9 +174,9 @@ class Controller extends BaseController
     {
         if (!in_array($groupKey, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
             Translation::where('group', $groupKey)->where('key', $key)->delete();
-            DB::table('ltm_translation_sources')->where('group', $groupKey)->where('key', $key)->delete();
-            DB::table('ltm_translation_variables')->where('group', $groupKey)->where('key', $key)->delete();
-            DB::table('ltm_translation_urls')->where('group', $groupKey)->where('key', $key)->delete();
+            Translation::possibleVariables( $groupKey, $key)->delete();
+            Translation::sourceLocations( $groupKey, $key)->delete();
+            Translation::urls( $groupKey, $key)->delete();
             return ['status' => 'ok'];
         }
     }
