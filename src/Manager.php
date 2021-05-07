@@ -36,7 +36,7 @@ class Manager
         $this->app = $app;
         $this->files = $files;
         $this->events = $events;
-        $this->config = $app['config']['translation-manager'];
+        $this->config = $app[ 'config' ][ 'translation-manager' ];
         $this->ignoreFilePath = storage_path('.ignore_locales');
         $this->locales = [];
         $this->ignoreLocales = $this->getIgnoredLocales();
@@ -58,7 +58,7 @@ class Manager
         //allows for vendor lang files to be properly recorded through recursion.
         $vendor = true;
         if ($base == null) {
-            $base = $this->app['path.lang'];
+            $base = $this->app[ 'path.lang' ];
             $vendor = false;
         }
 
@@ -76,17 +76,17 @@ class Manager
             $vendorName = $this->files->name($this->files->dirname($langPath));
             foreach ($this->files->allfiles($langPath) as $file) {
                 $info = pathinfo($file);
-                $group = $info['filename'];
+                $group = $info[ 'filename' ];
                 if ($import_group) {
                     if ($import_group !== $group) {
                         continue;
                     }
                 }
 
-                if (in_array($group, $this->config['exclude_groups'])) {
+                if (in_array($group, $this->config[ 'exclude_groups' ])) {
                     continue;
                 }
-                $subLangPath = str_replace($langPath.DIRECTORY_SEPARATOR, '', $info['dirname']);
+                $subLangPath = str_replace($langPath.DIRECTORY_SEPARATOR, '', $info[ 'dirname' ]);
                 $subLangPath = str_replace(DIRECTORY_SEPARATOR, '/', $subLangPath);
                 $langPath = str_replace(DIRECTORY_SEPARATOR, '/', $langPath);
 
@@ -110,7 +110,7 @@ class Manager
             }
         }
 
-        foreach ($this->files->files($this->app['path.lang']) as $jsonTranslationFile) {
+        foreach ($this->files->files($this->app[ 'path.lang' ]) as $jsonTranslationFile) {
             if (strpos($jsonTranslationFile, '.json') === false) {
                 continue;
             }
@@ -130,7 +130,6 @@ class Manager
 
     public function importTranslation($key, $value, $locale, $group, $replace = false)
     {
-
         // process only string values
         if (is_array($value)) {
             return false;
@@ -163,7 +162,7 @@ class Manager
         $path = $path ?: base_path();
         $groupKeys = [];
         $stringKeys = [];
-        $functions = $this->config['trans_functions'];
+        $functions = $this->config[ 'trans_functions' ];
 
         $groupPattern =                                  // See https://regex101.com/r/Mxr50T/1
             "[\W]".                                      // Must not have an alphanum or _ or > before real method
@@ -197,28 +196,28 @@ class Manager
             // Search the current file for the pattern
             if (preg_match_all("/$groupPattern/si", $file->getContents(), $matches)) {
                 // Get all matches
-                foreach ($matches[2] as $i => $key) {
+                foreach ($matches[ 2 ] as $i => $key) {
                     $found++;
-                    if (!isset($groupKeys[$key])) {
-                        $groupKeys[$key] = [
+                    if (!isset($groupKeys[ $key ])) {
+                        $groupKeys[ $key ] = [
                             "sources" => [],
                             "variables" => [],
                         ];
                     }
-                    $groupKeys[$key]["sources"] = array_merge($groupKeys[$key]["sources"], $this->findLineNumber($file, $key));
-                    if (isset($matches[5]) && isset($matches[5][$i]) && $matches[5][$i] != "") {
-                        $attributes = explode(",", str_strip_whitespace($matches[5][$i]));
+                    $groupKeys[ $key ][ "sources" ] = array_merge($groupKeys[ $key ][ "sources" ], $this->findLineNumber($file, $key));
+                    if (isset($matches[ 5 ]) && isset($matches[ 5 ][ $i ]) && $matches[ 5 ][ $i ] != "") {
+                        $attributes = explode(",", str_strip_whitespace($matches[ 5 ][ $i ]));
                         foreach ($attributes as $attribute) {
                             list($item, $_rest) = explode("=", $attribute, 2);
-                            $groupKeys[$key]["variables"][] = str_replace(['"', "'"], "", $item);
+                            $groupKeys[ $key ][ "variables" ][] = str_replace(['"', "'"], "", $item);
                         }
                     }
                 }
             }
 
-            if ($this->config['ignore_json'] != false) {
+            if ($this->config[ 'ignore_json' ] != false) {
                 if (preg_match_all("/$stringPattern/siU", $file->getContents(), $matches)) {
-                    foreach ($matches['string'] as $key) {
+                    foreach ($matches[ 'string' ] as $key) {
                         if (preg_match("/(^[a-zA-Z0-9_-]+([.][^\1)\ ]+)+$)/siU", $key, $groupMatches)) {
                             // group{.group}.key format, already in $groupKeys but also matched here
                             // do nothing, it has to be treated as a group
@@ -241,16 +240,15 @@ class Manager
 
         //clean variables and sources
         \Illuminate\Support\Facades\DB::statement('TRUNCATE TABLE `ltm_translation_sources`');
-        \Illuminate\Support\Facades\DB::statement('TRUNCATE TABLE `ltm_translation_variables`');
 
         // Add the translations to the database, if not existing.
         foreach ($groupKeys as $key => $data) {
             // Split the group and item
             list($group, $item) = explode('.', $key, 2);
-            $this->missingKey('', $group, $item);
+            $this->missingKey('', $group, $item, array_unique( $data[ 'variables' ] ) );
 
             // save location in strings
-            $files = array_unique($data['sources']);
+            $files = array_unique($data[ 'sources' ]);
             foreach ($files as $file) {
                 list($path, $line) = explode(':', $file);
                 \Illuminate\Support\Facades\DB::table('ltm_translation_sources')->insert([
@@ -261,20 +259,10 @@ class Manager
                 ]);
             }
 
-            // save possible variables
-            $items = array_unique($data['variables']);
-            foreach ($items as $item) {
-                \Illuminate\Support\Facades\DB::table('ltm_translation_variables')->insert([
-                    "group" => $group,
-                    "key" => $item,
-                    "attribute" => $item,
-                ]);
-            }
-
             $counter++;
         }
 
-        if ($this->config['ignore_json'] != false) {
+        if ($this->config[ 'ignore_json' ] != false) {
             $stringKeys = array_unique($stringKeys);
             foreach ($stringKeys as $key) {
                 $group = self::JSON_GROUP;
@@ -289,8 +277,10 @@ class Manager
 
     /**
      * return list of line_numbers
+     *
      * @param  \Symfony\Component\Finder\SplFileInfo  $file
      * @param $search
+     *
      * @return array
      */
     private function findLineNumber(\Symfony\Component\Finder\SplFileInfo $file, $search)
@@ -307,29 +297,42 @@ class Manager
         return $line_numbers;
     }
 
-    public function missingKey($namespace, $group, $key)
+    public function missingKey($namespace, $group, $key, $parameters = [])
     {
-        if (!in_array($group, $this->config['exclude_groups'])) {
-            if ($this->config['ignore_json']) {
+        if (!in_array($group, $this->config[ 'exclude_groups' ])) {
+            if ($this->config[ 'ignore_json' ]) {
                 //ignore all non alphanumeric strings
                 if (preg_match("/[a-zA-Z0-9-_\.]*/", $key, $groupMatches)) {
-                    if ($groupMatches[0] != $key) {
+                    if ($groupMatches[ 0 ] != $key) {
                         return;
                     }
                 }
             }
 
             Translation::firstOrCreate([
-                'locale' => $this->app['config']['app.locale'],
+                'locale' => $this->app[ 'config' ][ 'app.locale' ],
                 'group' => $group,
                 'key' => $key,
             ]);
+
+            if (count($parameters) > 0) {
+                Translation::possibleVariables($group, $key)->delete();
+
+                // save possible variables
+                foreach ($parameters as $parameter) {
+                    \Illuminate\Support\Facades\DB::table('ltm_translation_variables')->insert([
+                        "group" => $group,
+                        "key" => $key,
+                        "attribute" => $parameter,
+                    ]);
+                }
+            }
 
             if (!app()->runningInConsole()) {
                 $url = request()->getRequestUri();
 
                 // ignore url when part of config->route->prefix
-                if (!Str::contains($url, $this->config['route']['prefix'])) {
+                if (!Str::contains($url, $this->config[ 'route' ][ 'prefix' ])) {
                     // save URL with translation key
                     $_testUrl = DB::table('ltm_translation_urls')
                         ->where('group', $group)
@@ -350,10 +353,10 @@ class Manager
 
     public function exportTranslations($group = null, $json = false)
     {
-        $basePath = $this->app['path.lang'];
+        $basePath = $this->app[ 'path.lang' ];
 
         if (!is_null($group) && !$json) {
-            if (!in_array($group, $this->config['exclude_groups'])) {
+            if (!in_array($group, $this->config[ 'exclude_groups' ])) {
                 $vendor = false;
                 if ($group == '*') {
                     return $this->exportAllTranslations();
@@ -368,9 +371,9 @@ class Manager
                     ->get());
 
                 foreach ($tree as $locale => $groups) {
-                    if (isset($groups[$group])) {
-                        $translations = $groups[$group];
-                        $path = $this->app['path.lang'];
+                    if (isset($groups[ $group ])) {
+                        $translations = $groups[ $group ];
+                        $path = $this->app[ 'path.lang' ];
 
                         $locale_path = $locale.DIRECTORY_SEPARATOR.$group;
                         if ($vendor) {
@@ -406,9 +409,9 @@ class Manager
                 ->get(), true);
 
             foreach ($tree as $locale => $groups) {
-                if (isset($groups[self::JSON_GROUP])) {
-                    $translations = $groups[self::JSON_GROUP];
-                    $path = $this->app['path.lang'].'/'.$locale.'.json';
+                if (isset($groups[ self::JSON_GROUP ])) {
+                    $translations = $groups[ self::JSON_GROUP ];
+                    $path = $this->app[ 'path.lang' ].'/'.$locale.'.json';
                     $output = json_encode($translations, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE);
                     $this->files->put($path, $output);
                 }
@@ -440,10 +443,10 @@ class Manager
         $array = [];
         foreach ($translations as $translation) {
             if ($json) {
-                $this->jsonSet($array[$translation->locale][$translation->group], $translation->key,
+                $this->jsonSet($array[ $translation->locale ][ $translation->group ], $translation->key,
                     $translation->value);
             } else {
-                Arr::set($array[$translation->locale][$translation->group], $translation->key,
+                Arr::set($array[ $translation->locale ][ $translation->group ], $translation->key,
                     $translation->value);
             }
         }
@@ -456,7 +459,7 @@ class Manager
         if (is_null($key)) {
             return $array = $value;
         }
-        $array[$key] = $value;
+        $array[ $key ] = $value;
 
         return $array;
     }
@@ -526,7 +529,7 @@ class Manager
         if ($key == null) {
             return $this->config;
         } else {
-            return $this->config[$key];
+            return $this->config[ $key ];
         }
     }
 }
