@@ -164,7 +164,7 @@ class Manager
         $stringKeys = [];
         $functions = $this->config[ 'trans_functions' ];
 
-        $groupPattern =                                  // See https://regex101.com/r/Mxr50T/1
+        $groupPattern =                                  // See https://regex101.com/r/Mxr50T/2
             "[\W]".                                      // Must not have an alphanum or _ or > before real method
             '('.implode('|', $functions).')'.   // Must start with one of the functions
             "\(\s?".                                     // Match opening parenthesis
@@ -172,15 +172,16 @@ class Manager
             '('.                                         // Start a new group to match:
             '[a-zA-Z0-9_-]+'.                            // Must start with group
             '[\.]'.                                      // Group ends with dot
-            "([a-zA-Z0-9_\-\.]+)".                       // Be followed by one or more items/keys
+            "([a-zA-Z0-9_\-\.]*)".                       // Be followed by zero or more items/keys
+            '[a-zA-Z0-9]'.                               // Must end with a number or letter
             ')'.                                         // Close group
             "[\'\"]\s?".                                 // Closing quote
             "[\),\s]{1,3}".                              // Close parentheses or new parameter
             "(\[([^\]]*)\])?";                           // take atributes if exists
 
         $stringPattern =
-            "[^\w]".                                     // Must not have an alphanum before real method
-            '('.implode('|', $functions).')'.             // Must start with one of the functions
+            "[^\w]".                                       // Must not have an alphanum before real method
+            '('.implode('|', $functions).')'.     // Must start with one of the functions
             "\(\s*".                                       // Match opening parenthesis
             "(?P<quote>['\"])".                            // Match " or ' and store in {quote}
             "(?P<string>(?:\\\k{quote}|(?!\k{quote}).)*)". // Match any string that can be {quote} escaped
