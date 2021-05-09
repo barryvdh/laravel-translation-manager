@@ -51,7 +51,7 @@
 </form>
 <hr>
 <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
-<table class="table">
+<table class="table table-stripped table-hover">
     <thead>
     <tr>
         <th width="15%">Key</th>
