@@ -10,6 +10,8 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Finder\Finder;
 
 class Manager
@@ -157,6 +159,7 @@ class Manager
         return true;
     }
 
+
     public function findTranslations($path = null)
     {
         $path = $path ?: base_path();
@@ -192,8 +195,23 @@ class Manager
         $finder = new Finder();
         $finder->in($path)->exclude('storage')->exclude('vendor')->name('*.php')->name('*.twig')->name('*.vue')->files();
 
+        $section = null;
+        if (app()->runningInConsole()) {
+            $output = new ConsoleOutput();
+            $section = $output->section();
+
+            $bar = new ProgressBar($section);
+            $bar->setFormat("%message%\n %current%/%max% [%bar%] %percent:3s%%");
+            $bar->setMessage('Files');
+            $bar->start(count($finder));
+        }
+
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($finder as $file) {
+            if ($section != null) {
+                $bar->advance();
+            }
+
             // Search the current file for the pattern
             if (preg_match_all("/$groupPattern/si", $file->getContents(), $matches)) {
                 // Get all matches
@@ -207,7 +225,7 @@ class Manager
                     }
                     $groupKeys[ $key ][ "sources" ] = array_merge($groupKeys[ $key ][ "sources" ], $this->findLineNumber($file, $key));
                     if (isset($matches[ 5 ]) && isset($matches[ 5 ][ $i ]) && $matches[ 5 ][ $i ] != "") {
-                        $attributes = explode(",", str_strip_whitespace($matches[ 5 ][ $i ]));
+                        $attributes = explode(",", static::str_strip_whitespace($matches[ 5 ][ $i ]));
                         foreach ($attributes as $attribute) {
                             list($item, $_rest) = explode("=", $attribute, 2);
                             $groupKeys[ $key ][ "variables" ][] = str_replace(['"', "'"], "", $item);
@@ -216,7 +234,7 @@ class Manager
                 }
             }
 
-            if ($this->config[ 'ignore_json' ] != false) {
+            if (!$this->config[ 'ignore_json' ]) {
                 if (preg_match_all("/$stringPattern/siU", $file->getContents(), $matches)) {
                     foreach ($matches[ 'string' ] as $key) {
                         if (preg_match("/(^[a-zA-Z0-9_-]+([.][^\1)\ ]+)+$)/siU", $key, $groupMatches)) {
@@ -239,14 +257,27 @@ class Manager
         // Remove duplicates
         ksort($groupKeys);
 
+        if ($section != null) {
+            $bar->finish();
+
+            $bar2 = new ProgressBar($section);
+            $bar2->setFormat("%message%\n %current%/%max% [%bar%] %percent:3s%%");
+            $bar2->setMessage("Keys");
+            $bar2->start(count($groupKeys));
+        }
+
         //clean variables and sources
         \Illuminate\Support\Facades\DB::statement('TRUNCATE TABLE `ltm_translation_sources`');
 
         // Add the translations to the database, if not existing.
         foreach ($groupKeys as $key => $data) {
+            if ($section != null) {
+                $bar2->advance();
+            }
+
             // Split the group and item
             list($group, $item) = explode('.', $key, 2);
-            $this->missingKey('', $group, $item, array_unique( $data[ 'variables' ] ) );
+            $this->missingKey('', $group, $item, array_unique($data[ 'variables' ]));
 
             // save location in strings
             $files = array_unique($data[ 'sources' ]);
@@ -263,12 +294,32 @@ class Manager
             $counter++;
         }
 
-        if ($this->config[ 'ignore_json' ] != false) {
+        if ($section != null) {
+            $bar2->finish();
+        }
+
+        if (!$this->config[ 'ignore_json' ]) {
             $stringKeys = array_unique($stringKeys);
+
+            if ($section != null) {
+                $bar3 = new ProgressBar($section);
+                $bar3->setFormat("%message%\n %current%/%max% [%bar%] %percent:3s%%");
+                $bar3->setMessage("JSON");
+                $bar3->start(count($groupKeys));
+            }
+
             foreach ($stringKeys as $key) {
-                $group = self::JSON_GROUP;
+                if ($bar3 != null) {
+                    $bar3->advance();
+                }
+
+                $group = Manager::JSON_GROUP;
                 $item = $key;
                 $this->missingKey('', $group, $item);
+            }
+
+            if ($section != null) {
+                $bar3->finish();
             }
         }
 
@@ -296,6 +347,18 @@ class Manager
         }
 
         return $line_numbers;
+    }
+
+    /**
+     * Strp all whitespaces inside of string
+     *
+     * @param $string
+     *
+     * @return string|string[]|null
+     */
+    public static function str_strip_whitespace($string)
+    {
+        return preg_replace('/\s+/', '', $string);
     }
 
     public function missingKey($namespace, $group, $key, $parameters = [])

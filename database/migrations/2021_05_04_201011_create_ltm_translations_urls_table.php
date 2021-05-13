@@ -1,10 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class CreateLtmTranslationsUrlsTable extends Migration
+class CreateLtmTranslationsUrlsTable
+    extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +14,16 @@ class CreateLtmTranslationsUrlsTable extends Migration
      */
     public function up()
     {
-        Schema::create('ltm_translation_urls', function (Blueprint $table) {
+        Schema::create('ltm_translation_urls', function (Blueprint $table)
+        {
             $table->bigIncrements('id');
 
             $table->string('group');
             $table->text('key');
 
-            $table->string( 'url' );
+            $table->string('url');
+
+            $table->index(['group', 'key']);
         });
     }
 
