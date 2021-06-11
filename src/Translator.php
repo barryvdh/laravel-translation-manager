@@ -8,6 +8,9 @@ class Translator extends LaravelTranslator {
     /** @var  Dispatcher */
     protected $events;
 
+    /** @var  Manager */
+    protected $manager;
+
     /**
      * Get the translation for the given key.
      *
@@ -27,6 +30,9 @@ class Translator extends LaravelTranslator {
             $result = parent::get($key, $replace, $locale, $fallback);
             
         }
+
+        if( config(  'translation-manager.debug', false ) && $result != $key )
+            $result .= " [" . $key . "]";
 
         return $result;
     }

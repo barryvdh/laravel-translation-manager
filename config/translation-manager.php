@@ -77,8 +77,20 @@ return [
     'ignore_json' => true,
 
     /**
-     * translations without source position will be marked as red
+     * Translations without source position will be marked as red
      */
     'warn_in_code' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | DEBUG
+    |--------------------------------------------------------------------------
+    |
+    | After every translation will be placed original key in square brackets
+    | e.g.: trans('auth.login') -> Login [auth.login]
+    | NOTE: only when translation exists!
+    |
+    */
+    'debug' => false,
 
 ];

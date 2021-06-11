@@ -6,8 +6,9 @@ use Barryvdh\TranslationManager\Controller;
 
 Route::group(config('translation-manager.route'), function ($router) {
     $router->get('/view/{groupKey?}', [Controller::class, 'getView'])->where('groupKey', '.*')->name( 'translation-manager.group.list' );
+    $router->get('/search', [Controller::class, 'getSearchResults'])->name( 'translation-manager.search' );
     $router->get('/detail/{groupKey}/{translationKey}', [Controller::class, 'getDetail'])->name( 'translation-manager.translation' );
-    $router->get('/{groupKey?}', [Controller::class, 'getIndex'])->where('groupKey', '.*');
+    $router->get('/{groupKey?}', [Controller::class, 'getIndex'])->where('groupKey', '.*')->name( 'translation-manager.index');
 
 
     $router->post('/add/{groupKey}', [Controller::class, 'postAdd'])->where('groupKey', '.*')->name('translation-manager.translation.add');

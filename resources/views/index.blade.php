@@ -316,7 +316,7 @@
             $.ajaxSetup({
                 beforeSend: function (xhr, settings) {
                     console.log('beforesend');
-                    settings.data += "&_token=<?php echo csrf_token() ?>";
+                    settings.data += "&_token={{ csrf_token() }}";
                 }
             });
 
@@ -336,9 +336,9 @@
             $('.group-select').on('change', function () {
                 var group = $(this).val();
                 if (group) {
-                    window.location.href = '<?php echo action('\Barryvdh\TranslationManager\Controller@getView') ?>/' + $(this).val();
+                    window.location.href = '{{ action('\Barryvdh\TranslationManager\Controller@getView') }}/' + $(this).val();
                 } else {
-                    window.location.href = '<?php echo action('\Barryvdh\TranslationManager\Controller@getIndex') ?>';
+                    window.location.href = '{{ action('\Barryvdh\TranslationManager\Controller@getIndex') }}';
                 }
             });
 
@@ -400,7 +400,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="<?php echo action('\Barryvdh\TranslationManager\Controller@getIndex') ?>" class="navbar-brand">
+            <a href="{{ action('\Barryvdh\TranslationManager\Controller@getIndex') }}" class="navbar-brand">
                 Translation Manager
             </a>
         </div>
@@ -417,53 +417,116 @@
         <p>Done searching for translations, found <strong class="counter">N</strong> items!</p>
     </div>
     <div class="alert alert-success success-publish" style="display:none;">
-        <p>Done publishing the translations for group '<?php echo $group ?>'!</p>
+        <p>Done publishing the translations for group '{{ $group }}'!</p>
     </div>
     <div class="alert alert-success success-publish-all" style="display:none;">
         <p>Done publishing the translations for all group!</p>
     </div>
-    <?php if(Session::has('successPublish')) : ?>
+    @if(Session::has('successPublish'))
     <div class="alert alert-info">
-        <?php echo Session::get('successPublish'); ?>
+        {{ Session::get('successPublish') }}
     </div>
-    <?php endif; ?>
-    <p>
-        @if( !isset( $group ) )
-            @include( 'translation-manager::components.post_import' )
-        @else
-            @include( 'translation-manager::components.post_publish' )
-        @endif
-    </p>
-    @if($group)
+    @endif
+    @if( !$q )
+        <p>
+            @if($group)
+                @include( 'translation-manager::components.post_publish' )
+            @else
+                @include( 'translation-manager::components.post_import' )
+            @endif
+        </p>
+    @else
+        <a href="{{ route('translation-manager.index')  }}" class="btn btn-default">Back</a>
+    @endif
+    @if($group || $q)
         @if($key)
             @include( 'translation-manager::components.translation_detail' )
         @else
-            <form role="form" method="POST"
-                  action="<?php echo action('\Barryvdh\TranslationManager\Controller@postAddGroup') ?>">
-                <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-                <div class="form-group">
-                    <p>Choose a group to display the group translations. If no groups are visisble, make sure you have run
-                        the migrations and imported the translations.</p>
-                    <select name="group" id="group" class="form-control group-select">
-                    <?php foreach($groups as $key => $value): ?>
-                            <option value="<?php echo $key ?>"<?php echo $key == $group ? ' selected' : '' ?>><?php echo $value ?></option>
-                        <?php endforeach; ?>
-                    </select>
+            @if($q)
+                @include( 'translation-manager::components.search' )
+            @else
+                <form role="form" method="POST"
+                      action="{{ action('\Barryvdh\TranslationManager\Controller@postAddGroup') }}">
+                    @csrf
+                    <div class="form-group">
+                        <p>Choose a group to display the group translations. If no groups are visisble, make sure you
+                            have run
+                            the migrations and imported the translations.</p>
+                        <select name="group" id="group" class="form-control group-select">
+                            @foreach($groups as $key => $value)
+                            <option value="{{ $key }}"{{ $key == $group ? ' selected' : '' }}>{{ $value }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </form>
+                <form action="{{ action('\Barryvdh\TranslationManager\Controller@postAdd', array($group)) }}"
+                      method="POST"
+                      role="form">
+                    @csrf
+                    <div class="form-group">
+                        <label>Add new keys to this group</label>
+                        <textarea class="form-control" rows="3" name="keys"
+                                  placeholder="Add 1 key per line, without the group prefix"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Add keys" class="btn btn-primary">
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <span class="btn btn-default enable-auto-translate-group">Use Auto Translate</span>
+                    </div>
                 </div>
-            </form>
+                <form class="form-add-locale autotranslate-block-group hidden" method="POST" role="form"
+                      action="{{ action('\Barryvdh\TranslationManager\Controller@postTranslateMissing') }}">
+                    @csrf
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="base-locale">Base Locale for Auto Translations</label>
+                                <select name="base-locale" id="base-locale" class="form-control">
+                                    @foreach ($locales as $locale)
+                                    <option value="{{ $locale }}">{{ $locale }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="new-locale">Enter target locale key</label>
+                                <input type="text" name="new-locale" class="form-control" id="new-locale"
+                                       placeholder="Enter target locale key"/>
+                            </div>
+                            @if(!config('laravel_google_translate.google_translate_api_key'))
+                            <p>
+                                <code>Translating using stichoza/google-translate-php. If you would like to use Google
+                                    Translate API
+                                    enter your Google Translate API key to config file laravel_google_translate</code>
+                            </p>
+                            @endif
+                            <div class="form-group">
+                                <input type="hidden" name="with-translations" value="1">
+                                <input type="hidden" name="file" value="{{ $group }}">
+                                <button type="submit" class="btn btn-default btn-block" data-disable-with="Adding..">
+                                    Auto translate
+                                    missing translations
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            @endif
             @include( 'translation-manager::components.translations_list' )
         @endif
     @else
         <form role="form" method="POST"
-              action="<?php echo action('\Barryvdh\TranslationManager\Controller@postAddGroup') ?>">
-            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+              action="{{ action('\Barryvdh\TranslationManager\Controller@postAddGroup') }}">
+            @csrf
             <div class="form-group">
                 <p>Choose a group to display the group translations. If no groups are visisble, make sure you have run
                     the migrations and imported the translations.</p>
                 <select name="group" id="group" class="form-control group-select">
-                    <?php foreach($groups as $key => $value): ?>
-                    <option value="<?php echo $key ?>"<?php echo $key == $group ? ' selected' : '' ?>><?php echo $value ?></option>
-                    <?php endforeach; ?>
+                    @foreach($groups as $key => $value)
+                    <option value="{{ $key }}"{{ $key == $group ? ' selected' : '' }}>{{ $value }}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="form-group">
@@ -474,6 +537,8 @@
                 <input type="submit" class="btn btn-default" name="add-group" value="Add and edit keys"/>
             </div>
         </form>
+
+        @include( 'translation-manager::components.search' )
 
         @include( 'translation-manager::components.locales_list' )
     @endif

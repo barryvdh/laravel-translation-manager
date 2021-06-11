@@ -14,8 +14,8 @@
         </div>
         @foreach($locales as $locale)
             <?php
-            if (isset($translations[$key][$locale])) {
-                $_translation = $translations[$key][$locale];
+            if (isset($translations[ $key ][ $locale ])) {
+                $_translation = $translations[ $key ][ $locale ];
             }
             ?>
             <div class="form-group">
@@ -27,8 +27,8 @@
         <div class="form-group row">
             <div class="col-xs-6">
                 <input type="submit" value="Save" class="btn btn-primary">
-                <a href="{{ route( 'translation-manager.group.list', [ "groupKey" => $prevTranslation['group'] ] ) }}"
-                       class="btn btn-default">Cancel</a>
+                <a href="{{ route( 'translation-manager.group.list', [ "groupKey" => $group ] ) }}"
+                   class="btn btn-default">Cancel</a>
 
             </div>
             <div class="col-xs-6 text-right">
@@ -38,6 +38,7 @@
                            class="btn btn-default"><span
                                     class="glyphicon glyphicon-chevron-left"></span> {{ $prevTranslation['key'] }}</a>
                     @endif
+                    <a href="#" class="btn btn-default disabled">{{ $key }}</a>
                     @if( $nextTranslation != null )
                         <a href="{{ route( 'translation-manager.translation', [ "groupKey" => $nextTranslation['group'], "translationKey" => $nextTranslation['key'] ] ) }}"
                            class="btn btn-default">{{ $nextTranslation['key'] }} <span
