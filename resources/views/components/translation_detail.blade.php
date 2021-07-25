@@ -6,32 +6,32 @@
 
         <div class="form-group">
             <label>group</label>
-            <input class="form-control" disabled value="{{ $group }}"/>
+            <input class="form-control" readonly value="{{ $group }}"/>
         </div>
         <div class="form-group">
             <label>key</label>
-            <input class="form-control" disabled value="{{ $key }}"/>
+            <input class="form-control" readonly value="{{ $key }}"/>
         </div>
-        @foreach($locales as $locale)
+        @foreach($locales as $localeKey => $locale)
             <?php
             if (isset($translations[ $key ][ $locale ])) {
                 $_translation = $translations[ $key ][ $locale ];
             }
             ?>
-            <div class="form-group">
-                <label>{{ $locale }}</label>
+            <div class="form-group {{ isset($translations[$key][$locale]) ? "has-success" : "has-error" }}">
+                <label class="control-label">{{ $locale }}</label>
                 <textarea class="form-control" rows="3" name="value[{{ $locale }}]"
                           placeholder="">{!! isset($translations[$key][$locale]) ? $translations[$key][$locale]->value : "" !!}</textarea>
             </div>
         @endforeach
         <div class="form-group row">
-            <div class="col-xs-6">
+            <div class="col-xs-4">
                 <input type="submit" value="Save" class="btn btn-primary">
                 <a href="{{ route( 'translation-manager.group.list', [ "groupKey" => $group ] ) }}"
                    class="btn btn-default">Cancel</a>
 
             </div>
-            <div class="col-xs-6 text-right">
+            <div class="col-xs-8 text-right">
                 <div class="btn-group">
                     @if( $prevTranslation != null )
                         <a href="{{ route( 'translation-manager.translation', [ "groupKey" => $prevTranslation['group'], "translationKey" => $prevTranslation['key'] ] ) }}"
