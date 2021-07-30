@@ -18,7 +18,7 @@
                 $_translation = $translations[ $key ][ $locale ];
             }
             ?>
-            <div class="form-group {{ isset($translations[$key][$locale]) ? "has-success" : "has-error" }}">
+            <div class="form-group {{ isset($translations[$key][$locale]) && $translations[$key][$locale] != "" ? "has-success" : "has-error" }}">
                 <label class="control-label">{{ $locale }}</label>
                 <textarea class="form-control" rows="3" name="value[{{ $locale }}]"
                           placeholder="">{!! isset($translations[$key][$locale]) ? $translations[$key][$locale]->value : "" !!}</textarea>

@@ -509,7 +509,7 @@ class Manager
             if ($json) {
                 $this->jsonSet($array[ $translation->locale ][ $translation->group ], $translation->key,
                     $translation->value);
-            } else {
+            } else if( isset($translation->value) && $translation->value != "" ){
                 Arr::set($array[ $translation->locale ][ $translation->group ], $translation->key,
                     $translation->value);
             }
