@@ -2,19 +2,20 @@
 
 declare(strict_types=1);
 
-$config = array_merge(config('translation-manager.route'), ['namespace' => 'Barryvdh\TranslationManager']);
+
+$config = array_merge(config('translation-manager.route'), ['namespace' => '\Barryvdh\TranslationManager']);
 Route::group($config, function($router)
 {
-    $router->get('view/{groupKey?}', 'Controller@getView')->where('groupKey', '.*');
-    $router->get('/{groupKey?}', 'Controller@getIndex')->where('groupKey', '.*');
-    $router->post('/add/{groupKey}', 'Controller@postAdd')->where('groupKey', '.*');
-    $router->post('/edit/{groupKey}', 'Controller@postEdit')->where('groupKey', '.*');
-    $router->post('/groups/add', 'Controller@postAddGroup');
-    $router->post('/delete/{groupKey}/{translationKey}', 'Controller@postDelete')->where('groupKey', '.*');
-    $router->post('/import', 'Controller@postImport');
-    $router->post('/find', 'Controller@postFind');
-    $router->post('/locales/add', 'Controller@postAddLocale');
-    $router->post('/locales/remove', 'Controller@postRemoveLocale');
-    $router->post('/publish/{groupKey}', 'Controller@postPublish')->where('groupKey', '.*');
-    $router->post('/translate-missing', 'Controller@postTranslateMissing');
+    $router->get('view/{groupKey?}', [\Barryvdh\TranslationManager\Controller::class,'getView'])->where('groupKey', '.*');
+    $router->get('/{groupKey?}', [\Barryvdh\TranslationManager\Controller::class,'getIndex'])->where('groupKey', '.*');
+    $router->post('/add/{groupKey}', [\Barryvdh\TranslationManager\Controller::class,'postAdd'])->where('groupKey', '.*');
+    $router->post('/edit/{groupKey}', [\Barryvdh\TranslationManager\Controller::class,'postEdit'])->where('groupKey', '.*');
+    $router->post('/groups/add', [\Barryvdh\TranslationManager\Controller::class,'postAddGroup']);
+    $router->post('/delete/{groupKey}/{translationKey}', [\Barryvdh\TranslationManager\Controller::class,'postDelete'])->where('groupKey', '.*');
+    $router->post('/import', [\Barryvdh\TranslationManager\Controller::class,'postImport']);
+    $router->post('/find', [\Barryvdh\TranslationManager\Controller::class,'postFind']);
+    $router->post('/locales/add', [\Barryvdh\TranslationManager\Controller::class,'postAddLocale']);
+    $router->post('/locales/remove', [\Barryvdh\TranslationManager\Controller::class,'postRemoveLocale']);
+    $router->post('/publish/{groupKey}', [\Barryvdh\TranslationManager\Controller::class,'postPublish'])->where('groupKey', '.*');
+    $router->post('/translate-missing', [\Barryvdh\TranslationManager\Controller::class,'postTranslateMissing']);
 });
