@@ -2,14 +2,17 @@
 
 namespace Barryvdh\TranslationManager;
 
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
-use Symfony\Component\Finder\Finder;
-use Illuminate\Filesystem\Filesystem;
+use Barryvdh\TranslationManager\Events\TranslationsExportedEvent;
+use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
-use Barryvdh\TranslationManager\Models\Translation;
-use Barryvdh\TranslationManager\Events\TranslationsExportedEvent;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Finder\Finder;
 
 class Manager
 {
@@ -35,7 +38,7 @@ class Manager
         $this->app = $app;
         $this->files = $files;
         $this->events = $events;
-        $this->config = $app['config']['translation-manager'];
+        $this->config = $app[ 'config' ][ 'translation-manager' ];
         $this->ignoreFilePath = storage_path('.ignore_locales');
         $this->locales = [];
         $this->ignoreLocales = $this->getIgnoredLocales();
@@ -43,7 +46,7 @@ class Manager
 
     protected function getIgnoredLocales()
     {
-        if (! $this->files->exists($this->ignoreFilePath)) {
+        if (!$this->files->exists($this->ignoreFilePath)) {
             return [];
         }
         $result = json_decode($this->files->get($this->ignoreFilePath));
@@ -57,7 +60,7 @@ class Manager
         //allows for vendor lang files to be properly recorded through recursion.
         $vendor = true;
         if ($base == null) {
-            $base = $this->app['path.lang'];
+            $base = $this->app[ 'path.lang' ];
             $vendor = false;
         }
 
@@ -75,17 +78,17 @@ class Manager
             $vendorName = $this->files->name($this->files->dirname($langPath));
             foreach ($this->files->allfiles($langPath) as $file) {
                 $info = pathinfo($file);
-                $group = $info['filename'];
+                $group = $info[ 'filename' ];
                 if ($import_group) {
                     if ($import_group !== $group) {
                         continue;
                     }
                 }
 
-                if (in_array($group, $this->config['exclude_groups'])) {
+                if (in_array($group, $this->config[ 'exclude_groups' ])) {
                     continue;
                 }
-                $subLangPath = str_replace($langPath.DIRECTORY_SEPARATOR, '', $info['dirname']);
+                $subLangPath = str_replace($langPath.DIRECTORY_SEPARATOR, '', $info[ 'dirname' ]);
                 $subLangPath = str_replace(DIRECTORY_SEPARATOR, '/', $subLangPath);
                 $langPath = str_replace(DIRECTORY_SEPARATOR, '/', $langPath);
 
@@ -93,7 +96,7 @@ class Manager
                     $group = $subLangPath.'/'.$group;
                 }
 
-                if (! $vendor) {
+                if (!$vendor) {
                     $translations = \Lang::getLoader()->load($locale, $group);
                 } else {
                     $translations = include $file;
@@ -109,14 +112,13 @@ class Manager
             }
         }
 
-        foreach ($this->files->files($this->app['path.lang']) as $jsonTranslationFile) {
+        foreach ($this->files->files($this->app[ 'path.lang' ]) as $jsonTranslationFile) {
             if (strpos($jsonTranslationFile, '.json') === false) {
                 continue;
             }
             $locale = basename($jsonTranslationFile, '.json');
             $group = self::JSON_GROUP;
-            $translations =
-                \Lang::getLoader()->load($locale, '*', '*'); // Retrieves JSON entries of the given locale only
+            $translations = \Lang::getLoader()->load($locale, '*', '*'); // Retrieves JSON entries of the given locale only
             if ($translations && is_array($translations)) {
                 foreach ($translations as $key => $value) {
                     $importedTranslation = $this->importTranslation($key, $value, $locale, $group, $replace);
@@ -130,7 +132,6 @@ class Manager
 
     public function importTranslation($key, $value, $locale, $group, $replace = false)
     {
-
         // process only string values
         if (is_array($value)) {
             return false;
@@ -138,8 +139,8 @@ class Manager
         $value = (string) $value;
         $translation = Translation::firstOrNew([
             'locale' => $locale,
-            'group'  => $group,
-            'key'    => $key,
+            'group' => $group,
+            'key' => $key,
         ]);
 
         // Check if the database is different then the files
@@ -149,7 +150,7 @@ class Manager
         }
 
         // Only replace when empty, or explicitly told so
-        if ($replace || ! $translation->value) {
+        if ($replace || !$translation->value) {
             $translation->value = $value;
         }
 
@@ -158,28 +159,32 @@ class Manager
         return true;
     }
 
+
     public function findTranslations($path = null)
     {
         $path = $path ?: base_path();
         $groupKeys = [];
         $stringKeys = [];
-        $functions = $this->config['trans_functions'];
+        $functions = $this->config[ 'trans_functions' ];
 
-        $groupPattern =                          // See https://regex101.com/r/WEJqdL/6
-            "[^\w|>]".                          // Must not have an alphanum or _ or > before real method
-            '('.implode('|', $functions).')'.  // Must start with one of the functions
-            "\(".                               // Match opening parenthesis
-            "[\'\"]".                           // Match " or '
-            '('.                                // Start a new group to match:
-            '[a-zA-Z0-9_-]+'.               // Must start with group
-            "([.](?! )[^\1)]+)+".             // Be followed by one or more items/keys
-            ')'.                                // Close group
-            "[\'\"]".                           // Closing quote
-            "[\),]";                            // Close parentheses or new parameter
+        $groupPattern =                                  // See https://regex101.com/r/Mxr50T/2
+            "[\W]".                                      // Must not have an alphanum or _ or > before real method
+            '('.implode('|', $functions).')'.   // Must start with one of the functions
+            "\(\s?".                                     // Match opening parenthesis
+            "[\'\"]".                                    // Match " or '
+            '('.                                         // Start a new group to match:
+            '[a-zA-Z0-9_-]+'.                            // Must start with group
+            '[\.]'.                                      // Group ends with dot
+            "([a-zA-Z0-9_\-\.]*)".                       // Be followed by zero or more items/keys
+            '[a-zA-Z0-9]'.                               // Must end with a number or letter
+            ')'.                                         // Close group
+            "[\'\"]\s?".                                 // Closing quote
+            "[\),\s]{1,3}".                              // Close parentheses or new parameter
+            "(\[([^\]]*)\])?";                           // take atributes if exists
 
         $stringPattern =
-            "[^\w]".                                     // Must not have an alphanum before real method
-            '('.implode('|', $functions).')'.             // Must start with one of the functions
+            "[^\w]".                                       // Must not have an alphanum before real method
+            '('.implode('|', $functions).')'.     // Must start with one of the functions
             "\(\s*".                                       // Match opening parenthesis
             "(?P<quote>['\"])".                            // Match " or ' and store in {quote}
             "(?P<string>(?:\\\k{quote}|(?!\k{quote}).)*)". // Match any string that can be {quote} escaped
@@ -190,72 +195,232 @@ class Manager
         $finder = new Finder();
         $finder->in($path)->exclude('storage')->exclude('vendor')->name('*.php')->name('*.twig')->name('*.vue')->files();
 
+        $section = null;
+        if (app()->runningInConsole()) {
+            $output = new ConsoleOutput();
+            $section = $output->section();
+
+            $bar = new ProgressBar($section);
+            $bar->setFormat("%message%\n %current%/%max% [%bar%] %percent:3s%%");
+            $bar->setMessage('Files');
+            $bar->start(count($finder));
+        }
+
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($finder as $file) {
+            if ($section != null) {
+                $bar->advance();
+            }
+
             // Search the current file for the pattern
-            if (preg_match_all("/$groupPattern/siU", $file->getContents(), $matches)) {
+            if (preg_match_all("/$groupPattern/si", $file->getContents(), $matches)) {
                 // Get all matches
-                foreach ($matches[2] as $key) {
-                    $groupKeys[] = $key;
+                foreach ($matches[ 2 ] as $i => $key) {
+                    $found++;
+                    if (!isset($groupKeys[ $key ])) {
+                        $groupKeys[ $key ] = [
+                            "sources" => [],
+                            "variables" => [],
+                        ];
+                    }
+                    $groupKeys[ $key ][ "sources" ] = array_merge($groupKeys[ $key ][ "sources" ], $this->findLineNumber($file, $key));
+                    if (isset($matches[ 5 ]) && isset($matches[ 5 ][ $i ]) && $matches[ 5 ][ $i ] != "") {
+                        $attributes = explode(",", static::str_strip_whitespace($matches[ 5 ][ $i ]));
+                        foreach ($attributes as $attribute) {
+                            list($item, $_rest) = explode("=", $attribute, 2);
+                            $groupKeys[ $key ][ "variables" ][] = str_replace(['"', "'"], "", $item);
+                        }
+                    }
                 }
             }
 
-            if (preg_match_all("/$stringPattern/siU", $file->getContents(), $matches)) {
-                foreach ($matches['string'] as $key) {
-                    if (preg_match("/(^[a-zA-Z0-9_-]+([.][^\1)\ ]+)+$)/siU", $key, $groupMatches)) {
-                        // group{.group}.key format, already in $groupKeys but also matched here
-                        // do nothing, it has to be treated as a group
-                        continue;
-                    }
+            if (!$this->config[ 'ignore_json' ]) {
+                if (preg_match_all("/$stringPattern/siU", $file->getContents(), $matches)) {
+                    foreach ($matches[ 'string' ] as $key) {
+                        if (preg_match("/(^[a-zA-Z0-9_-]+([.][^\1)\ ]+)+$)/siU", $key, $groupMatches)) {
+                            // group{.group}.key format, already in $groupKeys but also matched here
+                            // do nothing, it has to be treated as a group
+                            continue;
+                        }
 
-                    //TODO: This can probably be done in the regex, but I couldn't do it.
-                    //skip keys which contain namespacing characters, unless they also contain a
-                    //space, which makes it JSON.
-                    if (! (Str::contains($key, '::') && Str::contains($key, '.'))
-                         || Str::contains($key, ' ')) {
-                        $stringKeys[] = $key;
+                        //TODO: This can probably be done in the regex, but I couldn't do it.
+                        //skip keys which contain namespacing characters, unless they also contain a
+                        //space, which makes it JSON.
+                        if (!(Str::contains($key, '::') && Str::contains($key, '.'))
+                            || Str::contains($key, ' ')) {
+                            $stringKeys[] = $key;
+                        }
                     }
                 }
             }
         }
         // Remove duplicates
-        $groupKeys = array_unique($groupKeys);
-        $stringKeys = array_unique($stringKeys);
+        ksort($groupKeys);
 
-        // Add the translations to the database, if not existing.
-        foreach ($groupKeys as $key) {
-            // Split the group and item
-            list($group, $item) = explode('.', $key, 2);
-            $this->missingKey('', $group, $item);
+        if ($section != null) {
+            $bar->finish();
+
+            $bar2 = new ProgressBar($section);
+            $bar2->setFormat("%message%\n %current%/%max% [%bar%] %percent:3s%%");
+            $bar2->setMessage("Keys");
+            $bar2->start(count($groupKeys));
         }
 
-        foreach ($stringKeys as $key) {
-            $group = self::JSON_GROUP;
-            $item = $key;
-            $this->missingKey('', $group, $item);
+        //clean variables and sources
+        \Illuminate\Support\Facades\DB::statement('TRUNCATE TABLE `ltm_translation_sources`');
+
+        // Add the translations to the database, if not existing.
+        foreach ($groupKeys as $key => $data) {
+            if ($section != null) {
+                $bar2->advance();
+            }
+
+            // Split the group and item
+            list($group, $item) = explode('.', $key, 2);
+            $this->missingKey('', $group, $item, array_unique($data[ 'variables' ]));
+
+            // save location in strings
+            $files = array_unique($data[ 'sources' ]);
+            foreach ($files as $file) {
+                list($path, $line) = explode(':', $file);
+                \Illuminate\Support\Facades\DB::table('ltm_translation_sources')->insert([
+                    "group" => $group,
+                    "key" => $item,
+                    "file_path" => $path,
+                    "file_line" => $line,
+                ]);
+            }
+
+            $counter++;
+        }
+
+        if ($section != null) {
+            $bar2->finish();
+        }
+
+        if (!$this->config[ 'ignore_json' ]) {
+            $stringKeys = array_unique($stringKeys);
+
+            if ($section != null) {
+                $bar3 = new ProgressBar($section);
+                $bar3->setFormat("%message%\n %current%/%max% [%bar%] %percent:3s%%");
+                $bar3->setMessage("JSON");
+                $bar3->start(count($groupKeys));
+            }
+
+            foreach ($stringKeys as $key) {
+                if ($bar3 != null) {
+                    $bar3->advance();
+                }
+
+                $group = Manager::JSON_GROUP;
+                $item = $key;
+                $this->missingKey('', $group, $item);
+            }
+
+            if ($section != null) {
+                $bar3->finish();
+            }
         }
 
         // Return the number of found translations
         return count($groupKeys + $stringKeys);
     }
 
-    public function missingKey($namespace, $group, $key)
+    /**
+     * return list of line_numbers
+     *
+     * @param  \Symfony\Component\Finder\SplFileInfo  $file
+     * @param $search
+     *
+     * @return array
+     */
+    private function findLineNumber(\Symfony\Component\Finder\SplFileInfo $file, $search)
     {
-        if (! in_array($group, $this->config['exclude_groups'])) {
+        $lines = file($file->getRealPath());
+        $line_numbers = [];
+
+        foreach ($lines as $key => $line) {
+            if (strpos($line, $search) !== false) {
+                $line_numbers[] = $file->getRelativePath()."/".$file->getFilename().":".($key + 1);
+            }
+        }
+
+        return $line_numbers;
+    }
+
+    /**
+     * Strp all whitespaces inside of string
+     *
+     * @param $string
+     *
+     * @return string|string[]|null
+     */
+    public static function str_strip_whitespace($string)
+    {
+        return preg_replace('/\s+/', '', $string);
+    }
+
+    public function missingKey($namespace, $group, $key, $parameters = [])
+    {
+        if (!in_array($group, $this->config[ 'exclude_groups' ])) {
+            if ($this->config[ 'ignore_json' ]) {
+                //ignore all non alphanumeric strings
+                if (preg_match("/[a-zA-Z0-9-_\.]*/", $key, $groupMatches)) {
+                    if ($groupMatches[ 0 ] != $key) {
+                        return;
+                    }
+                }
+            }
+
             Translation::firstOrCreate([
-                'locale' => $this->app['config']['app.locale'],
-                'group'  => $group,
-                'key'    => $key,
+                'locale' => $this->app[ 'config' ][ 'app.locale' ],
+                'group' => $group,
+                'key' => $key,
             ]);
+
+            if (count($parameters) > 0) {
+                Translation::possibleVariables($group, $key)->delete();
+
+                // save possible variables
+                foreach ($parameters as $parameter) {
+                    \Illuminate\Support\Facades\DB::table('ltm_translation_variables')->insert([
+                        "group" => $group,
+                        "key" => $key,
+                        "attribute" => $parameter,
+                    ]);
+                }
+            }
+
+            if (!app()->runningInConsole()) {
+                $url = request()->getRequestUri();
+
+                // ignore url when part of config->route->prefix
+                if (!Str::contains($url, $this->config[ 'route' ][ 'prefix' ])) {
+                    // save URL with translation key
+                    $_testUrl = DB::table('ltm_translation_urls')
+                        ->where('group', $group)
+                        ->where('key', $key)
+                        ->where('url', $url);
+
+                    if ($_testUrl->count() == 0) {
+                        DB::table('ltm_translation_urls')->insert([
+                            'group' => $group,
+                            'key' => $key,
+                            'url' => $url,
+                        ]);
+                    }
+                }
+            }
         }
     }
 
     public function exportTranslations($group = null, $json = false)
     {
-        $basePath = $this->app['path.lang'];
+        $basePath = $this->app[ 'path.lang' ];
 
-        if (! is_null($group) && ! $json) {
-            if (! in_array($group, $this->config['exclude_groups'])) {
+        if (!is_null($group) && !$json) {
+            if (!in_array($group, $this->config[ 'exclude_groups' ])) {
                 $vendor = false;
                 if ($group == '*') {
                     return $this->exportAllTranslations();
@@ -266,13 +431,13 @@ class Manager
                 }
 
                 $tree = $this->makeTree(Translation::ofTranslatedGroup($group)
-                                                    ->orderByGroupKeys(Arr::get($this->config, 'sort_keys', false))
-                                                    ->get());
+                    ->orderByGroupKeys(Arr::get($this->config, 'sort_keys', false))
+                    ->get());
 
                 foreach ($tree as $locale => $groups) {
-                    if (isset($groups[$group])) {
-                        $translations = $groups[$group];
-                        $path = $this->app['path.lang'];
+                    if (isset($groups[ $group ])) {
+                        $translations = $groups[ $group ];
+                        $path = $this->app[ 'path.lang' ];
 
                         $locale_path = $locale.DIRECTORY_SEPARATOR.$group;
                         if ($vendor) {
@@ -287,7 +452,7 @@ class Manager
                             $subfolder_level = $subfolder_level.$subfolder.DIRECTORY_SEPARATOR;
 
                             $temp_path = rtrim($path.DIRECTORY_SEPARATOR.$subfolder_level, DIRECTORY_SEPARATOR);
-                            if (! is_dir($temp_path)) {
+                            if (!is_dir($temp_path)) {
                                 mkdir($temp_path, 0777, true);
                             }
                         }
@@ -304,13 +469,13 @@ class Manager
 
         if ($json) {
             $tree = $this->makeTree(Translation::ofTranslatedGroup(self::JSON_GROUP)
-                                                ->orderByGroupKeys(Arr::get($this->config, 'sort_keys', false))
-                                                ->get(), true);
+                ->orderByGroupKeys(Arr::get($this->config, 'sort_keys', false))
+                ->get(), true);
 
             foreach ($tree as $locale => $groups) {
-                if (isset($groups[self::JSON_GROUP])) {
-                    $translations = $groups[self::JSON_GROUP];
-                    $path = $this->app['path.lang'].'/'.$locale.'.json';
+                if (isset($groups[ self::JSON_GROUP ])) {
+                    $translations = $groups[ self::JSON_GROUP ];
+                    $path = $this->app[ 'path.lang' ].'/'.$locale.'.json';
                     $output = json_encode($translations, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE);
                     $this->files->put($path, $output);
                 }
@@ -342,10 +507,10 @@ class Manager
         $array = [];
         foreach ($translations as $translation) {
             if ($json) {
-                $this->jsonSet($array[$translation->locale][$translation->group], $translation->key,
+                $this->jsonSet($array[ $translation->locale ][ $translation->group ], $translation->key,
                     $translation->value);
-            } else {
-                Arr::set($array[$translation->locale][$translation->group], $translation->key,
+            } else if( isset($translation->value) && $translation->value != "" ){
+                Arr::set($array[ $translation->locale ][ $translation->group ], $translation->key,
                     $translation->value);
             }
         }
@@ -358,7 +523,7 @@ class Manager
         if (is_null($key)) {
             return $array = $value;
         }
-        $array[$key] = $value;
+        $array[ $key ] = $value;
 
         return $array;
     }
@@ -399,7 +564,7 @@ class Manager
         $this->saveIgnoredLocales();
         $this->ignoreLocales = $this->getIgnoredLocales();
 
-        if (! $this->files->exists($localeDir) || ! $this->files->isDirectory($localeDir)) {
+        if (!$this->files->exists($localeDir) || !$this->files->isDirectory($localeDir)) {
             return $this->files->makeDirectory($localeDir);
         }
 
@@ -413,7 +578,7 @@ class Manager
 
     public function removeLocale($locale)
     {
-        if (! $locale) {
+        if (!$locale) {
             return false;
         }
         $this->ignoreLocales = array_merge($this->ignoreLocales, [$locale]);
@@ -428,7 +593,7 @@ class Manager
         if ($key == null) {
             return $this->config;
         } else {
-            return $this->config[$key];
+            return $this->config[ $key ];
         }
     }
 }

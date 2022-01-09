@@ -8,6 +8,9 @@ class Translator extends LaravelTranslator {
     /** @var  Dispatcher */
     protected $events;
 
+    /** @var  Manager */
+    protected $manager;
+
     /**
      * Get the translation for the given key.
      *
@@ -20,13 +23,16 @@ class Translator extends LaravelTranslator {
     {
         // Get without fallback
         $result = parent::get($key, $replace, $locale, false);
-        if($result === $key){
-            $this->notifyMissingKey($key);
+        if($result === $key && config( 'translation-manager.ignore_new_trans', false )){
+            $this->notifyMissingKey($key, array_keys( $replace ));
 
             // Reget with fallback
             $result = parent::get($key, $replace, $locale, $fallback);
             
         }
+
+        if( config(  'translation-manager.debug', false ) && $result != $key )
+            $result .= " [" . $key . "]";
 
         return $result;
     }
@@ -36,11 +42,14 @@ class Translator extends LaravelTranslator {
         $this->manager = $manager;
     }
 
-    protected function notifyMissingKey($key)
+    protected function notifyMissingKey($key, $parameters)
     {
+        if( config('translation-manager.ignore_new_trans', false ) )
+            return ;
+
         list($namespace, $group, $item) = $this->parseKey($key);
         if($this->manager && $namespace === '*' && $group && $item ){
-            $this->manager->missingKey($namespace, $group, $item);
+            $this->manager->missingKey($namespace, $group, $item, $parameters);
         }
     }
 

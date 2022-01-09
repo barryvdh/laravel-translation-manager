@@ -1,21 +1,23 @@
 <?php namespace Barryvdh\TranslationManager\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use DB;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Translation model
  *
  * @property integer $id
  * @property integer $status
- * @property string  $locale
- * @property string  $group
- * @property string  $key
- * @property string  $value
+ * @property string $locale
+ * @property string $group
+ * @property string $key
+ * @property string $value
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
-class Translation extends Model{
+class Translation extends Model
+{
 
     const STATUS_SAVED = 0;
     const STATUS_CHANGED = 1;
@@ -28,7 +30,8 @@ class Translation extends Model{
         return $query->where('group', $group)->whereNotNull('value');
     }
 
-    public function scopeOrderByGroupKeys($query, $ordered) {
+    public function scopeOrderByGroupKeys($query, $ordered)
+    {
         if ($ordered) {
             $query->orderBy('group')->orderBy('key');
         }
@@ -40,7 +43,7 @@ class Translation extends Model{
     {
         $select = '';
 
-        switch (DB::getDriverName()){
+        switch (DB::getDriverName()) {
             case 'mysql':
                 $select = 'DISTINCT `group`';
                 break;
@@ -50,6 +53,39 @@ class Translation extends Model{
         }
 
         return $query->select(DB::raw($select));
+    }
+
+    /**
+     * @param $group
+     * @param $key
+     *
+     * @return Builder
+     */
+    public static function sourceLocations( $group, $key )
+    {
+        return \Illuminate\Support\Facades\DB::table('ltm_translation_sources')->where('group', $group)->where('key', $key);
+    }
+
+    /**
+     * @param $group
+     * @param $key
+     *
+     * @return Builder
+     */
+    public static function urls( $group, $key )
+    {
+        return \Illuminate\Support\Facades\DB::table('ltm_translation_urls')->where('group', $group)->where('key', $key);
+    }
+
+    /**
+     * @param $group
+     * @param $key
+     *
+     * @return Builder
+     */
+    public static function possibleVariables( $group, $key )
+    {
+        return \Illuminate\Support\Facades\DB::table('ltm_translation_variables')->where('group', $group)->where('key', $key);
     }
 
 }

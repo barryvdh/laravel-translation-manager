@@ -5,7 +5,8 @@ namespace Barryvdh\TranslationManager\Console;
 use Barryvdh\TranslationManager\Manager;
 use Illuminate\Console\Command;
 
-class FindCommand extends Command
+class FindCommand
+    extends Command
 {
     /**
      * The console command name.
@@ -24,6 +25,8 @@ class FindCommand extends Command
     /** @var \Barryvdh\TranslationManager\Manager */
     protected $manager;
 
+    protected $config;
+
     public function __construct(Manager $manager)
     {
         $this->manager = $manager;
@@ -36,6 +39,7 @@ class FindCommand extends Command
     public function handle()
     {
         $counter = $this->manager->findTranslations(null);
+        $this->config = config('translation-manager');
         $this->info('Done importing, processed '.$counter.' items!');
     }
 }

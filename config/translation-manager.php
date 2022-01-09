@@ -66,4 +66,31 @@ return [
         '$trans.get',
     ],
 
+    /**
+     * if true finding new translations will be disabled while users browse application
+     */
+    'ignore_new_trans' => false,
+
+    /**
+     * When project does not user JSON alternative it can be ignored
+     */
+    'ignore_json' => true,
+
+    /**
+     * Translations without source position will be marked as red
+     */
+    'warn_in_code' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | DEBUG
+    |--------------------------------------------------------------------------
+    |
+    | After every translation will be placed original key in square brackets
+    | e.g.: trans('auth.login') -> Login [auth.login]
+    | NOTE: only when translation exists!
+    |
+    */
+    'debug' => false,
+
 ];
