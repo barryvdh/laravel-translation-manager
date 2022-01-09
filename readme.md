@@ -1,6 +1,5 @@
-## Laravel 5 Translation Manager
+## Laravel Translation Manager
 
-### For Laravel 4, please use the [0.1 branch](https://github.com/barryvdh/laravel-translation-manager/tree/0.1)!
 
 This is a package to manage Laravel translation files.
 It does not replace the Translation system, only import/export the php files to a database and make them editable through a webinterface.
