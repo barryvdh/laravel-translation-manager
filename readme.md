@@ -27,6 +27,8 @@ After updating composer, add the ServiceProvider to the providers array in `conf
 
 You need to run the migrations for this package.
 
+> You could need to run `config:clear` if nothing publishes.
+
     $ php artisan vendor:publish --provider="Barryvdh\TranslationManager\ManagerServiceProvider" --tag=migrations
     $ php artisan migrate
 
