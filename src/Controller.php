@@ -40,8 +40,6 @@ class Controller extends BaseController
                             ->when(request()->searchValues == 'true', function ($query) use ($searchKeywords, $searchKeys) {
                                 return $query->{$searchKeys ? 'orWhere': 'where'}('value', 'like', '%' . $searchKeywords . '%');
                             });
-            /*$allTranslations->where('value', 'like', '%' . $searchKeywords . '%')
-                            ->orWhere('key', 'like', '%' . $searchKeywords . '%');*/
         }
         $allTranslations = $allTranslations->orderBy('key', 'asc')->get();
 
