@@ -231,6 +231,29 @@
         </form>
         <hr>
     <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
+        <form action="" method="GET">
+            <div class="row">
+                <div class="col-xs-6 col-md-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" value="<?= request()->keywords ?>" name="keywords" placeholder="Search"/>
+                        <div class="input-group-btn">
+                        <button class="btn btn-primary" type="submit">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-check">
+                <span><b>Search in</b></span>
+                <input type="hidden" name="searchKeys" value="false">
+                <input type="checkbox" name="searchKeys" value="true" <?= request()->searchKeys === 'false' ? '' : 'checked' ?> class="form-check-input" id="searchKeys">
+                <label class="form-check-label" for="searchKeys">Keys</label>
+                <input type="hidden" name="searchValues" value="false">
+                <input type="checkbox" name="searchValues" value="true" <?= request()->searchValues === 'false' ? '' : 'checked' ?> class="form-check-input" id="searchValues">
+                <label class="form-check-label" for="searchValues">Locales</label>
+            </div>
+        </form>
         <table class="table">
             <thead>
             <tr>
