@@ -40,7 +40,7 @@ class Controller extends BaseController
                     return $query->where('key', 'like', '%' . $searchKeywords . '%');
                 })
                 ->when(request()->searchValues == 'true', function ($query) use ($searchKeywords, $searchKeys) {
-                    return $query->{$searchKeys ? 'orWhere': 'where'}('value', 'like', '%' . $searchKeywords . '%');
+                    return $query->orWhere('value', 'like', '%' . $searchKeywords . '%');
                 });
             });
         }
