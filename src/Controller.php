@@ -34,12 +34,15 @@ class Controller extends BaseController
 
         $allTranslations = Translation::where('group', $group);
         if($searchKeywords = request()->keywords){
-            $allTranslations->when($searchKeys = request()->searchKeys == 'true', function ($query) use ($searchKeywords) {
-                                return $query->where('key', 'like', '%' . $searchKeywords . '%');
-                            })
-                            ->when(request()->searchValues == 'true', function ($query) use ($searchKeywords, $searchKeys) {
-                                return $query->{$searchKeys ? 'orWhere': 'where'}('value', 'like', '%' . $searchKeywords . '%');
-                            });
+            $searchKeys = request()->searchKeys == 'true';
+            $allTranslations->where(function ($query)  use ($searchKeywords, $searchKeys) {
+                $query->when($searchKeys, function ($query) use ($searchKeywords) {
+                    return $query->where('key', 'like', '%' . $searchKeywords . '%');
+                })
+                ->when(request()->searchValues == 'true', function ($query) use ($searchKeywords, $searchKeys) {
+                    return $query->{$searchKeys ? 'orWhere': 'where'}('value', 'like', '%' . $searchKeywords . '%');
+                });
+            });
         }
         $allTranslations = $allTranslations->orderBy('key', 'asc')->get();
 
