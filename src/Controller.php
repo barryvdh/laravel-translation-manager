@@ -34,9 +34,8 @@ class Controller extends BaseController
 
         $allTranslations = Translation::where('group', $group);
         if($searchKeywords = request()->keywords){
-            $searchKeys = request()->searchKeys == 'true';
-            $allTranslations->where(function ($query)  use ($searchKeywords, $searchKeys) {
-                $query->when($searchKeys, function ($query) use ($searchKeywords) {
+            $allTranslations->where(function ($query)  use ($searchKeywords) {
+                $query->when(request()->searchKeys == 'true', function ($query) use ($searchKeywords) {
                     return $query->where('key', 'like', '%' . $searchKeywords . '%');
                 })
                 ->when(request()->searchValues == 'true', function ($query) use ($searchKeywords) {
