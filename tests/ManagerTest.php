@@ -4,7 +4,7 @@ namespace Barryvdh\TranslationManager\Tests;
 
 use Barryvdh\TranslationManager\Manager;
 
-class PdfTest extends TestCase
+class ManagerTest extends TestCase
 {
     public function testResolveManager(): void
     {
