@@ -1,5 +1,10 @@
 ## Laravel Translation Manager
 
+[![Tests](https://github.com/barryvdh/laravel-translation-manager/actions/workflows/run-tests.yml/badge.svg)](https://github.com/barryvdh/laravel-translation-manager/actions)
+[![Packagist License](https://poser.pugx.org/barryvdh/laravel-translation-manager/license.png)](http://choosealicense.com/licenses/mit/)
+[![Latest Stable Version](https://poser.pugx.org/barryvdh/laravel-translation-manager/version.png)](https://packagist.org/packages/barryvdh/laravel-translation-manager)
+[![Total Downloads](https://poser.pugx.org/barryvdh/laravel-translation-manager/d/total.png)](https://packagist.org/packages/barryvdh/laravel-translation-manager)
+[![Fruitcake](https://img.shields.io/badge/Powered%20By-Fruitcake-b2bc35.svg)](https://fruitcake.nl/)
 
 This is a package to manage Laravel translation files.
 It does not replace the Translation system, only import/export the php files to a database and make them editable through a webinterface.
