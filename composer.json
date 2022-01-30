@@ -17,8 +17,10 @@
     "php": ">=7",
     "illuminate/support": "^5.5|^6|^7|^8|^9",
     "illuminate/translation": "^5.5|^6|^7|^8|^9",
-    "symfony/finder": "^3|^4|^5|^6",
-    "tanmuhittin/laravel-google-translate": "^2.0.1"
+    "symfony/finder": "^3|^4|^5|^6"
+  },
+  "suggest": {
+     "tanmuhittin/laravel-google-translate": "If you want to translate using Google API"
   },
   "autoload": {
     "psr-4": {
