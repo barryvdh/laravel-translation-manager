@@ -218,7 +218,7 @@
                     </div>
                     <?php if(!config('laravel_google_translate.google_translate_api_key')): ?>
                         <p>
-                            <code>Translating using stichoza/google-translate-php. If you would like to use Google Translate API, require this package and enter your Google Translate API key to config file laravel_google_translate</code>
+                            <code>If you would like to use Google Translate API, install tanmuhittin/laravel-google-translate and enter your Google Translate API key to config file laravel_google_translate</code>
                         </p>
                     <?php endif; ?>
                     <div class="form-group">
