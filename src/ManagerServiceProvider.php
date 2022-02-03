@@ -1,31 +1,28 @@
-<?php namespace Barryvdh\TranslationManager;
+<?php
 
-use Illuminate\Routing\Router;
+namespace Barryvdh\TranslationManager;
+
 use Illuminate\Support\ServiceProvider;
 
-class ManagerServiceProvider extends ServiceProvider {
-	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
-	 */
-	protected $defer = false;
+class ManagerServiceProvider extends ServiceProvider
+{
+    /**
+     * Indicates if loading of the provider is deferred.
+     */
+    protected bool $defer = false;
 
-	/**
-	 * Register the service provider.
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
+    /**
+     * Register the service provider.
+     */
+    public function register()
+    {
         // Register the config publish path
-        $configPath = __DIR__ . '/../config/translation-manager.php';
+        $configPath = __DIR__.'/../config/translation-manager.php';
         $this->mergeConfigFrom($configPath, 'translation-manager');
         $this->publishes([$configPath => config_path('translation-manager.php')], 'config');
 
         $this->app->singleton('translation-manager', function ($app) {
-            $manager = $app->make('Barryvdh\TranslationManager\Manager');
-            return $manager;
+            return $app->make('Barryvdh\TranslationManager\Manager');
         });
 
         $this->app->singleton('command.translation-manager.reset', function ($app) {
@@ -52,15 +49,13 @@ class ManagerServiceProvider extends ServiceProvider {
             return new Console\CleanCommand($app['translation-manager']);
         });
         $this->commands('command.translation-manager.clean');
-	}
+    }
 
     /**
-	 * Bootstrap the application events.
-	 *
-	 * @return void
-	 */
-	public function boot()
-	{
+     * Bootstrap the application events.
+     */
+    public function boot(): void
+    {
         $viewPath = __DIR__.'/../resources/views';
         $this->loadViewsFrom($viewPath, 'translation-manager');
         $this->publishes([
@@ -73,22 +68,22 @@ class ManagerServiceProvider extends ServiceProvider {
         ], 'migrations');
 
         $this->loadRoutesFrom(__DIR__.'/routes.php');
-	}
+    }
 
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
-	public function provides()
-	{
-		return array('translation-manager',
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides(): array
+    {
+        return [
+            'translation-manager',
             'command.translation-manager.reset',
             'command.translation-manager.import',
             'command.translation-manager.find',
             'command.translation-manager.export',
-            'command.translation-manager.clean'
-        );
-	}
-
+            'command.translation-manager.clean',
+        ];
+    }
 }
