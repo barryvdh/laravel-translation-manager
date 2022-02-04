@@ -21,7 +21,10 @@ class FindCommand extends Command
      */
     protected $description = 'Find translations in php/twig files';
 
-    protected Manager $manager;
+    /**
+     * @var \Barryvdh\TranslationManager\Manager
+     */
+    protected $manager;
 
     public function __construct(Manager $manager)
     {

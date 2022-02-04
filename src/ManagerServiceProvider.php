@@ -3,13 +3,14 @@
 namespace Barryvdh\TranslationManager;
 
 use Illuminate\Support\ServiceProvider;
+use Barryvdh\TranslationManager\Manager;
 
 class ManagerServiceProvider extends ServiceProvider
 {
     /**
      * Indicates if loading of the provider is deferred.
      */
-    protected bool $defer = false;
+    protected $defer = false;
 
     /**
      * Register the service provider.
@@ -22,7 +23,7 @@ class ManagerServiceProvider extends ServiceProvider
         $this->publishes([$configPath => config_path('translation-manager.php')], 'config');
 
         $this->app->singleton('translation-manager', function ($app) {
-            return $app->make('Barryvdh\TranslationManager\Manager');
+            return $app->make(Manager::class);
         });
 
         $this->app->singleton('command.translation-manager.reset', function ($app) {

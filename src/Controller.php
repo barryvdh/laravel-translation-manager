@@ -16,19 +16,34 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     /** @var \Barryvdh\TranslationManager\Manager */
-    protected Manager $manager;
+    protected $manager;
 
     public function __construct(Manager $manager)
     {
         $this->manager = $manager;
     }
 
-    public function getView($group = null): Factory|View|Application
+    /**
+     * @param null $group
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function getView($group = null)
     {
         return $this->getIndex($group);
     }
 
-    public function getIndex($group = null): View|Factory|Application
+
+    /**
+     * @param null $group
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function getIndex($group = null)
     {
         $locales = $this->manager->getLocales();
         $groups = Translation::groupBy('group');
@@ -60,11 +75,11 @@ class Controller extends BaseController
             $prefix = $this->manager->getConfig('route')['prefix'];
             $path = url("$prefix/view/$group");
 
-            if ($this->manager->getConfig('template') === 'bootstrap3') {
+            if ('bootstrap3' === $this->manager->getConfig('template')) {
                 LengthAwarePaginator::useBootstrapThree();
-            } elseif ($this->manager->getConfig('template') === 'bootstrap4') {
+            } elseif ('bootstrap4' === $this->manager->getConfig('template')) {
                 LengthAwarePaginator::useBootstrap();
-            } elseif ($this->manager->getConfig('template') === 'bootstrap5') {
+            } elseif ('bootstrap5' === $this->manager->getConfig('template')) {
                 LengthAwarePaginator::useBootstrap();
             }
 
@@ -181,11 +196,14 @@ class Controller extends BaseController
         return redirect()->back();
     }
 
+    /**
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function postAddLocale(Request $request): RedirectResponse
     {
         $locales = $this->manager->getLocales();
         $newLocale = str_replace([], '-', trim($request->input('new-locale')));
-        if (!$newLocale || in_array($newLocale, $locales)) {
+        if (!$newLocale || in_array($newLocale, $locales, true)) {
             return redirect()->back();
         }
         $this->manager->addLocale($newLocale);
@@ -193,6 +211,9 @@ class Controller extends BaseController
         return redirect()->back();
     }
 
+    /**
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function postRemoveLocale(Request $request): RedirectResponse
     {
         foreach ($request->input('remove-locale', []) as $locale => $val) {

@@ -21,7 +21,10 @@ class CleanCommand extends Command
      */
     protected $description = 'Clean empty translations';
 
-    protected Manager $manager;
+    /**
+     * @var \Barryvdh\TranslationManager\Manager
+     */
+    protected $manager;
 
     public function __construct(Manager $manager)
     {

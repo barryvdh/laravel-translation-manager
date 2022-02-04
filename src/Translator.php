@@ -7,11 +7,14 @@ use Illuminate\Translation\Translator as LaravelTranslator;
 
 class Translator extends LaravelTranslator
 {
-    protected Dispatcher $events;
+    /**
+     * @var \Illuminate\Events\Dispatcher
+     */
+    protected $events;
     /**
      * @var \Barryvdh\TranslationManager\Manager
      */
-    private Manager $manager;
+    private $manager;
 
     /**
      * Get the translation for the given key.

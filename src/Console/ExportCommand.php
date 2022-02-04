@@ -23,7 +23,10 @@ class ExportCommand extends Command
      */
     protected $description = 'Export translations to PHP files';
 
-    protected Manager $manager;
+    /**
+     * @var \Barryvdh\TranslationManager\Manager
+     */
+    protected $manager;
 
     public function __construct(Manager $manager)
     {

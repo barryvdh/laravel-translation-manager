@@ -22,7 +22,10 @@ class ImportCommand extends Command
      */
     protected $description = 'Import translations from the PHP sources';
 
-    protected Manager $manager;
+    /**
+     * @var \Barryvdh\TranslationManager\Manager
+     */
+    protected $manager;
 
     public function __construct(Manager $manager)
     {

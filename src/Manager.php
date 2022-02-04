@@ -16,20 +16,44 @@ class Manager
 {
     public const JSON_GROUP = '_json';
 
-    protected Application $app;
+    /**
+     * @var \Illuminate\Contracts\Foundation\Application
+     */
+    protected $app;
 
-    protected Filesystem $files;
+    /**
+     * @var \Illuminate\Filesystem\Filesystem
+     */
+    protected $files;
 
-    protected Dispatcher $events;
+    /**
+     * @var \Illuminate\Contracts\Events\Dispatcher
+     */
+    protected $events;
 
-    protected array $config;
+    /**
+     * @var array
+     */
+    protected $config;
 
-    protected array $locales;
+    /**
+     * @var array
+     */
+    protected $locales;
 
-    protected mixed $ignoreLocales;
+    /**
+     * @var mixed
+     */
+    protected $ignoreLocales;
 
-    protected string $ignoreFilePath;
+    /**
+     * @var string
+     */
+    protected $ignoreFilePath;
 
+    /**
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function __construct(Application $app, Filesystem $files, Dispatcher $events)
     {
         $this->app = $app;
@@ -41,12 +65,15 @@ class Manager
         $this->ignoreLocales = $this->getIgnoredLocales();
     }
 
+    /**
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     protected function getIgnoredLocales()
     {
         if (!$this->files->exists($this->ignoreFilePath)) {
             return [];
         }
-        $result = json_decode($this->files->get($this->ignoreFilePath), false, 512, JSON_THROW_ON_ERROR);
+        $result = json_decode($this->files->get($this->ignoreFilePath), false, 512);
 
         return ($result && is_array($result)) ? $result : [];
     }
@@ -255,6 +282,7 @@ class Manager
                 $vendor = false;
                 if ('*' === $group) {
                     $this->exportAllTranslations();
+
                     return;
                 }
 
@@ -281,7 +309,7 @@ class Manager
 
                         $subFolder_level = '';
                         foreach ($subFolders as $subFolder) {
-                            $subFolder_level .= $subFolder . DIRECTORY_SEPARATOR;
+                            $subFolder_level .= $subFolder.DIRECTORY_SEPARATOR;
 
                             $temp_path = rtrim($path.DIRECTORY_SEPARATOR.$subFolder_level, DIRECTORY_SEPARATOR);
                             if (!is_dir($temp_path)) {
@@ -289,7 +317,7 @@ class Manager
                             }
                         }
 
-                        $path .= DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . $group . '.php';
+                        $path .= DIRECTORY_SEPARATOR.$locale.DIRECTORY_SEPARATOR.$group.'.php';
 
                         $output = "<?php\n\nreturn ".var_export($translations, true).';'.\PHP_EOL;
                         $this->files->put($path, $output);
@@ -308,7 +336,7 @@ class Manager
                 if (isset($groups[self::JSON_GROUP])) {
                     $translations = $groups[self::JSON_GROUP];
                     $path = $this->app['path.lang'].'/'.$locale.'.json';
-                    $output = json_encode($translations, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                    $output = json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
                     $this->files->put($path, $output);
                 }
             }
@@ -396,6 +424,9 @@ class Manager
         return array_diff($this->locales, $this->ignoreLocales);
     }
 
+    /**
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function addLocale($locale): bool
     {
         $localeDir = $this->app->langPath().'/'.$locale;
@@ -411,11 +442,17 @@ class Manager
         return true;
     }
 
-    protected function saveIgnoredLocales(): bool|int
+    /**
+     * @return bool|int
+     */
+    protected function saveIgnoredLocales()
     {
-        return $this->files->put($this->ignoreFilePath, json_encode($this->ignoreLocales, JSON_THROW_ON_ERROR));
+        return $this->files->put($this->ignoreFilePath, json_encode($this->ignoreLocales));
     }
 
+    /**
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function removeLocale($locale)
     {
         if (!$locale) {
