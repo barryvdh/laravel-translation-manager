@@ -35,6 +35,26 @@ return [
      *    )
      */
     'exclude_groups' => [],
+    
+     /**
+     * Add additional file-extensions for the file-search than the standard twig, php and vue
+     *
+     * @type array
+     *
+     *    array(
+     *        'js'
+     *    )
+     */
+    'find_file_extensions' => [],
+    
+    /**
+     * Disable Group Detection for the php artisan translations:find command
+     * Can be useful if you have group signs in the translation string keys (like points)
+     * 
+     * @type boolean
+     * 
+     */
+    'disable_group_detection_for_find'  => true,
 
     /**
      * Exclude specific languages from Laravel Translation Manager.
@@ -52,6 +72,21 @@ return [
      * Export translations with keys output alphabetically.
      */
     'sort_keys'     => false,
+
+    /**
+     * Exclude specific folders from the translations:find command
+     *
+     * @type array
+     *
+     *    array(
+     *        'storage',
+     *        'vendor',
+     *    )
+     */
+    'find_exclude_folders'  => [
+        'storage',
+        'vendor'
+    ],
 
     'trans_functions' => [
         'trans',
