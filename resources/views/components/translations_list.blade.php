@@ -16,14 +16,18 @@
 
     @foreach ($translations as $key => $translation)
         <?php
+        $isEmpty = false;
         if ($group == "") {
             foreach ($locales as $locale) {
-                if (isset($translation[$locale]))
+                if (isset($translation[$locale])){
                     $group = $translation[$locale]->group;
+                } else {
+                    $isEmpty = true;
+                }
             }
         }
         ?>
-        <tr id="{!! htmlentities($key, ENT_QUOTES, 'UTF-8', false) !!}">
+        <tr id="{!! htmlentities($key, ENT_QUOTES, 'UTF-8', false) !!}" @if( $isEmpty ) class="danger" @endif>
             <td @if( config('translation-manager.warn_in_code', false ) && \Barryvdh\TranslationManager\Models\Translation::sourceLocations( $group, $key )->count() == 0 ) class="danger" @endif>{!! htmlentities($key, ENT_QUOTES, 'UTF-8', false) !!}
                 <a href="{{ route('translation-manager.translation', [ "groupKey" => $group, "translationKey" => $key ]) }}"><span
                             class="glyphicon glyphicon-new-window"></span></a>
