@@ -166,16 +166,16 @@ class Manager
         $functions = $this->config['trans_functions'];
 
         $groupPattern =                          // See https://regex101.com/r/WEJqdL/6
-            "[^\w|>]".                          // Must not have an alphanum or _ or > before real method
-            '('.implode('|', $functions).')'.  // Must start with one of the functions
-            "\(".                               // Match opening parenthesis
-            "[\'\"]".                           // Match " or '
-            '('.                                // Start a new group to match:
-            '[a-zA-Z0-9_-]+'.               // Must start with group
-            "([.](?! )[^\1)]+)+".             // Be followed by one or more items/keys
-            ')'.                                // Close group
-            "[\'\"]".                           // Closing quote
-            "[\),]";                            // Close parentheses or new parameter
+            "[^\w|>]" .                          // Must not have an alphanum or _ or > before real method
+            '(' . implode('|', $functions) . ')' .  // Must start with one of the functions
+            "\(" .                               // Match opening parenthesis
+            "[\'\"]" .                           // Match " or '
+            '(' .                                // Start a new group to match:
+            '[\/a-zA-Z0-9_-]+' .                 // Must start with group
+            "([.](?! )[^\1)]+)+" .               // Be followed by one or more items/keys
+            ')' .                                // Close group
+            "[\'\"]" .                           // Closing quote
+            "[\),]";                             // Close parentheses or new parameter
 
         $stringPattern =
             "[^\w]".                                     // Must not have an alphanum before real method
@@ -202,7 +202,7 @@ class Manager
 
             if (preg_match_all("/$stringPattern/siU", $file->getContents(), $matches)) {
                 foreach ($matches['string'] as $key) {
-                    if (preg_match("/(^[a-zA-Z0-9_-]+([.][^\1)\ ]+)+$)/siU", $key, $groupMatches)) {
+                    if (preg_match("/(^[\/a-zA-Z0-9_-]+([.][^\1)\ ]+)+$)/siU", $key, $groupMatches)) {
                         // group{.group}.key format, already in $groupKeys but also matched here
                         // do nothing, it has to be treated as a group
                         continue;
