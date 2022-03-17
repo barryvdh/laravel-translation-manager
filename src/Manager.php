@@ -252,6 +252,7 @@ class Manager
 
     public function exportTranslations($group = null, $json = false)
     {
+        $group = basename($group);
         $basePath = $this->app['path.lang'];
 
         if (! is_null($group) && ! $json) {
@@ -270,6 +271,7 @@ class Manager
                                                     ->get());
 
                 foreach ($tree as $locale => $groups) {
+                    $locale = basename($locale);
                     if (isset($groups[$group])) {
                         $translations = $groups[$group];
                         $path = $this->app['path.lang'];
