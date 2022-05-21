@@ -50,14 +50,17 @@
                 }
             });
 
-            $("a.delete-key").click(function(event){
-              event.preventDefault();
-              var row = $(this).closest('tr');
-              var url = $(this).attr('href');
-              var id = row.attr('id');
-              $.post( url, {id: id}, function(){
-                  row.remove();
-              } );
+            $("a.delete-key").on('confirm:complete',function(event,result){
+                if(result)
+                {
+                    var row = $(this).closest('tr');
+                    var url = $(this).attr('href');
+                    var id = row.attr('id');
+                    $.post( url, {id: id}, function(){
+                        row.remove();
+                    } );
+                }
+                return false;
             });
 
             $('.form-import').on('ajax:success', function (e, data) {
@@ -215,7 +218,7 @@
                     </div>
                     <?php if(!config('laravel_google_translate.google_translate_api_key')): ?>
                         <p>
-                            <code>Translating using stichoza/google-translate-php. If you would like to use Google Translate API enter your Google Translate API key to config file laravel_google_translate</code>
+                            <code>If you would like to use Google Translate API, install tanmuhittin/laravel-google-translate and enter your Google Translate API key to config file laravel_google_translate</code>
                         </p>
                     <?php endif; ?>
                     <div class="form-group">
@@ -285,7 +288,7 @@
                                 &times;
                             </button>
                             <?php echo $locale ?>
-                            
+
                         </div>
                     </li>
                 <?php endforeach; ?>
