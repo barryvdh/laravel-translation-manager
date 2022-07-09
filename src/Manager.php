@@ -294,7 +294,11 @@ class Manager
                             }
                         }
 
-                        $path = $path.DIRECTORY_SEPARATOR.$locale.DIRECTORY_SEPARATOR.$group.'.php';
+                        if ($vendor) {
+                            $path = $path.DIRECTORY_SEPARATOR.'messages.php';
+                        } else {
+                            $path = $path.DIRECTORY_SEPARATOR.$locale.DIRECTORY_SEPARATOR.$group.'.php';
+                        }
 
                         $output = "<?php\n\nreturn ".var_export($translations, true).';'.\PHP_EOL;
                         $this->files->put($path, $output);
