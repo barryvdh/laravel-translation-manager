@@ -53,6 +53,20 @@ class Translation extends Model{
     }
 
     /**
+     * Get the table associated with the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        if ($table = config('translation-manager.db_table')){
+            return $table;
+        }
+
+        return parent::getTable();
+    }
+
+    /**
      * Get the current connection name for the model.
      *
      * @return string|null
