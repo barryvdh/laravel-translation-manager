@@ -3,7 +3,6 @@
 namespace Barryvdh\TranslationManager;
 
 use Illuminate\Support\ServiceProvider;
-use Barryvdh\TranslationManager\Manager;
 
 class ManagerServiceProvider extends ServiceProvider
 {
@@ -15,7 +14,7 @@ class ManagerServiceProvider extends ServiceProvider
     /**
      * Register the service provider.
      */
-    public function register()
+    public function register(): void
     {
         // Register the config publish path
         $configPath = __DIR__.'/../config/translation-manager.php';
@@ -73,8 +72,6 @@ class ManagerServiceProvider extends ServiceProvider
 
     /**
      * Get the services provided by the provider.
-     *
-     * @return array
      */
     public function provides(): array
     {

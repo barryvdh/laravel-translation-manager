@@ -2,7 +2,6 @@
 
 namespace Barryvdh\TranslationManager;
 
-use Illuminate\Events\Dispatcher;
 use Illuminate\Translation\Translator as LaravelTranslator;
 
 class Translator extends LaravelTranslator

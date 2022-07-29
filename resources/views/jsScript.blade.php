@@ -340,6 +340,15 @@
             }
         });
 
+        $('.model-select').on('change', function () {
+            const model = $(this).val();
+            if (model) {
+                window.location.href = '{{ action($controller . '@getModelView') }}/' + $(this).val();
+            } else {
+                window.location.href = '{{ action($controller . '@getIndex') }}';
+            }
+        });
+
         $("a.delete-key").click(function (event) {
             event.preventDefault();
             const row = $(this).closest('tr');
