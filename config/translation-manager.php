@@ -66,6 +66,11 @@ return [
     ],
 
     /*
+     * Database connection name to allow for different db connection for the translations table.
+     */
+    'db_connection' => env('TRANSLATION_MANAGER_DB_CONNECTION', null),
+
+    /*
      * Enable pagination of translations
      *
      * @type boolean
