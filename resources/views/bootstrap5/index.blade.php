@@ -9,10 +9,17 @@
 
 @section('content')
     @include('translation-manager::bootstrap5.blocks._mainBlock')
-    @include('translation-manager::bootstrap5.blocks._addEditGroupKeys')
+    @if(!$selectedModel)
+        @include('translation-manager::bootstrap5.blocks._addEditGroupKeys')
+    @else
+        @include('translation-manager::bootstrap5.blocks._selectEditModel')
+    @endif
     @if($group)
         @include('translation-manager::bootstrap5.blocks._edit')
+    @elseif($selectedModel)
+        @include('translation-manager::bootstrap5.blocks._editModel')
     @else
+        @include('translation-manager::bootstrap5.blocks._selectEditModel')
         @include('translation-manager::bootstrap5.blocks._supportedLocales')
         @include('translation-manager::bootstrap5.blocks._publishAll')
     @endif

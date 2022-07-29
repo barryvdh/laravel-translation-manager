@@ -81,7 +81,7 @@ class Manager
     public function importTranslations($replace = false, $base = null, $import_group = false): int
     {
         $counter = 0;
-        //allows for vendor lang files to be properly recorded through recursion.
+        // allows for vendor lang files to be properly recorded through recursion.
         $vendor = true;
         if (null === $base) {
             $base = $this->app['path.lang'];
@@ -91,7 +91,7 @@ class Manager
         foreach ($this->files->directories($base) as $langPath) {
             $locale = basename($langPath);
 
-            //import langfiles for each vendor
+            // import langfiles for each vendor
             if ('vendor' === $locale) {
                 foreach ($this->files->directories($langPath) as $vendor) {
                     $counter += $this->importTranslations($replace, $vendor);
@@ -190,15 +190,15 @@ class Manager
         $functions = $this->config['trans_functions'];
 
         $groupPattern =                          // See https://regex101.com/r/WEJqdL/6
-            "[^\w|>]" .                          // Must not have an alphanum or _ or > before real method
-            '(' . implode('|', $functions) . ')' .  // Must start with one of the functions
-            "\(" .                               // Match opening parenthesis
-            "[\'\"]" .                           // Match " or '
-            '(' .                                // Start a new group to match:
-            '[\/a-zA-Z0-9_-]+' .                 // Must start with group
-            "([.](?! )[^\1)]+)+" .               // Be followed by one or more items/keys
-            ')' .                                // Close group
-            "[\'\"]" .                           // Closing quote
+            "[^\w|>]".                          // Must not have an alphanum or _ or > before real method
+            '('.implode('|', $functions).')'.  // Must start with one of the functions
+            "\(".                               // Match opening parenthesis
+            "[\'\"]".                           // Match " or '
+            '('.                                // Start a new group to match:
+            '[\/a-zA-Z0-9_-]+'.                 // Must start with group
+            "([.](?! )[^\1)]+)+".               // Be followed by one or more items/keys
+            ')'.                                // Close group
+            "[\'\"]".                           // Closing quote
             "[\),]";                             // Close parentheses or new parameter
 
         $stringPattern =
@@ -232,9 +232,9 @@ class Manager
                         continue;
                     }
 
-                    //TODO: This can probably be done in the regex, but I couldn't do it.
-                    //skip keys which contain namespacing characters, unless they also contain a
-                    //space, which makes it JSON.
+                    // TODO: This can probably be done in the regex, but I couldn't do it.
+                    // skip keys which contain namespacing characters, unless they also contain a
+                    // space, which makes it JSON.
                     if (Str::contains($key, ' ') || !(Str::contains($key, '::') && Str::contains($key, '.'))) {
                         $stringKeys[] = $key;
                     }

@@ -13,19 +13,19 @@
                         </select>
                     </div>
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-success btn-block" data-disable-with="Loading..">Import
-                            groups
-                        </button>
+                        <button type="submit" class="btn btn-success btn-block" data-disable-with="Loading..">Import groups</button>
                     </div>
                 </div>
             </form>
             <form class="form-find" method="POST" action="{{ action($controller.'@postFind') }}" data-remote="true" role="form"
                   data-confirm="Are you sure you want to scan you app folder? All found translation keys will be added to the database.">
                 @csrf()
-                <div class="form-group">
-                    <button type="submit" class="btn btn-info" data-disable-with="Searching..">Find translations in
-                        files
-                    </button>
+
+                <div class="btn-group" role="group">
+                    <button type="submit" class="btn btn-info" data-disable-with="Searching..">Find translations in files</button>
+                    @if($selectedModel)
+                        <a href="{{ action($controller.'@getIndex') }}" class="btn btn-secondary">Back</a>
+                    @endif
                 </div>
             </form>
         @else

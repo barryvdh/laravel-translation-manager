@@ -65,6 +65,13 @@ return [
         '$trans.get',
     ],
 
+    'models' => [
+//        \App\Models\Post::class,
+//        \App\Models\Category::class,
+    ],
+
+    'model-field-source' => 'translatable',
+
     /*
      * Database connection name to allow for different db connection for the translations table.
      */

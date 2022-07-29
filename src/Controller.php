@@ -5,11 +5,8 @@ namespace Barryvdh\TranslationManager;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Contracts\Foundation\Application;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Routing\Controller as BaseController;
 
@@ -24,9 +21,10 @@ class Controller extends BaseController
     }
 
     /**
-     * @param null $group
+     * @param string $group
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     *
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -35,11 +33,11 @@ class Controller extends BaseController
         return $this->getIndex($group);
     }
 
-
     /**
-     * @param null $group
+     * @param string $group
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     *
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -57,6 +55,13 @@ class Controller extends BaseController
             $groups = $groups->all();
         }
         $groups = ['' => 'Choose a group'] + $groups;
+        $models = [];
+        foreach (config('translation-manager.models') as $modelClass) {
+            $modelTable = (new $modelClass())->getTable();
+            $models[$modelTable] = $modelClass;
+        }
+        $models = ['' => 'Choose a model'] + $models;
+
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
         $allTranslations = Translation::where('group', $group)->orderBy('key', 'asc')->get();
@@ -91,7 +96,9 @@ class Controller extends BaseController
             ->with('translations', $translations)
             ->with('locales', $locales)
             ->with('groups', $groups)
+            ->with('models', $models)
             ->with('group', $group)
+            ->with('selectedModel', null)
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
             ->with('editUrl', $group ? action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]) : null)
@@ -99,9 +106,79 @@ class Controller extends BaseController
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
 
+    /**
+     * @param string $selectedModel
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
+    public function getModelView($selectedModel = null)
+    {
+        if (empty($selectedModel)) {
+            return $this->getIndex();
+        }
+
+        $locales = $this->manager->getLocales();
+        $models = [];
+        foreach (config('translation-manager.models') as $modelClass) {
+            $modelTable = (new $modelClass())->getTable();
+            $models[$modelTable] = $modelClass;
+        }
+        $models = empty($models) ? [] : ['' => 'Choose a model'] + $models;
+
+        $allTranslationModels = (new $models[$selectedModel]())->newQuery()->get();
+        $translations = [];
+        $numModelTranslations = count($allTranslationModels);
+        $numTranslations = 0;
+        $translatableSource = config('translation-manager.model-field-source');
+        foreach ($allTranslationModels as $translationModel) {
+            /* @var \Illuminate\Database\Eloquent\Model $translationModel */
+            foreach ((new $models[$selectedModel]())->$translatableSource as $field) {
+                foreach ($locales as $locale) {
+                    $translationValues = json_decode($translationModel->getAttributes()[$field] ?? '' ?: '{}', true) ?: [];
+
+                    $translations[$translationModel->getKey()][$field][$locale] = empty($translationValues[$locale]) ? '' : $translationValues[$locale];
+                }
+                ++$numTranslations;
+            }
+        }
+
+        if ($this->manager->getConfig('pagination_enabled')) {
+            $total = count($translations);
+            $page = request()->get('page', 1);
+            $perPage = $this->manager->getConfig('per_page');
+            $offSet = ($page * $perPage) - $perPage;
+            $itemsForCurrentPage = array_slice($translations, $offSet, $perPage, true);
+            $prefix = $this->manager->getConfig('route')['prefix'];
+            $path = url("$prefix/model/$selectedModel");
+
+            if ('bootstrap3' === $this->manager->getConfig('template')) {
+                LengthAwarePaginator::useBootstrapThree();
+            } elseif ('bootstrap4' === $this->manager->getConfig('template')) {
+                LengthAwarePaginator::useBootstrap();
+            } elseif ('bootstrap5' === $this->manager->getConfig('template')) {
+                LengthAwarePaginator::useBootstrap();
+            }
+
+            $paginator = new LengthAwarePaginator($itemsForCurrentPage, $total, $perPage, $page);
+            $translations = $paginator->withPath($path);
+        }
+
+        return view('translation-manager::'.$this->manager->getConfig('template').'.index')
+            ->with('translations', $translations)
+            ->with('locales', $locales)
+            ->with('models', $models)
+            ->with('group', null)
+            ->with('selectedModel', $selectedModel)
+            ->with('numModelTranslations', $numModelTranslations)
+            ->with('numTranslations', $numTranslations)
+            ->with('editUrl', action('\Barryvdh\TranslationManager\Controller@postEditModel', [$selectedModel]))
+            ->with('paginationEnabled', $this->manager->getConfig('pagination_enabled'))
+            ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
+    }
+
     protected function loadLocales(): array
     {
-        //Set the default locale as the first one.
+        // Set the default locale as the first one.
         $locales = Translation::groupBy('locale')
             ->select('locale')
             ->get()
@@ -144,6 +221,34 @@ class Controller extends BaseController
             $translation->value = (string) $value ?: null;
             $translation->status = Translation::STATUS_CHANGED;
             $translation->save();
+
+            return ['status' => 'ok'];
+        }
+    }
+
+    public function postEditModel($selectedModel)
+    {
+        $models = [];
+        foreach (config('translation-manager.models') as $modelClass) {
+            $modelTable = (new $modelClass())->getTable();
+            $models[$modelTable] = $modelClass;
+        }
+
+        if (array_key_exists($selectedModel, $models)) {
+            $name = request()->get('name');
+            $value = request()->get('value');
+
+            [$locale, $field, $key] = explode('|', $name, 3);
+
+            /* @var \Illuminate\Database\Eloquent\Model $model */
+            $model = (new $models[$selectedModel]())->findOrFail($key);
+            $translationValues = json_decode($model->getAttributes()[$field] ?? '' ?: '{}', true) ?: [];
+            $translationValues[$locale] = $value ? (string) $value : null;
+
+            $model->setRawAttributes([
+                $field => json_encode($translationValues),
+            ]);
+            $model->save();
 
             return ['status' => 'ok'];
         }

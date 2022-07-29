@@ -22,7 +22,12 @@
                   aria-label="Scan folders"
             >
                 @csrf()
-                <button type="submit" class="btn btn-info" data-disable-with="Searching...">Find translations in files</button>
+                <div class="btn-group" role="group">
+                    <button type="submit" class="btn btn-info" data-disable-with="Searching...">Find translations in files</button>
+                    @if($selectedModel)
+                        <a href="{{ action($controller.'@getIndex') }}" class="btn btn-secondary">Back</a>
+                    @endif
+                </div>
             </form>
         @else
             <form class="form-inline form-publish" method="POST" action="{{ action($controller.'@postPublish', $group) }}" data-remote="true" role="form"

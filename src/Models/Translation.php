@@ -62,7 +62,7 @@ class Translation extends Model
      */
     public function getConnectionName()
     {
-        if ($connection = config('translation-manager.db_connection')){
+        if ($connection = config('translation-manager.db_connection')) {
             return $connection;
         }
 
