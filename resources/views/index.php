@@ -232,7 +232,7 @@
         <hr>
     <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
         <table class="table">
-            <thead>
+            <thead style="position: sticky; top: 0; background: #fff;">
             <tr>
                 <th width="15%">Key</th>
                 <?php foreach ($locales as $locale): ?>
