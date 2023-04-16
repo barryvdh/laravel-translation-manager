@@ -29,6 +29,11 @@
       "Barryvdh\\TranslationManager\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Barryvdh\\TranslationManager\\Tests\\": "tests/"
+    }
+  },
   "extra": {
     "branch-alias": {
       "dev-master": "0.5-dev"

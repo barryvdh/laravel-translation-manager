@@ -1,13 +1,15 @@
-<?php namespace Barryvdh\TranslationManager\Models;
+<?php
+
+namespace Barryvdh\TranslationManager\Models;
 
 use DB;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Translation model
+ * Translation model.
  *
- * @property integer        $id
- * @property integer        $status
+ * @property int            $id
+ * @property int            $status
  * @property string         $locale
  * @property string         $group
  * @property string         $key
@@ -17,9 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Translation extends Model
 {
-
-    const STATUS_SAVED = 0;
-    const STATUS_CHANGED = 1;
+    public const STATUS_SAVED = 0;
+    public const STATUS_CHANGED = 1;
 
     protected $table = 'ltm_translations';
     protected $guarded = ['id', 'created_at', 'updated_at'];
@@ -54,4 +55,17 @@ class Translation extends Model
         return $query->select(DB::raw($select));
     }
 
+    /**
+     * Get the current connection name for the model.
+     *
+     * @return string|null
+     */
+    public function getConnectionName()
+    {
+        if ($connection = config('translation-manager.db_connection')) {
+            return $connection;
+        }
+
+        return parent::getConnectionName();
+    }
 }

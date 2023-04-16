@@ -1,87 +1,53 @@
-<?php namespace Barryvdh\TranslationManager;
+<?php
 
-use Illuminate\Routing\Router;
+namespace Barryvdh\TranslationManager;
+
 use Illuminate\Support\ServiceProvider;
 
 class ManagerServiceProvider extends ServiceProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = false;
-
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
+    public function register(): void
     {
-        // Register the config publish path
-        $configPath = __DIR__ . '/../config/translation-manager.php';
-        $this->mergeConfigFrom($configPath, 'translation-manager');
-        $this->publishes([$configPath => config_path('translation-manager.php')], 'config');
+        $this->mergeConfigFrom(__DIR__.'/../config/translation-manager.php', 'translation-manager');
 
-        $this->app->singleton('translation-manager', function ($app) {
-            $manager = $app->make('Barryvdh\TranslationManager\Manager');
-            return $manager;
-        });
+        $this->app->singleton('translation-manager', Manager::class);
 
-        $this->app->singleton('command.translation-manager.reset', function ($app) {
-            return new Console\ResetCommand($app['translation-manager']);
-        });
-        $this->commands('command.translation-manager.reset');
-
-        $this->app->singleton('command.translation-manager.import', function ($app) {
-            return new Console\ImportCommand($app['translation-manager']);
-        });
-        $this->commands('command.translation-manager.import');
-
-        $this->app->singleton('command.translation-manager.find', function ($app) {
-            return new Console\FindCommand($app['translation-manager']);
-        });
-        $this->commands('command.translation-manager.find');
-
-        $this->app->singleton('command.translation-manager.export', function ($app) {
-            return new Console\ExportCommand($app['translation-manager']);
-        });
-        $this->commands('command.translation-manager.export');
-
-        $this->app->singleton('command.translation-manager.clean', function ($app) {
-            return new Console\CleanCommand($app['translation-manager']);
-        });
-        $this->commands('command.translation-manager.clean');
+        $this->registerCommands([
+            'reset' => Console\ResetCommand::class,
+            'import' => Console\ImportCommand::class,
+            'find' => Console\FindCommand::class,
+            'export' => Console\ExportCommand::class,
+            'clean' => Console\CleanCommand::class,
+        ]);
     }
 
-    /**
-     * Bootstrap the application events.
-     *
-     * @return void
-     */
-    public function boot()
+    private function registerCommands(array $commands): void
     {
-        $viewPath = __DIR__ . '/../resources/views';
-        $this->loadViewsFrom($viewPath, 'translation-manager');
+        foreach ($commands as $name => $class) {
+            $this->app->singleton("command.translation-manager.{$name}", function ($app) use ($class) {
+                return new $class($app['translation-manager']);
+            });
+
+            $this->commands("command.translation-manager.{$name}");
+        }
+    }
+
+    public function boot(): void
+    {
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'translation-manager');
+
         $this->publishes([
-            $viewPath => base_path('resources/views/vendor/translation-manager'),
+            __DIR__.'/../resources/views' => resource_path('views/vendor/translation-manager'),
         ], 'views');
 
-        $migrationPath = __DIR__ . '/../database/migrations';
         $this->publishes([
-            $migrationPath => base_path('database/migrations'),
+            __DIR__.'/../database/migrations' => database_path('migrations'),
         ], 'migrations');
 
-        $this->loadRoutesFrom(__DIR__ . '/routes.php');
+        $this->loadRoutesFrom(__DIR__.'/routes.php');
     }
 
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
+    public function provides(): array
     {
         return [
             'translation-manager',
@@ -89,8 +55,7 @@ class ManagerServiceProvider extends ServiceProvider
             'command.translation-manager.import',
             'command.translation-manager.find',
             'command.translation-manager.export',
-            'command.translation-manager.clean'
+            'command.translation-manager.clean',
         ];
     }
-
 }

@@ -7,7 +7,7 @@
         <p>Done searching for translations, found <strong class="counter">N</strong> items!</p>
     </div>
     <div class="alert alert-success success-publish" style="display:none;">
-        <p>Done publishing the translations for group '{{$group}}'!</p>
+        <p>Done publishing the translations for group '{{ $group }}'!</p>
     </div>
     <div class="alert alert-success success-publish-all" style="display:none;">
         <p>Done publishing the translations for all group!</p>

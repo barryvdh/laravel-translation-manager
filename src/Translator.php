@@ -1,23 +1,27 @@
-<?php namespace Barryvdh\TranslationManager;
+<?php
 
-use Illuminate\Events\Dispatcher;
+namespace Barryvdh\TranslationManager;
+
 use Illuminate\Translation\Translator as LaravelTranslator;
 
 class Translator extends LaravelTranslator
 {
-
-    /** @var  Dispatcher */
+    /**
+     * @var \Illuminate\Events\Dispatcher
+     */
     protected $events;
+    /**
+     * @var \Barryvdh\TranslationManager\Manager
+     */
+    private $manager;
 
     /**
      * Get the translation for the given key.
      *
      * @param string $key
-     * @param array  $replace
      * @param string $locale
-     * @return string
      */
-    public function get($key, array $replace = [], $locale = null, $fallback = true)
+    public function get($key, array $replace = [], $locale = null, $fallback = true): string
     {
         // Get without fallback
         $result = parent::get($key, $replace, $locale, false);
@@ -26,23 +30,21 @@ class Translator extends LaravelTranslator
 
             // Reget with fallback
             $result = parent::get($key, $replace, $locale, $fallback);
-
         }
 
         return $result;
     }
 
-    protected function notifyMissingKey($key)
-    {
-        list($namespace, $group, $item) = $this->parseKey($key);
-        if ($this->manager && $namespace === '*' && $group && $item) {
-            $this->manager->missingKey($namespace, $group, $item);
-        }
-    }
-
-    public function setTranslationManager(Manager $manager)
+    public function setTranslationManager(Manager $manager): void
     {
         $this->manager = $manager;
     }
 
+    protected function notifyMissingKey($key): void
+    {
+        [$namespace, $group, $item] = $this->parseKey($key);
+        if ($this->manager && '*' === $namespace && $group && $item) {
+            $this->manager->missingKey($namespace, $group, $item);
+        }
+    }
 }
