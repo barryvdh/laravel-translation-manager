@@ -50,6 +50,22 @@
                 }
             });
 
+            $('#search_key').on('click', function(){
+                var group = $("#key_name").val();
+                if (group) {
+                    window.location.href = '<?php echo action('\Barryvdh\TranslationManager\Controller@getView') ?>/'+group;
+                } else {
+                    window.location.href = '<?php echo action('\Barryvdh\TranslationManager\Controller@getIndex') ?>';
+                }
+            });
+
+            $("#key_name").keydown(function(event){
+                if(event.keyCode == 13) {
+                    event.preventDefault();
+                    return false;
+                }
+            });
+
             $("a.delete-key").on('confirm:complete',function(event,result){
                 if(result)
                 {
