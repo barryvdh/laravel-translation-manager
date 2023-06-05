@@ -347,7 +347,8 @@ class Manager
     {
         $array = [];
         foreach ($translations as $translation) {
-            if ($json) {
+            // For JSON and sentences, do not use dotted notation
+            if ($json || Str::contains($translation->key, [' ']) || Str::endsWith($translation->key, ['.'])) {
                 $this->jsonSet($array[$translation->locale][$translation->group], $translation->key,
                     $translation->value);
             } else {
