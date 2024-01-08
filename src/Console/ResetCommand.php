@@ -21,7 +21,9 @@ class ResetCommand extends Command
      */
     protected $description = 'Delete all translations from the database';
 
-    /** @var \Barryvdh\TranslationManager\Manager */
+    /**
+     * @var \Barryvdh\TranslationManager\Manager
+     */
     protected $manager;
 
     public function __construct(Manager $manager)
@@ -33,7 +35,7 @@ class ResetCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $this->manager->truncateTranslations();
         $this->info('All translations are deleted');

@@ -2,8 +2,8 @@
 
 namespace Barryvdh\TranslationManager\Console;
 
-use Barryvdh\TranslationManager\Manager;
 use Illuminate\Console\Command;
+use Barryvdh\TranslationManager\Manager;
 use Symfony\Component\Console\Input\InputOption;
 
 class ImportCommand extends Command
@@ -22,7 +22,9 @@ class ImportCommand extends Command
      */
     protected $description = 'Import translations from the PHP sources';
 
-    /** @var \Barryvdh\TranslationManager\Manager */
+    /**
+     * @var \Barryvdh\TranslationManager\Manager
+     */
     protected $manager;
 
     public function __construct(Manager $manager)
@@ -34,7 +36,7 @@ class ImportCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $replace = $this->option('replace');
         $counter = $this->manager->importTranslations($replace);
@@ -43,10 +45,8 @@ class ImportCommand extends Command
 
     /**
      * Get the console command options.
-     *
-     * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['replace', 'R', InputOption::VALUE_NONE, 'Replace existing keys'],

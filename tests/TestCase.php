@@ -8,9 +8,10 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
     /**
      * @param \Illuminate\Foundation\Application $app
+     *
      * @return string[]
      */
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [ManagerServiceProvider::class];
     }
