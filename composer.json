@@ -1,53 +1,59 @@
 {
-  "name": "barryvdh/laravel-translation-manager",
-  "description": "Manage Laravel Translations",
-  "keywords": [
-    "laravel",
-    "translations",
-    "translator"
-  ],
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Barry vd. Heuvel",
-      "email": "barryvdh@gmail.com"
-    }
-  ],
-  "require": {
-    "php": ">=7.2",
-    "illuminate/support": "^9|^10",
-    "illuminate/translation": "^9|^10",
-    "symfony/finder": "^6"
-  },
-  "require-dev": {
-    "orchestra/testbench": "^7|^8"
-  },
-  "suggest": {
-     "tanmuhittin/laravel-google-translate": "If you want to translate using Google API"
-  },
-  "autoload": {
-    "psr-4": {
-      "Barryvdh\\TranslationManager\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Barryvdh\\TranslationManager\\Tests\\": "tests/"
-    }
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "0.6-dev"
+    "name": "barryvdh/laravel-translation-manager",
+    "description": "Manage Laravel Translations",
+    "keywords": [
+        "laravel",
+        "translations",
+        "translator"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Barry vd. Heuvel",
+            "email": "barryvdh@gmail.com"
+        },
+        {
+            "name": "Jose Vicente Orts Romero",
+            "email": "jvortsromero@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "brick/varexporter": "^0.3.0",
+        "illuminate/support": "^9|^10",
+        "illuminate/translation": "^9|^10",
+        "symfony/finder": "^6"
     },
-    "laravel": {
-      "providers": [
-        "Barryvdh\\TranslationManager\\ManagerServiceProvider"
-      ]
-    }
-  },
-  "scripts": {
-    "test": "phpunit"
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.46.0",
+        "orchestra/testbench": "^7|^8"
+    },
+    "suggest": {
+        "tanmuhittin/laravel-google-translate": "If you want to translate using Google API"
+    },
+    "autoload": {
+        "psr-4": {
+            "Barryvdh\\TranslationManager\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Barryvdh\\TranslationManager\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.6-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Barryvdh\\TranslationManager\\ManagerServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
