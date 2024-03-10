@@ -184,17 +184,19 @@ class Controller extends BaseController
                     // Translation already exists. Skip
                     continue;
                 }
-                $translated_text = Str::apiTranslateWithAttributes($base_string->value, $newLocale, $base_locale);
-                request()->replace([
-                    'value' => $translated_text,
-                    'name' => $newLocale . '|' . $base_string->key,
-                ]);
-                app()->call(
-                    'Barryvdh\TranslationManager\Controller@postEdit',
-                    [
-                        'group' => $group
-                    ]
-                );
+                if(!empty($base_string->value)) {
+                    $translated_text = Str::apiTranslateWithAttributes($base_string->value, $newLocale, $base_locale);
+                    request()->replace([
+                        'value' => $translated_text,
+                        'name' => $newLocale . '|' . $base_string->key,
+                    ]);
+                    app()->call(
+                        'Barryvdh\TranslationManager\Controller@postEdit',
+                        [
+                            'group' => $group
+                        ]
+                    );
+                }
             }
             return redirect()->back();
         }
