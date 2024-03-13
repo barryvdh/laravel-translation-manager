@@ -19,8 +19,8 @@
   ],
   "require": {
     "php": ">=7",
-    "illuminate/support": "^9|^10",
-    "illuminate/translation": "^9|^10",
+    "illuminate/support": "^9|^10|^11",
+    "illuminate/translation": "^9|^10|^11",
     "symfony/finder": "^6"
     "tanmuhittin/laravel-google-translate": "^2.0.1"
   },
