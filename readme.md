@@ -76,9 +76,9 @@ to
     'route' => [
         'prefix' => 'translations',
         'middleware' => [
-	        'web',
-	        'auth',
-		],
+            'web',
+            'auth',
+        ],
     ],
 ```
 
