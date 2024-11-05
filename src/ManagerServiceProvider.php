@@ -72,7 +72,9 @@ class ManagerServiceProvider extends ServiceProvider {
             $migrationPath => base_path('database/migrations'),
         ], 'migrations');
 
-        $this->loadRoutesFrom(__DIR__.'/routes.php');
+        if (config('translation-manager.routes_enabled', true)) {
+            $this->loadRoutesFrom(__DIR__ . '/routes.php');
+        }
 	}
 
 	/**
