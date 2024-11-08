@@ -52,6 +52,11 @@ class ManagerServiceProvider extends ServiceProvider {
             return new Console\CleanCommand($app['translation-manager']);
         });
         $this->commands('command.translation-manager.clean');
+
+        $this->app->singleton('command.translation-manager.sync', function ($app) {
+            return new Console\SyncCommand($app['translation-manager']);
+        });
+        $this->commands('command.translation-manager.sync');
 	}
 
     /**
@@ -87,7 +92,8 @@ class ManagerServiceProvider extends ServiceProvider {
             'command.translation-manager.import',
             'command.translation-manager.find',
             'command.translation-manager.export',
-            'command.translation-manager.clean'
+            'command.translation-manager.clean',
+            'command.translation-manager.sync',
         );
 	}
 
