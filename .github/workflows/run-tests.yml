@@ -7,8 +7,6 @@ on:
   pull_request:
     branches:
       - "*"
-  schedule:
-    - cron: '0 0 * * *'
 
 jobs:
   php-tests:
@@ -19,11 +17,13 @@ jobs:
 
     strategy:
       matrix:
-        php: [8.3, 8.2, 8.1]
-        laravel: [11.*, 10.*, 9.*]
+        php: [8.4, 8.3, 8.2, 8.1]
+        laravel: [12.*, 11.*, 10.*, 9.*]
         dependency-version: [prefer-lowest, prefer-stable]
         exclude:
           - laravel: 11.*
+            php: 8.1
+          - laravel: 12.*
             php: 8.1
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }}
