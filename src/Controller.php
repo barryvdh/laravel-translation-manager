@@ -32,8 +32,19 @@ class Controller extends BaseController
         $groups = [''=>'Choose a group'] + $groups;
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
+        $allTranslations = Translation::where('group', $group);
+        if($searchKeywords = request()->keywords){
+            $allTranslations->where(function ($query)  use ($searchKeywords) {
+                $query->when(request()->searchKeys == 'true', function ($query) use ($searchKeywords) {
+                    return $query->where('key', 'like', '%' . $searchKeywords . '%');
+                })
+                ->when(request()->searchValues == 'true', function ($query) use ($searchKeywords) {
+                    return $query->orWhere('value', 'like', '%' . $searchKeywords . '%');
+                });
+            });
+        }
+        $allTranslations = $allTranslations->orderBy('key', 'asc')->get();
 
-        $allTranslations = Translation::where('group', $group)->orderBy('key', 'asc')->get();
         $numTranslations = count($allTranslations);
         $translations = [];
         foreach($allTranslations as $translation){
