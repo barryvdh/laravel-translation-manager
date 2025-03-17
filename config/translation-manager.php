@@ -16,6 +16,13 @@ return [
     ],
 
     /**
+     * Enable routes for Laravel Translation Manager
+     *
+     * @type boolean
+     */
+    'routes_enabled' => true,
+
+    /**
      * Enable deletion of translations
      *
      * @type boolean
