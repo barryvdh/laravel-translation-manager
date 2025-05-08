@@ -18,10 +18,10 @@
     }
   ],
   "require": {
-    "php": ">=7",
-    "illuminate/support": "^9|^10",
-    "illuminate/translation": "^9|^10",
-    "symfony/finder": "^6"
+    "php": ">=7.4",
+    "illuminate/support": "^9|^10|^11|^12",
+    "illuminate/translation": "^9|^10|^11|^12",
+    "symfony/finder": "^6|^7",
     "tanmuhittin/laravel-google-translate": "^2.0.1"
   },
   "autoload": {
@@ -44,5 +44,8 @@
       ]
     }
   },
-  "minimum-stability": "stable"
+  "minimum-stability": "stable",
+  "require-dev": {
+    "laravel/pint": "^1.22"
+  }
 }

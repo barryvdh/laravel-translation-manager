@@ -24,7 +24,7 @@ class ManagerServiceProvider extends ServiceProvider
     private function registerCommands(array $commands): void
     {
         foreach ($commands as $name => $class) {
-            $this->app->singleton("command.translation-manager.{$name}", function ($app) use ($class) {
+            $this->app->singleton("command.translation-manager.{$name}", function (array $app) use ($class) {
                 return new $class($app['translation-manager']);
             });
 

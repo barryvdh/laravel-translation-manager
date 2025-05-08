@@ -66,8 +66,8 @@ return [
     ],
 
     'models' => [
-//        \App\Models\Post::class,
-//        \App\Models\Category::class,
+        //        \App\Models\Post::class,
+        //        \App\Models\Category::class,
     ],
 
     'model-field-source' => 'translatable',

@@ -10,6 +10,7 @@ class Translator extends LaravelTranslator
      * @var \Illuminate\Events\Dispatcher
      */
     protected $events;
+
     /**
      * @var \Barryvdh\TranslationManager\Manager
      */
@@ -18,8 +19,8 @@ class Translator extends LaravelTranslator
     /**
      * Get the translation for the given key.
      *
-     * @param string $key
-     * @param string $locale
+     * @param  string  $key
+     * @param  string  $locale
      */
     public function get($key, array $replace = [], $locale = null, $fallback = true): string
     {
@@ -43,7 +44,7 @@ class Translator extends LaravelTranslator
     protected function notifyMissingKey($key): void
     {
         [$namespace, $group, $item] = $this->parseKey($key);
-        if ($this->manager && '*' === $namespace && $group && $item) {
+        if ($this->manager && $namespace === '*' && $group && $item) {
             $this->manager->missingKey($namespace, $group, $item);
         }
     }

@@ -2,17 +2,24 @@
 
 namespace Barryvdh\TranslationManager;
 
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Barryvdh\TranslationManager\Models\Translation;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class Controller extends BaseController
 {
-    /** @var \Barryvdh\TranslationManager\Manager */
+    /** @var Manager */
     protected $manager;
 
     public function __construct(Manager $manager)
@@ -21,12 +28,11 @@ class Controller extends BaseController
     }
 
     /**
-     * @param string $group
+     * @param  string  $group
+     * @return Application|Factory|View
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
-     *
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function getView($group = null)
     {
@@ -34,12 +40,11 @@ class Controller extends BaseController
     }
 
     /**
-     * @param string $group
+     * @param  string  $group
+     * @return Application|Factory|View
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
-     *
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function getIndex($group = null)
     {
@@ -57,7 +62,7 @@ class Controller extends BaseController
         $groups = ['' => 'Choose a group'] + $groups;
         $models = [];
         foreach (config('translation-manager.models') as $modelClass) {
-            $modelTable = (new $modelClass())->getTable();
+            $modelTable = (new $modelClass)->getTable();
             $models[$modelTable] = $modelClass;
         }
         $models = ['' => 'Choose a model'] + $models;
@@ -80,11 +85,11 @@ class Controller extends BaseController
             $prefix = $this->manager->getConfig('route')['prefix'];
             $path = url("$prefix/view/$group");
 
-            if ('bootstrap3' === $this->manager->getConfig('template')) {
+            if ($this->manager->getConfig('template') === 'bootstrap3') {
                 LengthAwarePaginator::useBootstrapThree();
-            } elseif ('bootstrap4' === $this->manager->getConfig('template')) {
+            } elseif ($this->manager->getConfig('template') === 'bootstrap4') {
                 LengthAwarePaginator::useBootstrap();
-            } elseif ('bootstrap5' === $this->manager->getConfig('template')) {
+            } elseif ($this->manager->getConfig('template') === 'bootstrap5') {
                 LengthAwarePaginator::useBootstrap();
             }
 
@@ -107,9 +112,8 @@ class Controller extends BaseController
     }
 
     /**
-     * @param string $selectedModel
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @param  string  $selectedModel
+     * @return Application|Factory|View
      */
     public function getModelView($selectedModel = null)
     {
@@ -120,25 +124,25 @@ class Controller extends BaseController
         $locales = $this->manager->getLocales();
         $models = [];
         foreach (config('translation-manager.models') as $modelClass) {
-            $modelTable = (new $modelClass())->getTable();
+            $modelTable = (new $modelClass)->getTable();
             $models[$modelTable] = $modelClass;
         }
-        $models = empty($models) ? [] : ['' => 'Choose a model'] + $models;
+        $models = $models === [] ? [] : ['' => 'Choose a model'] + $models;
 
-        $allTranslationModels = (new $models[$selectedModel]())->newQuery()->get();
+        $allTranslationModels = (new $models[$selectedModel])->newQuery()->get();
         $translations = [];
         $numModelTranslations = count($allTranslationModels);
         $numTranslations = 0;
         $translatableSource = config('translation-manager.model-field-source');
         foreach ($allTranslationModels as $translationModel) {
-            /* @var \Illuminate\Database\Eloquent\Model $translationModel */
-            foreach ((new $models[$selectedModel]())->$translatableSource as $field) {
+            /* @var Model $translationModel */
+            foreach ((new $models[$selectedModel])->$translatableSource as $field) {
                 foreach ($locales as $locale) {
                     $translationValues = json_decode($translationModel->getAttributes()[$field] ?? '' ?: '{}', true) ?: [];
 
                     $translations[$translationModel->getKey()][$field][$locale] = empty($translationValues[$locale]) ? '' : $translationValues[$locale];
                 }
-                ++$numTranslations;
+                $numTranslations++;
             }
         }
 
@@ -151,11 +155,11 @@ class Controller extends BaseController
             $prefix = $this->manager->getConfig('route')['prefix'];
             $path = url("$prefix/model/$selectedModel");
 
-            if ('bootstrap3' === $this->manager->getConfig('template')) {
+            if ($this->manager->getConfig('template') === 'bootstrap3') {
                 LengthAwarePaginator::useBootstrapThree();
-            } elseif ('bootstrap4' === $this->manager->getConfig('template')) {
+            } elseif ($this->manager->getConfig('template') === 'bootstrap4') {
                 LengthAwarePaginator::useBootstrap();
-            } elseif ('bootstrap5' === $this->manager->getConfig('template')) {
+            } elseif ($this->manager->getConfig('template') === 'bootstrap5') {
                 LengthAwarePaginator::useBootstrap();
             }
 
@@ -208,7 +212,7 @@ class Controller extends BaseController
 
     public function postEdit($group = null)
     {
-        if (!in_array($group, $this->manager->getConfig('exclude_groups'), true)) {
+        if (! in_array($group, $this->manager->getConfig('exclude_groups'), true)) {
             $name = request()->get('name');
             $value = request()->get('value');
 
@@ -224,13 +228,15 @@ class Controller extends BaseController
 
             return ['status' => 'ok'];
         }
+
+        return null;
     }
 
     public function postEditModel($selectedModel)
     {
         $models = [];
         foreach (config('translation-manager.models') as $modelClass) {
-            $modelTable = (new $modelClass())->getTable();
+            $modelTable = (new $modelClass)->getTable();
             $models[$modelTable] = $modelClass;
         }
 
@@ -240,8 +246,8 @@ class Controller extends BaseController
 
             [$locale, $field, $key] = explode('|', $name, 3);
 
-            /* @var \Illuminate\Database\Eloquent\Model $model */
-            $model = (new $models[$selectedModel]())->findOrFail($key);
+            /* @var Model $model */
+            $model = (new $models[$selectedModel])->findOrFail($key);
             $translationValues = json_decode($model->getAttributes()[$field] ?? '' ?: '{}', true) ?: [];
             $translationValues[$locale] = $value ? (string) $value : null;
 
@@ -252,15 +258,19 @@ class Controller extends BaseController
 
             return ['status' => 'ok'];
         }
+
+        return null;
     }
 
     public function postDelete($group, $key)
     {
-        if ($this->manager->getConfig('delete_enabled') && !in_array($group, $this->manager->getConfig('exclude_groups'), true)) {
+        if ($this->manager->getConfig('delete_enabled') && ! in_array($group, $this->manager->getConfig('exclude_groups'), true)) {
             Translation::where('group', $group)->where('key', $key)->delete();
 
             return ['status' => 'ok'];
         }
+
+        return null;
     }
 
     public function postImport(Request $request): array
@@ -282,7 +292,7 @@ class Controller extends BaseController
     {
         $json = false;
 
-        if ('_json' === $group) {
+        if ($group === '_json') {
             $json = true;
         }
 
@@ -302,13 +312,13 @@ class Controller extends BaseController
     }
 
     /**
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
     public function postAddLocale(Request $request): RedirectResponse
     {
         $locales = $this->manager->getLocales();
         $newLocale = str_replace([], '-', trim($request->input('new-locale')));
-        if (!$newLocale || in_array($newLocale, $locales, true)) {
+        if (! $newLocale || in_array($newLocale, $locales, true)) {
             return redirect()->back();
         }
         $this->manager->addLocale($newLocale);
@@ -317,7 +327,7 @@ class Controller extends BaseController
     }
 
     /**
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
     public function postRemoveLocale(Request $request): RedirectResponse
     {

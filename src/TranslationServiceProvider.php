@@ -13,7 +13,7 @@ class TranslationServiceProvider extends BaseTranslationServiceProvider
     {
         $this->registerLoader();
 
-        $this->app->singleton('translator', function ($app) {
+        $this->app->singleton('translator', function (array $app): \Barryvdh\TranslationManager\Translator {
             $loader = $app['translation.loader'];
 
             // When registering the translator component, we'll need to set the default

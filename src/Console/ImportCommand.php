@@ -2,8 +2,8 @@
 
 namespace Barryvdh\TranslationManager\Console;
 
-use Illuminate\Console\Command;
 use Barryvdh\TranslationManager\Manager;
+use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 
 class ImportCommand extends Command
@@ -23,7 +23,7 @@ class ImportCommand extends Command
     protected $description = 'Import translations from the PHP sources';
 
     /**
-     * @var \Barryvdh\TranslationManager\Manager
+     * @var Manager
      */
     protected $manager;
 

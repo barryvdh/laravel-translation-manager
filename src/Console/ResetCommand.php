@@ -2,8 +2,8 @@
 
 namespace Barryvdh\TranslationManager\Console;
 
-use Illuminate\Console\Command;
 use Barryvdh\TranslationManager\Manager;
+use Illuminate\Console\Command;
 
 class ResetCommand extends Command
 {
@@ -22,7 +22,7 @@ class ResetCommand extends Command
     protected $description = 'Delete all translations from the database';
 
     /**
-     * @var \Barryvdh\TranslationManager\Manager
+     * @var Manager
      */
     protected $manager;
 

@@ -8,21 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Translation model.
  *
- * @property int            $id
- * @property int            $status
- * @property string         $locale
- * @property string         $group
- * @property string         $key
- * @property string         $value
+ * @property int $id
+ * @property int $status
+ * @property string $locale
+ * @property string $group
+ * @property string $key
+ * @property string $value
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
 class Translation extends Model
 {
     public const STATUS_SAVED = 0;
+
     public const STATUS_CHANGED = 1;
 
     protected $table = 'ltm_translations';
+
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
     public function scopeOfTranslatedGroup($query, $group)

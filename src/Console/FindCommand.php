@@ -2,8 +2,8 @@
 
 namespace Barryvdh\TranslationManager\Console;
 
-use Illuminate\Console\Command;
 use Barryvdh\TranslationManager\Manager;
+use Illuminate\Console\Command;
 
 class FindCommand extends Command
 {
@@ -22,7 +22,7 @@ class FindCommand extends Command
     protected $description = 'Find translations in php/twig files';
 
     /**
-     * @var \Barryvdh\TranslationManager\Manager
+     * @var Manager
      */
     protected $manager;
 

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Barryvdh\TranslationManager\Controller;
+use Illuminate\Support\Facades\Route;
 
 $config = array_merge(config('translation-manager.route'), ['namespace' => '\Barryvdh\TranslationManager']);
 Route::group($config, function ($router) {
