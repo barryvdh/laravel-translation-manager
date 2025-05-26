@@ -250,6 +250,27 @@ class Manager
         }
     }
 
+    protected static function arrayToShortSyntax($data, $indent = '')
+    {
+        if (!is_array($data)) {
+            return var_export($data, true);
+        }
+    
+        $isAssoc = array_keys($data) !== range(0, count($data) - 1);
+        $lines = [];
+        $innerIndent = $indent . '    ';
+    
+        foreach ($data as $key => $value) {
+            $keyPart = $isAssoc ? static::arrayToShortSyntax($key) . ' => ' : '';
+            $valuePart = is_array($value)
+                ? static::arrayToShortSyntax($value, $innerIndent)
+                : var_export($value, true);
+            $lines[] = $innerIndent . $keyPart . $valuePart;
+        }
+    
+        return "[\n" . implode(",\n", $lines) . "\n" . $indent . "]";
+    }
+
     public function exportTranslations($group = null, $json = false)
     {
         $group = basename($group);
@@ -300,7 +321,7 @@ class Manager
                             $path = $path.DIRECTORY_SEPARATOR.$locale.DIRECTORY_SEPARATOR.$group.'.php';
                         }
 
-                        $output = "<?php\n\nreturn ".var_export($translations, true).';'.\PHP_EOL;
+                        $output = "<?php\n\nreturn " . static::arrayToShortSyntax($translations) . ";\n";
                         $this->files->put($path, $output);
                     }
                 }
