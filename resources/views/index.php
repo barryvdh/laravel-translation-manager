@@ -255,7 +255,7 @@
                             <a href="#edit"
                                class="editable status-<?php echo $t ? $t->status : 0 ?> locale-<?php echo $locale ?>"
                                data-locale="<?php echo $locale ?>" data-name="<?php echo $locale . "|" . htmlentities($key, ENT_QUOTES, 'UTF-8', false) ?>"
-                               id="username" data-type="textarea" data-pk="<?php echo $t ? $t->id : 0 ?>"
+                               data-type="textarea" data-pk="<?php echo $t ? $t->id : 0 ?>"
                                data-url="<?php echo $editUrl ?>"
                                data-title="Enter translation"><?php echo $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' ?></a>
                         </td>
