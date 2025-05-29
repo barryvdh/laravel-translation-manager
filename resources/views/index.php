@@ -214,7 +214,12 @@
                     </div>
                     <div class="form-group">
                         <label for="new-locale">Enter target locale key</label>
-                        <input type="text" name="new-locale" class="form-control" id="new-locale" placeholder="Enter target locale key" />
+                        <input type="text" name="new-locale" class="form-control" id="new-locale" list="available-locales" placeholder="Enter target locale key" />
+                        <datalist id="available-locales">
+                            <?php foreach ($available_locales as $locale): ?>
+                                <option value="<?= $locale->code ?>"><?= $locale->name ?></option>
+                            <?php endforeach; ?>
+                        </datalist>
                     </div>
                     <?php if(!config('laravel_google_translate.google_translate_api_key')): ?>
                         <p>
@@ -302,7 +307,12 @@
                     </p>
                     <div class="row">
                         <div class="col-sm-3">
-                            <input type="text" name="new-locale" class="form-control" />
+                            <input type="text" name="new-locale" list="available-locales" class="form-control" />
+                            <datalist id="available-locales">
+                                <?php foreach ($available_locales as $locale): ?>
+                                    <option value="<?= $locale->code ?>"><?= $locale->name ?></option>
+                                <?php endforeach; ?>
+                            </datalist>
                         </div>
                         <div class="col-sm-2">
                             <button type="submit" class="btn btn-default btn-block"  data-disable-with="Adding..">Add new locale</button>

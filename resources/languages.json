@@ -1,0 +1,510 @@
+[
+    {
+        "name": "Afrikaans",
+        "code": "af"
+    },
+    {
+        "name": "Akan",
+        "code": "ak"
+    },
+    {
+        "name": "Az\u0259rbaycan",
+        "code": "az"
+    },
+    {
+        "name": "Bamanakan",
+        "code": "bm"
+    },
+    {
+        "name": "Basa Sunda",
+        "code": "su"
+    },
+    {
+        "name": "Bosanski",
+        "code": "bs"
+    },
+    {
+        "name": "Catal\u00e0",
+        "code": "ca"
+    },
+    {
+        "name": "Cebuano",
+        "code": "ceb"
+    },
+    {
+        "name": "Chishona",
+        "code": "sn"
+    },
+    {
+        "name": "Cymraeg",
+        "code": "cy"
+    },
+    {
+        "name": "Dansk",
+        "code": "da"
+    },
+    {
+        "name": "Deutsch",
+        "code": "de"
+    },
+    {
+        "name": "Deutsch (Schweiz)",
+        "code": "de_CH"
+    },
+    {
+        "name": "Eesti",
+        "code": "et"
+    },
+    {
+        "name": "English",
+        "code": "en"
+    },
+    {
+        "name": "English (Canada)",
+        "code": "en_CA"
+    },
+    {
+        "name": "Espa\u00f1ol",
+        "code": "es"
+    },
+    {
+        "name": "Esperanto",
+        "code": "eo"
+    },
+    {
+        "name": "Euskara",
+        "code": "eu"
+    },
+    {
+        "name": "E\u028begbe",
+        "code": "ee"
+    },
+    {
+        "name": "Filipino",
+        "code": "fil"
+    },
+    {
+        "name": "Fran\u00e7ais",
+        "code": "fr"
+    },
+    {
+        "name": "Frysk",
+        "code": "fy"
+    },
+    {
+        "name": "Gaeilge",
+        "code": "ga"
+    },
+    {
+        "name": "Galego",
+        "code": "gl"
+    },
+    {
+        "name": "G\u00e0idhlig",
+        "code": "gd"
+    },
+    {
+        "name": "Hausa",
+        "code": "ha"
+    },
+    {
+        "name": "Hrvatski",
+        "code": "hr"
+    },
+    {
+        "name": "Igbo",
+        "code": "ig"
+    },
+    {
+        "name": "Indonesia",
+        "code": "id"
+    },
+    {
+        "name": "Isixhosa",
+        "code": "xh"
+    },
+    {
+        "name": "Isizulu",
+        "code": "zu"
+    },
+    {
+        "name": "Italiano",
+        "code": "it"
+    },
+    {
+        "name": "Kinyarwanda",
+        "code": "rw"
+    },
+    {
+        "name": "Kiswahili",
+        "code": "sw"
+    },
+    {
+        "name": "Kurd\u00ee",
+        "code": "ku"
+    },
+    {
+        "name": "Latvie\u0161u",
+        "code": "lv"
+    },
+    {
+        "name": "Lietuvi\u0173",
+        "code": "lt"
+    },
+    {
+        "name": "Ling\u00e1la",
+        "code": "ln"
+    },
+    {
+        "name": "Luganda",
+        "code": "lg"
+    },
+    {
+        "name": "L\u00ebtzebuergesch",
+        "code": "lb"
+    },
+    {
+        "name": "Magyar",
+        "code": "hu"
+    },
+    {
+        "name": "Malagasy",
+        "code": "mg"
+    },
+    {
+        "name": "Malti",
+        "code": "mt"
+    },
+    {
+        "name": "Manipuri",
+        "code": "mni_Mtei"
+    },
+    {
+        "name": "Melayu",
+        "code": "ms"
+    },
+    {
+        "name": "M\u0101ori",
+        "code": "mi"
+    },
+    {
+        "name": "Nederlands",
+        "code": "nl"
+    },
+    {
+        "name": "Norsk Bokm\u00e5l",
+        "code": "nb"
+    },
+    {
+        "name": "Norsk Nynorsk",
+        "code": "nn"
+    },
+    {
+        "name": "Occitan",
+        "code": "oc"
+    },
+    {
+        "name": "Oromoo",
+        "code": "om"
+    },
+    {
+        "name": "O\u2018zbek",
+        "code": "uz_Latn"
+    },
+    {
+        "name": "Polski",
+        "code": "pl"
+    },
+    {
+        "name": "Portugu\u00eas",
+        "code": "pt"
+    },
+    {
+        "name": "Portugu\u00eas (Brasil)",
+        "code": "pt_BR"
+    },
+    {
+        "name": "Rom\u00e2n\u0103",
+        "code": "ro"
+    },
+    {
+        "name": "Runasimi",
+        "code": "qu"
+    },
+    {
+        "name": "Sardu",
+        "code": "sc"
+    },
+    {
+        "name": "Shqip",
+        "code": "sq"
+    },
+    {
+        "name": "Sloven\u010dina",
+        "code": "sk"
+    },
+    {
+        "name": "Sloven\u0161\u010dina",
+        "code": "sl"
+    },
+    {
+        "name": "Soomaali",
+        "code": "so"
+    },
+    {
+        "name": "Srpski",
+        "code": "sr_Latn"
+    },
+    {
+        "name": "Srpski (Crna Gora)",
+        "code": "sr_Latn_ME"
+    },
+    {
+        "name": "Suomi",
+        "code": "fi"
+    },
+    {
+        "name": "Svenska",
+        "code": "sv"
+    },
+    {
+        "name": "Tagalog",
+        "code": "tl"
+    },
+    {
+        "name": "Ti\u1ebfng Vi\u1ec7t",
+        "code": "vi"
+    },
+    {
+        "name": "T\u00fcrkmen Dili",
+        "code": "tk"
+    },
+    {
+        "name": "T\u00fcrk\u00e7e",
+        "code": "tr"
+    },
+    {
+        "name": "\u00c8d\u00e8 Yor\u00f9b\u00e1",
+        "code": "yo"
+    },
+    {
+        "name": "\u00cdslenska",
+        "code": "is"
+    },
+    {
+        "name": "\u010ce\u0161tina",
+        "code": "cs"
+    },
+    {
+        "name": "\u02bb\u014clelo Hawai\u02bbi",
+        "code": "haw"
+    },
+    {
+        "name": "\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac",
+        "code": "el"
+    },
+    {
+        "name": "\u040e\u0437\u0431\u0435\u043a\u0447\u0430",
+        "code": "uz_Cyrl"
+    },
+    {
+        "name": "\u0411\u0435\u043b\u0430\u0440\u0443\u0441\u043a\u0430\u044f",
+        "code": "be"
+    },
+    {
+        "name": "\u0411\u044a\u043b\u0433\u0430\u0440\u0441\u043a\u0438",
+        "code": "bg"
+    },
+    {
+        "name": "\u041a\u044b\u0440\u0433\u044b\u0437\u0447\u0430",
+        "code": "ky"
+    },
+    {
+        "name": "\u041c\u0430\u043a\u0435\u0434\u043e\u043d\u0441\u043a\u0438",
+        "code": "mk"
+    },
+    {
+        "name": "\u041c\u043e\u043d\u0433\u043e\u043b",
+        "code": "mn"
+    },
+    {
+        "name": "\u0420\u0443\u0441\u0441\u043a\u0438\u0439",
+        "code": "ru"
+    },
+    {
+        "name": "\u0421\u0440\u043f\u0441\u043a\u0438",
+        "code": "sr_Cyrl"
+    },
+    {
+        "name": "\u0422\u0430\u0442\u0430\u0440",
+        "code": "tt"
+    },
+    {
+        "name": "\u0422\u043e\u04b7\u0438\u043a\u04e3",
+        "code": "tg"
+    },
+    {
+        "name": "\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430",
+        "code": "uk"
+    },
+    {
+        "name": "\u049a\u0430\u0437\u0430\u049b \u0422\u0456\u043b\u0456",
+        "code": "kk"
+    },
+    {
+        "name": "\u0540\u0561\u0575\u0565\u0580\u0565\u0576",
+        "code": "hy"
+    },
+    {
+        "name": "\u05d9\u05d9\u05b4\u05d3\u05d9\u05e9",
+        "code": "yi"
+    },
+    {
+        "name": "\u05e2\u05d1\u05e8\u05d9\u05ea",
+        "code": "he"
+    },
+    {
+        "name": "\u0626\u06c7\u064a\u063a\u06c7\u0631\u0686\u06d5",
+        "code": "ug"
+    },
+    {
+        "name": "\u0627\u0631\u062f\u0648",
+        "code": "ur"
+    },
+    {
+        "name": "\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+        "code": "ar"
+    },
+    {
+        "name": "\u0633\u0646\u068c\u064a",
+        "code": "sd"
+    },
+    {
+        "name": "\u0641\u0627\u0631\u0633\u06cc",
+        "code": "fa"
+    },
+    {
+        "name": "\u067e\u069a\u062a\u0648",
+        "code": "ps"
+    },
+    {
+        "name": "\u06a9\u0648\u0631\u062f\u06cc\u06cc \u0646\u0627\u0648\u06d5\u0646\u062f\u06cc",
+        "code": "ckb"
+    },
+    {
+        "name": "\u0921\u094b\u0917\u0930\u0940",
+        "code": "doi"
+    },
+    {
+        "name": "\u0928\u0947\u092a\u093e\u0932\u0940",
+        "code": "ne"
+    },
+    {
+        "name": "\u092d\u094b\u091c\u092a\u0941\u0930\u0940",
+        "code": "bho"
+    },
+    {
+        "name": "\u092e\u0930\u093e\u0920\u0940",
+        "code": "mr"
+    },
+    {
+        "name": "\u092e\u0948\u0925\u093f\u0932\u0940",
+        "code": "mai"
+    },
+    {
+        "name": "\u0938\u0902\u0938\u094d\u0915\u0943\u0924 \u092d\u093e\u0937\u093e",
+        "code": "sa"
+    },
+    {
+        "name": "\u0939\u093f\u0928\u094d\u0926\u0940",
+        "code": "hi"
+    },
+    {
+        "name": "\u0985\u09b8\u09ae\u09c0\u09af\u09bc\u09be",
+        "code": "as"
+    },
+    {
+        "name": "\u09ac\u09be\u0982\u09b2\u09be",
+        "code": "bn"
+    },
+    {
+        "name": "\u0a2a\u0a70\u0a1c\u0a3e\u0a2c\u0a40",
+        "code": "pa"
+    },
+    {
+        "name": "\u0a97\u0ac1\u0a9c\u0ab0\u0abe\u0aa4\u0ac0",
+        "code": "gu"
+    },
+    {
+        "name": "\u0b13\u0b21\u0b3c\u0b3f\u0b06",
+        "code": "or"
+    },
+    {
+        "name": "\u0ba4\u0bae\u0bbf\u0bb4\u0bcd",
+        "code": "ta"
+    },
+    {
+        "name": "\u0c24\u0c46\u0c32\u0c41\u0c17\u0c41",
+        "code": "te"
+    },
+    {
+        "name": "\u0c95\u0ca8\u0ccd\u0ca8\u0ca1",
+        "code": "kn"
+    },
+    {
+        "name": "\u0d2e\u0d32\u0d2f\u0d3e\u0d33\u0d02",
+        "code": "ml"
+    },
+    {
+        "name": "\u0dc3\u0dd2\u0d82\u0dc4\u0dbd",
+        "code": "si"
+    },
+    {
+        "name": "\u0e44\u0e17\u0e22",
+        "code": "th"
+    },
+    {
+        "name": "\u0ea5\u0eb2\u0ea7",
+        "code": "lo"
+    },
+    {
+        "name": "\u1019\u103c\u1014\u103a\u1019\u102c",
+        "code": "my"
+    },
+    {
+        "name": "\u10e5\u10d0\u10e0\u10d7\u10e3\u10da\u10d8",
+        "code": "ka"
+    },
+    {
+        "name": "\u1275\u130d\u122d\u129b",
+        "code": "ti"
+    },
+    {
+        "name": "\u12a0\u121b\u122d\u129b",
+        "code": "am"
+    },
+    {
+        "name": "\u1781\u17d2\u1798\u17c2\u179a",
+        "code": "km"
+    },
+    {
+        "name": "\u4e2d\u6587 (\u4e2d\u56fd)",
+        "code": "zh_CN"
+    },
+    {
+        "name": "\u4e2d\u6587 (\u4e2d\u56fd\u9999\u6e2f\u7279\u522b\u884c\u653f\u533a)",
+        "code": "zh_HK"
+    },
+    {
+        "name": "\u4e2d\u6587 (\u53f0\u6e7e)",
+        "code": "zh_TW"
+    },
+    {
+        "name": "\u65e5\u672c\u8a9e",
+        "code": "ja"
+    },
+    {
+        "name": "\ud55c\uad6d\uc5b4",
+        "code": "ko"
+    }
+]
