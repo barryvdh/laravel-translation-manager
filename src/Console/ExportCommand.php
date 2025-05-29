@@ -23,7 +23,7 @@ class ExportCommand extends Command
      */
     protected $description = 'Export translations to PHP files';
 
-    /** @var \Barryvdh\TranslationManager\Manager */
+    /** @var Manager */
     protected $manager;
 
     public function __construct(Manager $manager)
@@ -35,7 +35,7 @@ class ExportCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $group = $this->option('all') ? '*' : $this->argument('group');
         $json = $this->option('json');
@@ -52,7 +52,7 @@ class ExportCommand extends Command
             return;
         }
 
-        if ( $group == '*' ) {
+        if ( $group === '*' ) {
             $this->manager->exportAllTranslations();
         }
         else {
@@ -60,7 +60,7 @@ class ExportCommand extends Command
         }
 
         if (!is_null($group)) {
-            $this->info('Done writing language files for '.(($group == '*') ? 'ALL groups' : $group.' group'));
+            $this->info('Done writing language files for '.(($group === '*') ? 'ALL groups' : $group.' group'));
         } elseif ($json) {
             $this->info('Done writing JSON language files for translation strings');
         }
@@ -71,7 +71,7 @@ class ExportCommand extends Command
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['group', InputArgument::OPTIONAL, 'The group to export (--all for all).'],
@@ -83,7 +83,7 @@ class ExportCommand extends Command
      *
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['json', 'J', InputOption::VALUE_NONE, 'Export anonymous strings to JSON'],

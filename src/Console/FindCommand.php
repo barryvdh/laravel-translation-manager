@@ -21,7 +21,7 @@ class FindCommand extends Command
      */
     protected $description = 'Find translations in php/twig files';
 
-    /** @var \Barryvdh\TranslationManager\Manager */
+    /** @var Manager */
     protected $manager;
 
     public function __construct(Manager $manager)
@@ -33,7 +33,7 @@ class FindCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $counter = $this->manager->findTranslations(null);
         $this->info('Done importing, processed '.$counter.' items!');

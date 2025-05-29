@@ -1,7 +1,7 @@
 <?php namespace Barryvdh\TranslationManager;
 
-use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
+use Barryvdh\TranslationManager\Manager;
 
 class ManagerServiceProvider extends ServiceProvider {
 	/**
@@ -9,23 +9,22 @@ class ManagerServiceProvider extends ServiceProvider {
 	 *
 	 * @var bool
 	 */
-	protected $defer = false;
+	protected bool $defer = false;
 
 	/**
 	 * Register the service provider.
 	 *
 	 * @return void
 	 */
-	public function register()
-	{
+	public function register(): void
+    {
         // Register the config publish path
         $configPath = __DIR__ . '/../config/translation-manager.php';
         $this->mergeConfigFrom($configPath, 'translation-manager');
         $this->publishes([$configPath => config_path('translation-manager.php')], 'config');
 
         $this->app->singleton('translation-manager', function ($app) {
-            $manager = $app->make('Barryvdh\TranslationManager\Manager');
-            return $manager;
+            return $app->make(Manager::class);
         });
 
         $this->app->singleton('command.translation-manager.reset', function ($app) {
@@ -59,8 +58,8 @@ class ManagerServiceProvider extends ServiceProvider {
 	 *
 	 * @return void
 	 */
-	public function boot()
-	{
+	public function boot(): void
+    {
         $viewPath = __DIR__.'/../resources/views';
         $this->loadViewsFrom($viewPath, 'translation-manager');
         $this->publishes([
@@ -80,8 +79,8 @@ class ManagerServiceProvider extends ServiceProvider {
 	 *
 	 * @return array
 	 */
-	public function provides()
-	{
+	public function provides(): array
+    {
 		return array('translation-manager',
             'command.translation-manager.reset',
             'command.translation-manager.import',
