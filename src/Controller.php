@@ -56,7 +56,7 @@ class Controller extends BaseController
         return $this->getIndex($group);
     }
 
-    protected function loadLocales()
+    protected function loadLocales(): array
     {
         //Set the default locale as the first one.
         $locales = Translation::groupBy('locale')
@@ -111,7 +111,7 @@ class Controller extends BaseController
         }
     }
 
-    public function postImport(Request $request)
+    public function postImport(Request $request): array
     {
         $replace = $request->get('replace', false);
         $counter = $this->manager->importTranslations($replace);
@@ -119,14 +119,14 @@ class Controller extends BaseController
         return ['status' => 'ok', 'counter' => $counter];
     }
 
-    public function postFind()
+    public function postFind(): array
     {
         $numFound = $this->manager->findTranslations();
 
         return ['status' => 'ok', 'counter' => (int) $numFound];
     }
 
-    public function postPublish($group = null)
+    public function postPublish($group = null): array
     {
          $json = false;
 
@@ -146,10 +146,8 @@ class Controller extends BaseController
         {
             return redirect()->action('\Barryvdh\TranslationManager\Controller@getView',$group);
         }
-        else
-        {
-            return redirect()->back();
-        }
+
+        return redirect()->back();
     }
 
     public function postAddLocale(Request $request)
