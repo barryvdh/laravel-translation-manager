@@ -48,7 +48,7 @@ class Controller extends BaseController
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
             ->with('editUrl', $group ? action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]) : null)
-            ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
+            ->with('deleteEnabled', (bool) $this->manager->getConfig('delete_enabled'));
     }
 
     public function getView($group = null)
@@ -141,7 +141,7 @@ class Controller extends BaseController
 
     public function postAddGroup(Request $request)
     {
-        $group = str_replace(".", '', $request->input('new-group'));
+        $group = $this->sanitizeFilename($request->input('new-group'));
         if ($group)
         {
             return redirect()->action('\Barryvdh\TranslationManager\Controller@getView',$group);
@@ -155,7 +155,7 @@ class Controller extends BaseController
     public function postAddLocale(Request $request)
     {
         $locales = $this->manager->getLocales();
-        $newLocale = str_replace([], '-', trim($request->input('new-locale')));
+        $newLocale = $this->sanitizeFilename($request->input('new-locale'));
         if (!$newLocale || in_array($newLocale, $locales)) {
             return redirect()->back();
         }
@@ -199,5 +199,16 @@ class Controller extends BaseController
             return redirect()->back();
         }
         return redirect()->back();
+    }
+
+    protected function sanitizeFilename($input)
+    {
+        $input = Str::ascii(trim($input));
+        return str_replace(
+            ['<', '>', '%', '/', '\\', '.', ' ', '"', "'", '#', '?'],
+            '',
+            $input
+        );
+
     }
 }
