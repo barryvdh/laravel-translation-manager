@@ -196,7 +196,6 @@ class Controller extends BaseController
                     ]
                 );
             }
-            return redirect()->back();
         }
         return redirect()->back();
     }
