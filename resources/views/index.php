@@ -229,7 +229,7 @@
                     <?php endif; ?>
                     <div class="form-group">
                         <input type="hidden" name="with-translations" value="1">
-                        <input type="hidden" name="file" value="<?= $group ?>">
+                        <input type="hidden" name="file" value="<?= e($group) ?>">
                         <button type="submit" class="btn btn-default btn-block"  data-disable-with="Adding..">Auto translate missing translations</button>
                     </div>
                 </div>
