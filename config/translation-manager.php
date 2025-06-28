@@ -67,8 +67,9 @@ return [
     ],
 
     /**
-     * Database connection name to allow for different db connection for the translations table.
+     * Database table and connection name to allow for different db connection for the translations table.
      */
+    'db_table' => env('TRANSLATION_MANAGER_DB_TABLE', null),
     'db_connection' => env('TRANSLATION_MANAGER_DB_CONNECTION', null),
 
 ];
