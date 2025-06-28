@@ -304,7 +304,7 @@ class Manager
                         $this->files->put($path, $output);
                     }
                 }
-                Translation::ofTranslatedGroup($group)->update(['status' => Translation::STATUS_SAVED]);
+                Translation::ofTranslatedGroup($group)->toBase()->update(['status' => Translation::STATUS_SAVED]);
             }
         }
 
@@ -322,7 +322,7 @@ class Manager
                 }
             }
 
-            Translation::ofTranslatedGroup(self::JSON_GROUP)->update(['status' => Translation::STATUS_SAVED]);
+            Translation::ofTranslatedGroup(self::JSON_GROUP)->toBase()->update(['status' => Translation::STATUS_SAVED]);
         }
 
         $this->events->dispatch(new TranslationsExportedEvent());
