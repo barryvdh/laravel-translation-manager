@@ -266,9 +266,14 @@ class Manager
                     }
                 }
 
-                $tree = $this->makeTree(Translation::ofTranslatedGroup($group)
-                                                    ->orderByGroupKeys(Arr::get($this->config, 'sort_keys', false))
-                                                    ->get());
+                $models = [];
+                Translation::ofTranslatedGroup($group)
+                    ->orderByGroupKeys(Arr::get($this->config, 'sort_keys', false))
+                    ->chunkById(50000, function ($chunk) use (&$models) {
+                        $models = array_merge($models, $chunk->all());
+                    });
+
+                $tree = $this->makeTree($models);
 
                 foreach ($tree as $locale => $groups) {
                     $locale = basename($locale);
