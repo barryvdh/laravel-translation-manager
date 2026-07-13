@@ -172,4 +172,5 @@ This package is still very alpha. Few things that are on the todo-list:
     - Add locales/groups via webinterface
     - Improve webinterface (more selection/filtering, behavior of popup after save etc)
     - Seed existing languages (https://github.com/caouecs/Laravel-lang)
+    - Support remote storage options and sync between environments
     - Suggestions are welcome :)
