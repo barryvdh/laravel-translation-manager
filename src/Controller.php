@@ -40,9 +40,12 @@ class Controller extends BaseController
             $translations[$translation->key][$translation->locale] = $translation;
         }
 
+        $available_locales = json_decode(file_get_contents(__DIR__ . '/../resources/languages.json'), false, 512, JSON_THROW_ON_ERROR);
+
          return view('translation-manager::index')
             ->with('translations', $translations)
             ->with('locales', $locales)
+            ->with('available_locales', $available_locales)
             ->with('groups', $groups)
             ->with('group', $group)
             ->with('numTranslations', $numTranslations)
