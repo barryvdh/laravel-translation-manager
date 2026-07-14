@@ -32,6 +32,7 @@ class Controller extends BaseController
         $groups = [''=>'Choose a group'] + $groups;
         $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
+        $allNumChanged = Translation::where('status', Translation::STATUS_CHANGED)->count();
 
         $allTranslations = Translation::where('group', $group)->orderBy('key', 'asc')->get();
         $numTranslations = count($allTranslations);
@@ -47,6 +48,7 @@ class Controller extends BaseController
             ->with('group', $group)
             ->with('numTranslations', $numTranslations)
             ->with('numChanged', $numChanged)
+            ->with('allNumChanged', $allNumChanged)
             ->with('editUrl', $group ? action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]) : null)
             ->with('deleteEnabled', (bool) $this->manager->getConfig('delete_enabled'));
     }
