@@ -97,7 +97,7 @@ class Manager
                     $translations = \Lang::getLoader()->load($locale, $group);
                 } else {
                     $translations = include $file;
-                    $group = 'vendor/'.$vendorName;
+                    $group = 'vendor/'.$vendorName.'/'.$group;
                 }
 
                 if ($translations && is_array($translations)) {
@@ -252,19 +252,26 @@ class Manager
 
     public function exportTranslations($group = null, $json = false)
     {
-        $group = basename($group);
+		$vendor = false;
+
+		$baseGroup = basename($group);
+		if ($group == '*') {
+			return $this->exportAllTranslations();
+		} else {
+			if (Str::startsWith($group, 'vendor'))
+			{
+				$vendor = true;
+			}
+			else
+			{
+				$group = basename($group);
+			}
+		}
+
         $basePath = $this->app['path.lang'];
 
         if (! is_null($group) && ! $json) {
             if (! in_array($group, $this->config['exclude_groups'])) {
-                $vendor = false;
-                if ($group == '*') {
-                    return $this->exportAllTranslations();
-                } else {
-                    if (Str::startsWith($group, 'vendor')) {
-                        $vendor = true;
-                    }
-                }
 
                 $models = [];
                 Translation::ofTranslatedGroup($group)
@@ -283,7 +290,7 @@ class Manager
 
                         $locale_path = $locale.DIRECTORY_SEPARATOR.$group;
                         if ($vendor) {
-                            $path = $basePath.'/'.$group.'/'.$locale;
+                            $path = $basePath.'/'.dirname($group);
                             $locale_path = Str::after($group, '/');
                         }
                         $subfolders = explode(DIRECTORY_SEPARATOR, $locale_path);
@@ -299,11 +306,7 @@ class Manager
                             }
                         }
 
-                        if ($vendor) {
-                            $path = $path.DIRECTORY_SEPARATOR.'messages.php';
-                        } else {
-                            $path = $path.DIRECTORY_SEPARATOR.$locale.DIRECTORY_SEPARATOR.$group.'.php';
-                        }
+						$path = $path.DIRECTORY_SEPARATOR.$locale.DIRECTORY_SEPARATOR.$baseGroup.'.php';
 
                         $output = "<?php\n\nreturn ".var_export($translations, true).';'.\PHP_EOL;
                         $this->files->put($path, $output);
