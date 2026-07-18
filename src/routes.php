@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Route;
+
 $config = array_merge(config('translation-manager.route'), ['namespace' => 'Barryvdh\TranslationManager']);
-Route::group($config, function($router)
+Route::group($config, static function($router)
 {
     $router->get('view/{groupKey?}', 'Controller@getView')->where('groupKey', '.*');
     $router->get('/{groupKey?}', 'Controller@getIndex')->where('groupKey', '.*');

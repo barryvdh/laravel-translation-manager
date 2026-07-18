@@ -21,7 +21,7 @@ class CleanCommand extends Command
      */
     protected $description = 'Clean empty translations';
 
-    /** @var \Barryvdh\TranslationManager\Manager */
+    /** @var Manager */
     protected $manager;
 
     public function __construct(Manager $manager)
@@ -33,7 +33,7 @@ class CleanCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $this->manager->cleanTranslations();
         $this->info('Done cleaning translations');

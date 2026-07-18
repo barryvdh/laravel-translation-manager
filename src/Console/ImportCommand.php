@@ -22,7 +22,7 @@ class ImportCommand extends Command
      */
     protected $description = 'Import translations from the PHP sources';
 
-    /** @var \Barryvdh\TranslationManager\Manager */
+    /** @var Manager */
     protected $manager;
 
     public function __construct(Manager $manager)
@@ -34,7 +34,7 @@ class ImportCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $replace = $this->option('replace');
         $counter = $this->manager->importTranslations($replace);
@@ -46,7 +46,7 @@ class ImportCommand extends Command
      *
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['replace', 'R', InputOption::VALUE_NONE, 'Replace existing keys'],
